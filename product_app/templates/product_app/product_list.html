@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product List</title>
+</head>
+<body>
+    <h1>Product List</h1>
+
+    <form method="GET" action="">
+        {{ form.as_p }}
+        <button type="submit">Filter</button>
+    </form>
+
+    <ul>
+        {% for product in products %}
+            <li>
+                {{ product.name }} - {{ product.price }} Ksh
+                {% if product.is_on_sale %}
+                    <span style="color: red;">(On Sale!)</span>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No products found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
