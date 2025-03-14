@@ -1,5 +1,5 @@
 from django import forms
-from .models import Category, Brand
+from .models import Category, Brand, Review
 
 class ProductFilterForm(forms.Form):
     category = forms.ModelChoiceField(
@@ -26,3 +26,31 @@ class ProductFilterForm(forms.Form):
         required=False,
         label="On Sale"
     )
+
+    
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+
+        widgets = {
+            'rating': forms.Select(choices=[
+                (1, '1 - Poor'),
+                (2, '2 - Fair'),
+                (3, '3 - Good'),
+                (4, '4 - Very Good'),
+                (5, '5 - Excellent')
+            ], attrs={'class': 'form-control'}),
+            
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Share your experience...'
+            })
+        }
+
+        labels = {
+            'rating': 'Rating',
+            'comment': 'Your Review'
+        }
