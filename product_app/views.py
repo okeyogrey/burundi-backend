@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 def product_list(request):
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('-created_at')
     form = ProductFilterForm(request.GET)
 
     if form.is_valid():
@@ -32,10 +32,13 @@ def product_list(request):
     return render(request, 'product_app/product_list.html', context)
 
 
-
+@login_required
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(product=product)
+
+    # Prevent duplicate reviews
+    existing_review = reviews.filter(user=request.user).exists()
 
     if request.method == 'POST':
         form = ReviewForm(request.POST)
@@ -45,13 +48,14 @@ def product_detail(request, product_id):
             review.user = request.user
             review.save()
             messages.success(request, 'Your review has been submitted successfully!')
-            return redirect('product_detail', product_id=product.id)
+            return redirect('product_app:product_detail', product_id=product.id)
     else:
         form = ReviewForm()
 
     context = {
         'product': product,
         'reviews': reviews,
-        'form': form
+        'form': form,
+        'existing_review': existing_review  # Add this if missing
     }
     return render(request, 'product_app/product_detail.html', context)

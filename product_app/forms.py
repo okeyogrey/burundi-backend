@@ -27,12 +27,12 @@ class ProductFilterForm(forms.Form):
         label="On Sale"
     )
 
-    
+
 
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['rating', 'comment']
+        fields = ['rating', 'content']
 
         widgets = {
             'rating': forms.Select(choices=[
@@ -43,7 +43,7 @@ class ReviewForm(forms.ModelForm):
                 (5, '5 - Excellent')
             ], attrs={'class': 'form-control'}),
             
-            'comment': forms.Textarea(attrs={
+            'content': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Share your experience...'
@@ -52,5 +52,5 @@ class ReviewForm(forms.ModelForm):
 
         labels = {
             'rating': 'Rating',
-            'comment': 'Your Review'
+            'content': 'Your Review'
         }
