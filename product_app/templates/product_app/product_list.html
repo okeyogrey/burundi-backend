@@ -23,5 +23,45 @@
             <li>No products found.</li>
         {% endfor %}
     </ul>
+
+
+    
+
+    <div class="product-details">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
+        <p>Price: Kshs {{ product.price }}</p>
+    </div>
+    
+    <hr>
+    
+    <!-- Reviews Section -->
+    <h3>Customer Reviews</h3>
+    {% for review in reviews %}
+        <div class="review">
+            <strong>{{ review.user.username }}</strong>
+            <p>Rating: {{ review.rating }} / 5</p>
+            <p>{{ review.comment }}</p>
+            <small>Posted on {{ review.created_at }}</small>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No reviews yet. Be the first to review this product!</p>
+    {% endfor %}
+    
+    <!-- Add Review Form -->
+    {% if request.user.is_authenticated %}
+        <h3>Leave a Review</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
+    {% endif %}
+    
+
+
 </body>
 </html>

@@ -1,6 +1,9 @@
-from django.shortcuts import render
-from .models import Product
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product, Review
 from .forms import ProductFilterForm
+from .forms import ReviewForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def product_list(request):
     products = Product.objects.all()
@@ -27,3 +30,28 @@ def product_list(request):
         'form': form
     }
     return render(request, 'product_app/product_list.html', context)
+
+
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = Review.objects.filter(product=product)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            messages.success(request, 'Your review has been submitted successfully!')
+            return redirect('product_detail', product_id=product.id)
+    else:
+        form = ReviewForm()
+
+    context = {
+        'product': product,
+        'reviews': reviews,
+        'form': form
+    }
+    return render(request, 'product_app/product_detail.html', context)
