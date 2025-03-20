@@ -4,6 +4,7 @@ from .forms import ProductFilterForm
 from .forms import ReviewForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def product_list(request):
     products = Product.objects.all().order_by('-created_at')
@@ -24,6 +25,16 @@ def product_list(request):
 
         if form.cleaned_data['sale_items']:
             products = products.filter(is_on_sale=True)
+
+        # Pagination Logic
+    paginator = Paginator(products, 6)  # 6 products per page
+    page = request.GET.get('page')
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
 
     context = {
         'products': products,
