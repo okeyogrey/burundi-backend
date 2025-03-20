@@ -18,17 +18,15 @@ class ProductFilterForm(forms.Form):
             'id': 'searchQuery'
         })
     )
-    category = forms.ModelChoiceField(
+    categories = forms.ModelMultipleChoiceField(
         queryset=Category.objects.all(),
         required=False,
-        empty_label="All Categories",
-        widget=forms.Select(attrs={'class': 'filter-select'})
+        widget=forms.CheckboxSelectMultiple
     )
-    brand = forms.ModelChoiceField(
+    brands = forms.ModelMultipleChoiceField(
         queryset=Brand.objects.all(),
         required=False,
-        empty_label="All Brands",
-        widget=forms.Select(attrs={'class': 'filter-select'})
+        widget=forms.CheckboxSelectMultiple
     )
     min_price = forms.DecimalField(
         required=False,

@@ -36,51 +36,52 @@
             <form method="GET" class="filter-form" id="filterForm">
                 {% csrf_token %}
 
-                <!-- CATEGORY (Collapsible) -->
-                <div class="filter-group collapsible">
-                  <h3 class="collapsible-header">Category</h3>
-                  <div class="collapsible-body">
-                    {{ form.category }}
-                  </div>
-                </div>
-
-                <!-- BRAND (Collapsible) -->
-                <div class="filter-group collapsible">
-                  <h3 class="collapsible-header">Brand</h3>
-                  <div class="collapsible-body">
-                    {{ form.brand }}
-                  </div>
-                </div>
-
-                <!-- PRICE RANGE (Collapsible + noUiSlider) -->
-                <div class="filter-group collapsible">
-                  <h3 class="collapsible-header">Price Range</h3>
-                  <div class="collapsible-body price-range">
-                    <!-- Slider Container -->
-                    <div id="priceSlider"></div>
-
-                    <!-- Hidden fields to store the selected range -->
-                    <input type="hidden" name="min_price" id="minPriceField">
-                    <input type="hidden" name="max_price" id="maxPriceField">
-                  </div>
-                </div>
-
                 <!-- ON SALE (Collapsible) -->
                 <div class="filter-group collapsible">
-                  <h3 class="collapsible-header">On Sale</h3>
-                  <div class="collapsible-body">
-                    {{ form.sale_items }}
+                    <h3 class="collapsible-header">On Sale</h3>
+                    <div class="collapsible-body">
+                      {{ form.sale_items }}
+                    </div>
                   </div>
-                </div>
 
-                <!-- SORT BY (Collapsible) -->
+                  <!-- PRICE RANGE (Collapsible + noUiSlider) -->
+                <div class="filter-group collapsible">
+                    <h3 class="collapsible-header">Price Range</h3>
+                    <div class="collapsible-body price-range">
+                      <!-- Slider Container -->
+                      <div id="priceSlider"></div>
+  
+                      <!-- Hidden fields to store the selected range -->
+                      <input type="hidden" name="min_price" id="minPriceField">
+                      <input type="hidden" name="max_price" id="maxPriceField">
+                    </div>
+                  </div>
+
+                <!-- CATEGORY (Collapsible) -->
+                <div class="filter-group">
+                    <h3>Category</h3>
+                    <!-- This will now render multiple checkboxes -->
+                    {{ form.categories }}
+                  </div>
+
+                <!-- BRAND (Collapsible) -->
+                <div class="filter-group">
+                    <h3>Brand</h3>
+                    {{ form.brands }}
+                  </div>
+
+                
+
+                
+
+                <!-- SORT BY (Collapsible)
                 <div class="filter-group collapsible">
                   <h3 class="collapsible-header">Sort By</h3>
                   <div class="collapsible-body">
                     <label for="id_sort_by">Sort By</label>
                     {{ form.sort_by }}
                   </div>
-                </div>
+                </div> -->
 
                 <!-- SEARCH (Collapsible) -->
                 <div class="filter-group collapsible">
@@ -118,13 +119,13 @@
       // 1) Initialize noUiSlider
       const priceSlider = document.getElementById('priceSlider');
       noUiSlider.create(priceSlider, {
-        start: [0, 5000], // default range
+        start: [0, 20000], // default range
         connect: true,
         range: {
           'min': 0,
           'max': 20000
         },
-        step: 100
+        step: 100    
       });
 
       const minPriceField = document.getElementById('minPriceField');

@@ -19,25 +19,29 @@ def product_list(request):
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        # Category
-        category = form.cleaned_data.get('category')
-        if category:
-            products = products.filter(category=category)
+        # Multiple Categories
+        categories = form.cleaned_data.get('categories')
+        if categories:
+            products = products.filter(category__in=categories)
 
-        # Brand
-        if form.cleaned_data['brand']:
-            products = products.filter(brand=form.cleaned_data['brand'])
+        # Multiple Brands
+        brands = form.cleaned_data.get('brands')
+        if brands:
+            products = products.filter(brand__in=brands)
 
         # Min Price
-        if form.cleaned_data['min_price']:
-            products = products.filter(price__gte=form.cleaned_data['min_price'])
+        min_price = form.cleaned_data.get('min_price')
+        if min_price is not None:
+            products = products.filter(price__gte=min_price)
 
         # Max Price
-        if form.cleaned_data['max_price']:
-            products = products.filter(price__lte=form.cleaned_data['max_price'])
+        max_price = form.cleaned_data.get('max_price')
+        if max_price is not None:
+            products = products.filter(price__lte=max_price)
 
         # On Sale
-        if form.cleaned_data['sale_items']:
+        sale_items = form.cleaned_data.get('sale_items')
+        if sale_items:
             products = products.filter(is_on_sale=True)
 
         # Sort By
@@ -72,25 +76,29 @@ def product_list_json(request):
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        # Category
-        category = form.cleaned_data.get('category')
-        if category:
-            products = products.filter(category=category)
+        # Categories
+        categories = form.cleaned_data.get('categories')
+        if categories:
+            products = products.filter(category__in=categories)
 
-        # Brand
-        if form.cleaned_data['brand']:
-            products = products.filter(brand=form.cleaned_data['brand'])
+        # Brands
+        brands = form.cleaned_data.get('brands')
+        if brands:
+            products = products.filter(brand__in=brands)
 
         # Min Price
-        if form.cleaned_data['min_price']:
-            products = products.filter(price__gte=form.cleaned_data['min_price'])
+        min_price = form.cleaned_data.get('min_price')
+        if min_price is not None:
+            products = products.filter(price__gte=min_price)
 
         # Max Price
-        if form.cleaned_data['max_price']:
-            products = products.filter(price__lte=form.cleaned_data['max_price'])
+        max_price = form.cleaned_data.get('max_price')
+        if max_price is not None:
+            products = products.filter(price__lte=max_price)
 
         # On Sale
-        if form.cleaned_data['sale_items']:
+        sale_items = form.cleaned_data.get('sale_items')
+        if sale_items:
             products = products.filter(is_on_sale=True)
 
         # Sort By
