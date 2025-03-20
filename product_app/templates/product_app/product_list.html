@@ -121,6 +121,14 @@
           formData.append(key, val);
         }
 
+        // NEW CODE: read ?main_category=20 from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const mainCatParam = urlParams.get('main_category');
+        if (mainCatParam) {
+          // ensure the final request also has main_category=20
+          formData.set('main_category', mainCatParam);
+        }
+
         const params = new URLSearchParams(formData);
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
