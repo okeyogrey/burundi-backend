@@ -1,6 +1,19 @@
 from django import forms
 from .models import Category, Brand, Review
 
+
+class ProductFilterForm(forms.Form):
+    search_query = forms.CharField(
+        required=False,
+        label="Search",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Search products...',
+            'class': 'filter-input',
+            'id': 'searchQuery'
+        })
+    )
+
+
 class ProductFilterForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=Category.objects.all(),

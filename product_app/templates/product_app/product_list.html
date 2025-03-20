@@ -61,6 +61,20 @@
         <div class="filter-item">
             <button type="submit" class="filter-button">Filter</button>
         </div>
+
+        <div class="filter-item">
+            <label for="id_search_query">Search</label>
+            {{ form.search_query }}
+        </div>
+
+        
+
+        
+
+            <!-- Inside your filter form
+            <div class="filter-item align-right">
+                <a href="{% url 'product_app:product_list' %}" class="clear-button">Clear Filters</a>
+            </div> -->
     </form>
 
     <!-- Products Grid -->
@@ -108,5 +122,24 @@
         </span>
     </div>
 
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const searchField = document.getElementById("searchQuery");
+          const filterForm = document.querySelector(".filter-form");
+        
+          // Trigger form submit on input change (debounced)
+          let typingTimer;
+          searchField.addEventListener("keyup", () => {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+              filterForm.submit(); // auto-submit form
+            }, 500);
+          });
+        });
+        </script>
+    
 </body>
 </html>
+
+

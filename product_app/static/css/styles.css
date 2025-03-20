@@ -60,6 +60,7 @@ h1 {
 .filter-item {
     display: flex;
     flex-direction: column;
+    margin-bottom: 10px; /* Adds vertical space between fields */
 }
 
 .filter-item label {
@@ -211,4 +212,39 @@ h1 {
     text-align: center;
     width: 120px;
     margin: 10px auto;
+}
+
+.align-right {
+    justify-self: end; /* This works in a CSS grid context */
+}
+
+/* .filter-button { */
+    /* padding: 10px 20px; */
+    /* border: none; */
+    /* background-color: #dc3545; */
+    /* color: #fff; */
+    /* border-radius: 6px; */
+    /* cursor: pointer; */
+    /* transition: background-color 0.3s; */
+/* } */
+
+.clear-button {
+    background-color: #dc3545; /* Red for 'Clear' */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+    margin-top: 25px;
+}
+
+.clear-button:hover {
+    background-color: #c82333;
+}
+
+
+.align-right {
+    justify-self: end;
 }
