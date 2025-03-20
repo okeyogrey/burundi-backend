@@ -14,6 +14,18 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Subcategory(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True
+    )  # Allows subcategories without a strict parent category
+
+    def __str__(self):
+        return self.name
+
 class Brand(models.Model):
     name = models.CharField(max_length=100)
 
@@ -24,7 +36,8 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(default="No description available")
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
     stock = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='products/', default='default_image.jpg')
