@@ -13,7 +13,7 @@
         <div class="logo">BurundiSales</div>
         <ul class="nav-links">
             <!-- Link main_category to top-level categories in DB (pk=10,13,12,2) -->
-            <li><a href="{% url 'product_app:product_list' %}?main_category=19">Men's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=30">Women's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=12">Kid's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=2">Cosmetics</a></li>
@@ -47,8 +47,8 @@
 
                 <!-- Category (Subcategories Only) -->
                 <div class="filter-group">
-                    <h3>Category</h3>
-                    {{ form.categories }}
+                    <h3>Subcategory</h3>
+                    {{ form.subcategories }}
                 </div>
 
                 <!-- Brands (Multiple Checkboxes) -->

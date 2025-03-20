@@ -13,17 +13,18 @@ def product_list(request):
     main_category = None
     if main_cat_id:
         try:
-            main_category = Category.objects.get(pk=main_cat_id, parent__isnull=True)
+            # No parent logic here, just get the Category by pk
+            main_category = Category.objects.get(pk=main_cat_id)
         except Category.DoesNotExist:
             main_category = None
 
     # 2. Base queryset
     products = Product.objects.all().order_by('-created_at')
 
-    # 3. Filter products by main_category + subcategories if valid
+    # 3. Filter products by main_category if valid
     if main_category:
-        subcat_ids = main_category.subcategories.values_list('id', flat=True)
-        products = products.filter(category__in=[main_category.id, *subcat_ids])
+        # Directly filter by the category field
+        products = products.filter(category=main_category)
 
     # 4. Pass main_category to ProductFilterForm
     form = ProductFilterForm(request.GET, main_category=main_category)
@@ -74,20 +75,21 @@ def product_list(request):
     }
     return render(request, 'product_app/product_list.html', context)
 
+
 def product_list_json(request):
     """Return filtered products as JSON (for AJAX)."""
     main_cat_id = request.GET.get('main_category')
     main_category = None
     if main_cat_id:
         try:
-            main_category = Category.objects.get(pk=main_cat_id, parent__isnull=True)
+            main_category = Category.objects.get(pk=main_cat_id)
         except Category.DoesNotExist:
             main_category = None
 
     products = Product.objects.all().order_by('-created_at')
+
     if main_category:
-        subcat_ids = main_category.subcategories.values_list('id', flat=True)
-        products = products.filter(category__in=[main_category.id, *subcat_ids])
+        products = products.filter(category=main_category)
 
     form = ProductFilterForm(request.GET, main_category=main_category)
     if form.is_valid():
@@ -95,9 +97,9 @@ def product_list_json(request):
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        categories = form.cleaned_data.get('categories')
-        if categories:
-            products = products.filter(category__in=categories)
+        subcategories = form.cleaned_data.get('subcategories')
+        if subcategories:
+            products = products.filter(subcategory__in=subcategories)
 
         brands = form.cleaned_data.get('brands')
         if brands:
@@ -129,6 +131,7 @@ def product_list_json(request):
             'is_on_sale': product.is_on_sale
         })
     return JsonResponse({'products': data})
+
 
 @login_required
 def product_detail(request, product_id):

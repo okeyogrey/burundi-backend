@@ -3,7 +3,7 @@ from .models import Product, Category, Subcategory, Brand, Review
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'parent']
+    list_display = ['name']
 
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):

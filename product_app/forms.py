@@ -1,7 +1,6 @@
 from django import forms
-from .models import Category, Brand, Review
+from .models import Category, Subcategory, Brand, Review
 
-# Sorting choices
 SORT_CHOICES = [
     ('-created_at', 'Newest'),
     ('price', 'Price: Low to High'),
@@ -18,8 +17,8 @@ class ProductFilterForm(forms.Form):
             'id': 'searchQuery'
         })
     )
-    categories = forms.ModelMultipleChoiceField(
-        queryset=Category.objects.all(),
+    subcategories = forms.ModelMultipleChoiceField(
+        queryset=Subcategory.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple
     )
@@ -56,16 +55,15 @@ class ProductFilterForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        # Pop the main_category if passed, otherwise None
         main_category = kwargs.pop('main_category', None)
         super().__init__(*args, **kwargs)
 
         if main_category:
-            # Show only subcategories of main_category
-            self.fields['categories'].queryset = Category.objects.filter(parent=main_category)
+            # Show subcategories linked to the main category
+            self.fields['subcategories'].queryset = Subcategory.objects.filter(category=main_category)
         else:
-            # No main_category => show no categories
-            self.fields['categories'].queryset = Category.objects.none()
+            # Otherwise, show none (or you can show all if you prefer)
+            self.fields['subcategories'].queryset = Subcategory.objects.none()
 
 class ReviewForm(forms.ModelForm):
     class Meta:
