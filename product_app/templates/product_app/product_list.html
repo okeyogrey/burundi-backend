@@ -14,9 +14,9 @@
         <ul class="nav-links">
             <!-- Link main_category to top-level categories in DB (pk=10,13,12,2) -->
             <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=30">Women's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=12">Kid's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=2">Cosmetics</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
         </ul>
     </nav>
 
@@ -47,7 +47,7 @@
 
                 <!-- Category (Subcategories Only) -->
                 <div class="filter-group">
-                    <h3>Subcategory</h3>
+                    <h3>Category</h3>
                     {{ form.subcategories }}
                 </div>
 

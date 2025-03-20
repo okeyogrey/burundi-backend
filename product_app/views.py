@@ -35,9 +35,11 @@ def product_list(request):
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        categories = form.cleaned_data.get('categories')
-        if categories:
-            products = products.filter(category__in=categories)
+        subcategories = form.cleaned_data.get('subcategories')
+        print("DEBUG: Selected subcategories =>", subcategories)
+        if subcategories:
+            products = products.filter(subcategory__in=subcategories)
+        print("DEBUG: Final products after subcategory filter =>", products)
 
         brands = form.cleaned_data.get('brands')
         if brands:
@@ -93,13 +95,21 @@ def product_list_json(request):
 
     form = ProductFilterForm(request.GET, main_category=main_category)
     if form.is_valid():
+        print("DEBUG: subcategories raw =>", request.GET.getlist('subcategories'))
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
 
         subcategories = form.cleaned_data.get('subcategories')
+        print("DEBUG: subcategories from cleaned_data =>", subcategories)
         if subcategories:
             products = products.filter(subcategory__in=subcategories)
+            print("DEBUG: final SQL =>", products.query)
+            print("DEBUG: final product list =>", list(products))
+        
+        # Right here, print the final SQL query
+        print("DEBUG: final subcategory filter SQL =>", products.query)
+        print("DEBUG: final product list =>", list(products))
 
         brands = form.cleaned_data.get('brands')
         if brands:
