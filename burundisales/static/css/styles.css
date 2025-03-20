@@ -11,3 +11,23 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+.related-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.related-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.related-item h4 {
+    margin: 10px 0;
+}

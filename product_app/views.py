@@ -32,6 +32,7 @@ def product_list(request):
     return render(request, 'product_app/product_list.html', context)
 
 
+
 @login_required
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -56,6 +57,7 @@ def product_detail(request, product_id):
         'product': product,
         'reviews': reviews,
         'form': form,
-        'existing_review': existing_review  # Add this if missing
+        'existing_review': existing_review,  # Add this if missing
+        'related_products': related_products  # Added related products
     }
     return render(request, 'product_app/product_detail.html', context)

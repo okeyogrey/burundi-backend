@@ -45,6 +45,22 @@
     <p><strong>You have already reviewed this product.</strong></p>
 {% endif %}
 
+
+<hr>
+
+<h3>Related Products</h3>
+<div class="related-products">
+    {% for related_product in related_products %}
+        <div class="related-item">
+            <h4>{{ related_product.name }}</h4>
+            <p>Price: Kshs {{ related_product.price }}</p>
+            <a href="{% url 'product_app:product_detail' related_product.id %}">View Details</a>
+        </div>
+    {% empty %}
+        <p>No related products available.</p>
+    {% endfor %}
+</div>
+
 <a href="{% url 'product_app:product_list' %}">Back to Products</a>
 </body>
 </html>
