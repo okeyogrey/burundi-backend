@@ -38,7 +38,7 @@ def product_list(request):
             products = products.filter(is_on_sale=True)
 
     # Pagination Logic
-    paginator = Paginator(products, 6)  # 6 products per page
+    paginator = Paginator(products, 10)  # 6 products per page
     page = request.GET.get('page')
     try:
         products = paginator.page(page)

@@ -12,11 +12,11 @@
     <nav class="navbar">
         <div class="logo">BurundiSales</div>
         <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Men's Fashion</a></li>
-            <li><a href="#">Women's Fashion</a></li>
-            <li><a href="#">Kid's Fashion</a></li>
-            <li><a href="#">Cosmetics</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?category=1">Home</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?category=3">Men's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?category=4">Women's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?category=5">Kid's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?category=2">Cosmetics</a></li>
         </ul>
     </nav>
     
