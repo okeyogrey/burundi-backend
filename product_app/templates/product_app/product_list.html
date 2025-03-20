@@ -17,12 +17,12 @@
     <nav class="navbar">
         <div class="logo">BurundiSales</div>
         <ul class="nav-links">
-            <!-- Using category IDs for direct filter links -->
-            <li><a href="{% url 'product_app:product_list' %}?category=1">Home</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?category=3">Men's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?category=4">Women's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?category=5">Kid's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?category=2">Cosmetics</a></li>
+            <!-- If you want these links to filter by category, use ?categories=1, etc. -->
+            <li><a href="{% url 'product_app:product_list' %}">Home</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?categories=3">Men's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?categories=4">Women's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?categories=5">Kid's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?categories=2">Cosmetics</a></li>
         </ul>
     </nav>
 
@@ -32,7 +32,7 @@
         <!-- Sidebar (Filters) -->
         <aside class="filter-sidebar">
             <h2>Filter</h2>
-            <!-- The filter form now has an ID for AJAX -->
+            <!-- The filter form for sidebar fields -->
             <form method="GET" class="filter-form" id="filterForm">
                 {% csrf_token %}
 
@@ -40,143 +40,128 @@
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">On Sale</h3>
                     <div class="collapsible-body">
-                      {{ form.sale_items }}
+                        {{ form.sale_items }}
                     </div>
-                  </div>
+                </div>
 
-                  <!-- PRICE RANGE (Collapsible + noUiSlider) -->
+                <!-- PRICE RANGE (Collapsible + noUiSlider) -->
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">Price Range</h3>
                     <div class="collapsible-body price-range">
-                      <!-- Slider Container -->
-                      <div id="priceSlider"></div>
-  
-                      <!-- Hidden fields to store the selected range -->
-                      <input type="hidden" name="min_price" id="minPriceField">
-                      <input type="hidden" name="max_price" id="maxPriceField">
+                        <!-- Slider Container -->
+                        <div id="priceSlider"></div>
+                        <!-- Hidden fields to store the selected range -->
+                        <input type="hidden" name="min_price" id="minPriceField">
+                        <input type="hidden" name="max_price" id="maxPriceField">
                     </div>
-                  </div>
+                </div>
 
-                <!-- CATEGORY (Collapsible) -->
+                <!-- CATEGORY (Multiple Checkboxes) -->
                 <div class="filter-group">
                     <h3>Category</h3>
-                    <!-- This will now render multiple checkboxes -->
                     {{ form.categories }}
-                  </div>
+                </div>
 
-                <!-- BRAND (Collapsible) -->
+                <!-- BRAND (Multiple Checkboxes) -->
                 <div class="filter-group">
                     <h3>Brand</h3>
                     {{ form.brands }}
-                  </div>
-
-                
-
-                
-
-                <!-- SORT BY (Collapsible)
-                <div class="filter-group collapsible">
-                  <h3 class="collapsible-header">Sort By</h3>
-                  <div class="collapsible-body">
-                    <label for="id_sort_by">Sort By</label>
-                    {{ form.sort_by }}
-                  </div>
-                </div> -->
-
-                <!-- SEARCH (Collapsible) -->
-                <div class="filter-group collapsible">
-                  <h3 class="collapsible-header">Search</h3>
-                  <div class="collapsible-body">
-                    {{ form.search_query }}
-                  </div>
                 </div>
-
-                <!-- Removed the "Apply Filters" button for instant filtering -->
             </form>
         </aside>
 
         <!-- Main Content (Dynamic Product Grid) -->
         <main class="product-listing">
-
-            <!-- Top Bar for Sort By -->
-            <div class="sort-bar">
-                <label for="id_sort_by" class="sort-label">Sort By:</label>
+            <!-- Top Bar for Search + Sort -->
+            <form method="GET" class="filter-form" id="topBarForm">
+                {% csrf_token %}
+                <div class="sort-bar">
+                    <!-- Search Field -->
+                    <div class="search-container">
+                        <label for="id_search_query" class="search-label">Search</label>
+                        {{ form.search_query }}
+                    </div>
+                    <!-- Sort By Field -->
+                    <label for="id_sort_by" class="sort-label"></label>
                     {{ form.sort_by }}
-            </div>
+                </div>
+            </form>
 
             <!-- The product cards will be dynamically inserted here by JS -->
             <div class="products-container" id="productsContainer"></div>
-
         </main>
     </div>
 
     <!-- JavaScript for noUiSlider + AJAX Filtering + Collapsible Toggling -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const filterForm = document.getElementById("filterForm");
-      const productsContainer = document.getElementById("productsContainer");
-
-      // 1) Initialize noUiSlider
+      /* 1) Initialize noUiSlider */
       const priceSlider = document.getElementById('priceSlider');
       noUiSlider.create(priceSlider, {
-        start: [0, 20000], // default range
+        start: [0, 20000],  // default range
         connect: true,
         range: {
           'min': 0,
           'max': 20000
         },
-        step: 100    
+        step: 100
       });
 
+      /* 2) Setup hidden fields for min/max price */
       const minPriceField = document.getElementById('minPriceField');
       const maxPriceField = document.getElementById('maxPriceField');
-
-      // Update hidden fields whenever the slider changes
       priceSlider.noUiSlider.on('update', function(values, handle){
         minPriceField.value = Math.round(values[0]);
         maxPriceField.value = Math.round(values[1]);
       });
 
-      // 2) Prevent default form submission
-      filterForm.addEventListener("submit", function(e) {
-        e.preventDefault();
-        fetchFilteredProducts();
+      /* 3) Two forms: #filterForm (sidebar) & #topBarForm (search + sort) */
+      const sidebarForm = document.getElementById("filterForm");
+      const topBarForm = document.getElementById("topBarForm");
+      const productsContainer = document.getElementById("productsContainer");
+
+      /* 4) Prevent default submit on both forms */
+      sidebarForm.addEventListener("submit", e => e.preventDefault());
+      topBarForm.addEventListener("submit", e => e.preventDefault());
+
+      /* 5) Listen for changes in both forms */
+      const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
+      const topFields = topBarForm.querySelectorAll("select, input[type='text']");
+
+      sideFields.forEach(field => {
+        field.addEventListener("change", () => fetchFilteredProducts());
+      });
+      topFields.forEach(field => {
+        field.addEventListener("change", () => fetchFilteredProducts());
       });
 
-      // 3) Listen for changes on each field for instant updates
-      const fields = filterForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
-      fields.forEach(field => {
-        field.addEventListener("change", () => {
-          fetchFilteredProducts();
-        });
-      });
-
-      // 4) AJAX Fetch
+      /* 6) Merge data from both forms & fetch */
       function fetchFilteredProducts() {
-        // Build query string from form data
-        const formData = new FormData(filterForm);
+        // Collect sidebar form data
+        const formData = new FormData(sidebarForm);
+        // Collect top bar form data
+        const topBarData = new FormData(topBarForm);
+        // Merge them
+        for (let [key, val] of topBarData.entries()) {
+          formData.append(key, val);
+        }
+
+        // Build query string
         const params = new URLSearchParams(formData);
-        // e.g. /product/json/?category=1&min_price=500
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
         fetch(url)
           .then(response => response.json())
-          .then(data => {
-            renderProducts(data.products);
-          })
+          .then(data => renderProducts(data.products))
           .catch(err => console.error(err));
       }
 
-      // 5) Render Products
+      /* 7) Render Products */
       function renderProducts(products) {
-        // Clear container
         productsContainer.innerHTML = "";
-
-        // Create product card HTML for each product
         products.forEach(product => {
           const card = document.createElement("div");
           card.classList.add("product-card");
-
           card.innerHTML = `
             <img class="product-image" src="${product.image_url}" alt="${product.name}">
             <div class="product-info">
@@ -190,10 +175,10 @@
         });
       }
 
-      // 6) Initial load (fetch products on page load)
+      /* 8) Initial load */
       fetchFilteredProducts();
 
-      // 7) Collapsible sections
+      /* 9) Collapsible sections */
       const headers = document.querySelectorAll('.collapsible-header');
       headers.forEach(header => {
         header.addEventListener('click', () => {

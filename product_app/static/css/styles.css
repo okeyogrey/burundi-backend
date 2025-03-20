@@ -130,15 +130,36 @@ h1 {
 /* Sort Bar at Top Right */
 .sort-bar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   gap: 10px;
 }
 
+/* Container for the search input */
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .search-label {
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase; /* optional, like Kicks Kenya */
+    color: #222;
+  }
+
 .sort-label {
   font-weight: bold;
 }
+
+/* The actual search input (from your form) might have a class 'filter-input' */
+.filter-input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
 
 .filter-select {
     padding: 6px 10px;
