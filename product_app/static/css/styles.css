@@ -342,3 +342,14 @@ h1 {
     margin-right: 6px;
   }
   
+
+  .price-input {
+    width: 80px;           /* slightly wider than the default 70px */
+    padding: 5px;          /* internal padding */
+    margin-right: 5px;     /* small gap between the fields */
+    border: 1px solid #ccc;/* light gray border */
+    border-radius: 4px;    /* rounded corners */
+    font-size: 14px;       /* control text size */
+    text-align: center;    /* center the numeric text */
+  }
+  

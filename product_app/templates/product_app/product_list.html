@@ -10,7 +10,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">BurundiSales</div>
+        <div class="logo">KingOfSpeed</div>
         <ul class="nav-links">
             <!-- Link main_category to top-level categories in DB (pk=10,13,12,2) -->
             <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
@@ -39,9 +39,19 @@
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">Price Range</h3>
                     <div class="collapsible-body price-range">
+
+                        <!-- Slider -->
                         <div id="priceSlider"></div>
                         <input type="hidden" name="min_price" id="minPriceField">
                         <input type="hidden" name="max_price" id="maxPriceField">
+
+                    </div><br>
+
+                    <!-- Input fields for manual min/max entry -->
+                    <div class="price-display">
+                        <input type="number" id="minValueDisplay" value="0" class="price-input"> 
+                        -
+                        <input type="number" id="maxValueDisplay" value="20000" class="price-input">
                     </div>
                 </div>
 
@@ -89,20 +99,62 @@
         step: 100
       });
 
+      // Hidden fields for the Django form
       const minPriceField = document.getElementById('minPriceField');
       const maxPriceField = document.getElementById('maxPriceField');
-      priceSlider.noUiSlider.on('update', function(values, handle){
-        minPriceField.value = Math.round(values[0]);
-        maxPriceField.value = Math.round(values[1]);
+
+      // Visible input fields for manual entry
+      const minValueDisplay = document.getElementById('minValueDisplay');
+      const maxValueDisplay = document.getElementById('maxValueDisplay');
+
+      // 1) SLIDER => INPUT FIELDS
+      // Fire on 'update' if you want continuous feedback, or 'change' if only on release
+      priceSlider.noUiSlider.on('update', function(values, handle) {
+        const minVal = Math.round(values[0]);
+        const maxVal = Math.round(values[1]);
+
+        // Update the visible input boxes
+        minValueDisplay.value = minVal;
+        maxValueDisplay.value = maxVal;
+
+        // Also update the hidden fields for the form
+        minPriceField.value = minVal;
+        maxPriceField.value = maxVal;
       });
 
+      // Fire on 'change' to trigger the fetch once user stops dragging
+      priceSlider.noUiSlider.on('change', function() {
+        fetchFilteredProducts();
+      });
+
+      // 2) INPUT FIELDS => SLIDER
+      // When user types in the min input, update the slider
+      minValueDisplay.addEventListener('change', () => {
+        let newMin = parseInt(minValueDisplay.value, 10) || 0;
+        let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
+        priceSlider.noUiSlider.set([newMin, newMax]);
+
+        // Optionally auto-fetch here if you want immediate filter
+        fetchFilteredProducts();
+      });
+
+      // When user types in the max input, update the slider
+      maxValueDisplay.addEventListener('change', () => {
+        let newMin = parseInt(minValueDisplay.value, 10) || 0;
+        let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
+        priceSlider.noUiSlider.set([newMin, newMax]);
+
+        // Optionally auto-fetch here if you want immediate filter
+        fetchFilteredProducts();
+      });
+
+      // Prevent normal form submission
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
-      const productsContainer = document.getElementById("productsContainer");
-
       sidebarForm.addEventListener("submit", e => e.preventDefault());
       topBarForm.addEventListener("submit", e => e.preventDefault());
 
+      // Fields that will trigger a filter on "change"
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
       const topFields = topBarForm.querySelectorAll("select, input[type='text']");
 
@@ -113,6 +165,7 @@
         field.addEventListener("change", () => fetchFilteredProducts());
       });
 
+      // The main function to merge form data & fetch products
       function fetchFilteredProducts() {
         // Merge data from both forms
         const formData = new FormData(sidebarForm);
@@ -121,11 +174,10 @@
           formData.append(key, val);
         }
 
-        // NEW CODE: read ?main_category=20 from the URL
+        // read ?main_category=20 from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const mainCatParam = urlParams.get('main_category');
         if (mainCatParam) {
-          // ensure the final request also has main_category=20
           formData.set('main_category', mainCatParam);
         }
 
@@ -139,16 +191,18 @@
       }
 
       function renderProducts(products) {
+        const productsContainer = document.getElementById("productsContainer");
         productsContainer.innerHTML = "";
         products.forEach(product => {
           const card = document.createElement("div");
           card.classList.add("product-card");
           card.innerHTML = `
+          ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
             <img class="product-image" src="${product.image_url}" alt="${product.name}">
             <div class="product-info">
               <h4>${product.name}</h4>
               <p class="product-price">Ksh ${product.price}</p>
-              ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
+              
               <a class="details-button" href="/product/${product.id}/">View Details</a>
             </div>
           `;
@@ -156,9 +210,10 @@
         });
       }
 
+      // Initial fetch on page load
       fetchFilteredProducts();
 
-      // Collapsible
+      // Collapsible sections
       const headers = document.querySelectorAll('.collapsible-header');
       headers.forEach(header => {
         header.addEventListener('click', () => {
