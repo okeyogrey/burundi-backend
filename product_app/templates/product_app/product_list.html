@@ -90,17 +90,22 @@
                   </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="filter-button" id="applyFiltersBtn">
-                  Apply Filters
-                </button>
+                <!-- Removed the "Apply Filters" button for instant filtering -->
             </form>
         </aside>
 
         <!-- Main Content (Dynamic Product Grid) -->
         <main class="product-listing">
+
+            <!-- Top Bar for Sort By -->
+            <div class="sort-bar">
+                <label for="id_sort_by" class="sort-label">Sort By:</label>
+                    {{ form.sort_by }}
+            </div>
+
             <!-- The product cards will be dynamically inserted here by JS -->
             <div class="products-container" id="productsContainer"></div>
+
         </main>
     </div>
 
@@ -109,7 +114,6 @@
     document.addEventListener("DOMContentLoaded", () => {
       const filterForm = document.getElementById("filterForm");
       const productsContainer = document.getElementById("productsContainer");
-      const applyFiltersBtn = document.getElementById("applyFiltersBtn");
 
       // 1) Initialize noUiSlider
       const priceSlider = document.getElementById('priceSlider');
