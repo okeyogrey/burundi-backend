@@ -12,24 +12,17 @@ class ProductFilterForm(forms.Form):
             'id': 'searchQuery'
         })
     )
-
-
-class ProductFilterForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=Category.objects.all(),
         required=False,
         empty_label="All Categories",
-        widget=forms.Select(attrs={
-            'class': 'filter-select'
-        })
+        widget=forms.Select(attrs={'class': 'filter-select'})
     )
     brand = forms.ModelChoiceField(
         queryset=Brand.objects.all(),
         required=False,
         empty_label="All Brands",
-        widget=forms.Select(attrs={
-            'class': 'filter-select'
-        })
+        widget=forms.Select(attrs={'class': 'filter-select'})
     )
     min_price = forms.DecimalField(
         required=False,
@@ -50,10 +43,9 @@ class ProductFilterForm(forms.Form):
     sale_items = forms.BooleanField(
         required=False,
         label="On Sale",
-        widget=forms.CheckboxInput(attrs={
-            'class': 'filter-checkbox'
-        })
+        widget=forms.CheckboxInput(attrs={'class': 'filter-checkbox'})
     )
+
 
 class ReviewForm(forms.ModelForm):
     class Meta:

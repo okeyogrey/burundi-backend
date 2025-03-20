@@ -248,3 +248,21 @@ h1 {
 .align-right {
     justify-self: end;
 }
+
+/* If you have a .filter-button class already, add an extra .small-btn class for smaller sizing */
+.small-btn {
+    padding: 6px 12px;  /* slightly smaller than your default 10px 20px */
+    font-size: 14px;    /* reduce font size */
+    margin-left: 10px;  /* small gap from the checkbox */
+}
+
+/* Example row-group styling to align On Sale + Button horizontally */
+.row-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px; /* space between checkbox and button */
+}
+
+.row-group label {
+    margin-bottom: 0;  /* keep label aligned horizontally */
+}
