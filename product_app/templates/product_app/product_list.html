@@ -4,39 +4,30 @@
 <html>
 <head>
     <title>Product List</title>
-    <!-- Your existing CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
-    <!-- noUiSlider CSS & JS (CDN) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 </head>
 <body>
-
-    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo">BurundiSales</div>
         <ul class="nav-links">
-            <!-- If you want these links to filter by category, use ?categories=1, etc. -->
-            <li><a href="{% url 'product_app:product_list' %}">Home</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?categories=3">Men's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?categories=4">Women's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?categories=5">Kid's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?categories=2">Cosmetics</a></li>
+            <!-- Link main_category to top-level categories in DB (pk=10,13,12,2) -->
+            <li><a href="{% url 'product_app:product_list' %}?main_category=10">Men's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=13">Women's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=12">Kid's Fashion</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=2">Cosmetics</a></li>
         </ul>
     </nav>
 
-    <!-- Main Container for Sidebar + Product Listing -->
     <div class="product-page-container">
-
         <!-- Sidebar (Filters) -->
         <aside class="filter-sidebar">
             <h2>Filter</h2>
-            <!-- The filter form for sidebar fields -->
             <form method="GET" class="filter-form" id="filterForm">
                 {% csrf_token %}
 
-                <!-- ON SALE (Collapsible) -->
+                <!-- On Sale -->
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">On Sale</h3>
                     <div class="collapsible-body">
@@ -44,25 +35,23 @@
                     </div>
                 </div>
 
-                <!-- PRICE RANGE (Collapsible + noUiSlider) -->
+                <!-- Price Range -->
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">Price Range</h3>
                     <div class="collapsible-body price-range">
-                        <!-- Slider Container -->
                         <div id="priceSlider"></div>
-                        <!-- Hidden fields to store the selected range -->
                         <input type="hidden" name="min_price" id="minPriceField">
                         <input type="hidden" name="max_price" id="maxPriceField">
                     </div>
                 </div>
 
-                <!-- CATEGORY (Multiple Checkboxes) -->
+                <!-- Category (Subcategories Only) -->
                 <div class="filter-group">
                     <h3>Category</h3>
                     {{ form.categories }}
                 </div>
 
-                <!-- BRAND (Multiple Checkboxes) -->
+                <!-- Brands (Multiple Checkboxes) -->
                 <div class="filter-group">
                     <h3>Brand</h3>
                     {{ form.brands }}
@@ -70,44 +59,36 @@
             </form>
         </aside>
 
-        <!-- Main Content (Dynamic Product Grid) -->
+        <!-- Main Content -->
         <main class="product-listing">
             <!-- Top Bar for Search + Sort -->
             <form method="GET" class="filter-form" id="topBarForm">
                 {% csrf_token %}
                 <div class="sort-bar">
-                    <!-- Search Field -->
                     <div class="search-container">
                         <label for="id_search_query" class="search-label">Search</label>
                         {{ form.search_query }}
                     </div>
-                    <!-- Sort By Field -->
-                    <label for="id_sort_by" class="sort-label"></label>
+                    <label for="id_sort_by" class="sort-label">Sort By:</label>
                     {{ form.sort_by }}
                 </div>
             </form>
 
-            <!-- The product cards will be dynamically inserted here by JS -->
+            <!-- Product Grid -->
             <div class="products-container" id="productsContainer"></div>
         </main>
     </div>
 
-    <!-- JavaScript for noUiSlider + AJAX Filtering + Collapsible Toggling -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-      /* 1) Initialize noUiSlider */
       const priceSlider = document.getElementById('priceSlider');
       noUiSlider.create(priceSlider, {
-        start: [0, 20000],  // default range
+        start: [0, 20000],
         connect: true,
-        range: {
-          'min': 0,
-          'max': 20000
-        },
+        range: { 'min': 0, 'max': 20000 },
         step: 100
       });
 
-      /* 2) Setup hidden fields for min/max price */
       const minPriceField = document.getElementById('minPriceField');
       const maxPriceField = document.getElementById('maxPriceField');
       priceSlider.noUiSlider.on('update', function(values, handle){
@@ -115,16 +96,13 @@
         maxPriceField.value = Math.round(values[1]);
       });
 
-      /* 3) Two forms: #filterForm (sidebar) & #topBarForm (search + sort) */
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
       const productsContainer = document.getElementById("productsContainer");
 
-      /* 4) Prevent default submit on both forms */
       sidebarForm.addEventListener("submit", e => e.preventDefault());
       topBarForm.addEventListener("submit", e => e.preventDefault());
 
-      /* 5) Listen for changes in both forms */
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
       const topFields = topBarForm.querySelectorAll("select, input[type='text']");
 
@@ -135,18 +113,14 @@
         field.addEventListener("change", () => fetchFilteredProducts());
       });
 
-      /* 6) Merge data from both forms & fetch */
       function fetchFilteredProducts() {
-        // Collect sidebar form data
+        // Merge data from both forms
         const formData = new FormData(sidebarForm);
-        // Collect top bar form data
         const topBarData = new FormData(topBarForm);
-        // Merge them
         for (let [key, val] of topBarData.entries()) {
           formData.append(key, val);
         }
 
-        // Build query string
         const params = new URLSearchParams(formData);
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
@@ -156,7 +130,6 @@
           .catch(err => console.error(err));
       }
 
-      /* 7) Render Products */
       function renderProducts(products) {
         productsContainer.innerHTML = "";
         products.forEach(product => {
@@ -175,10 +148,9 @@
         });
       }
 
-      /* 8) Initial load */
       fetchFilteredProducts();
 
-      /* 9) Collapsible sections */
+      // Collapsible
       const headers = document.querySelectorAll('.collapsible-header');
       headers.forEach(header => {
         header.addEventListener('click', () => {
@@ -188,6 +160,5 @@
       });
     });
     </script>
-
 </body>
 </html>

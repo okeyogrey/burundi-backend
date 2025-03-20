@@ -1,23 +1,24 @@
 from django.db import models
-from django.contrib.auth.models import User  # For user references
-from django.conf import settings  # Import settings for AUTH_USER_MODEL
-from django.utils.timezone import now  # Import this
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='subcategories'
+    )
 
     def __str__(self):
         return self.name
-    
-
 
 class Brand(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-    
-
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -42,11 +43,10 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
-    
 
 class Review(models.Model):
     product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Updated here
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)])
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

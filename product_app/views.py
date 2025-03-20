@@ -3,54 +3,63 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.core import serializers
 
-from .models import Product, Review
+from .models import Product, Review, Category
 from .forms import ProductFilterForm, ReviewForm
 
 def product_list(request):
-    products = Product.objects.all().order_by('-created_at')
-    form = ProductFilterForm(request.GET)
+    # 1. Identify main_category from query string
+    main_cat_id = request.GET.get('main_category')
+    main_category = None
+    if main_cat_id:
+        try:
+            main_category = Category.objects.get(pk=main_cat_id, parent__isnull=True)
+        except Category.DoesNotExist:
+            main_category = None
 
-    # Apply filters if form is valid
+    # 2. Base queryset
+    products = Product.objects.all().order_by('-created_at')
+
+    # 3. Filter products by main_category + subcategories if valid
+    if main_category:
+        subcat_ids = main_category.subcategories.values_list('id', flat=True)
+        products = products.filter(category__in=[main_category.id, *subcat_ids])
+
+    # 4. Pass main_category to ProductFilterForm
+    form = ProductFilterForm(request.GET, main_category=main_category)
+
+    # 5. Additional filters if form is valid
     if form.is_valid():
-        # Search Query
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        # Multiple Categories
         categories = form.cleaned_data.get('categories')
         if categories:
             products = products.filter(category__in=categories)
 
-        # Multiple Brands
         brands = form.cleaned_data.get('brands')
         if brands:
             products = products.filter(brand__in=brands)
 
-        # Min Price
         min_price = form.cleaned_data.get('min_price')
         if min_price is not None:
             products = products.filter(price__gte=min_price)
 
-        # Max Price
         max_price = form.cleaned_data.get('max_price')
         if max_price is not None:
             products = products.filter(price__lte=max_price)
 
-        # On Sale
         sale_items = form.cleaned_data.get('sale_items')
         if sale_items:
             products = products.filter(is_on_sale=True)
 
-        # Sort By
         sort_by = form.cleaned_data.get('sort_by')
         if sort_by:
             products = products.order_by(sort_by)
 
-    # Pagination Logic
-    paginator = Paginator(products, 10)  # Show 10 products per page
+    # 6. Pagination
+    paginator = Paginator(products, 10)
     page = request.GET.get('page')
     try:
         products = paginator.page(page)
@@ -66,47 +75,50 @@ def product_list(request):
     return render(request, 'product_app/product_list.html', context)
 
 def product_list_json(request):
-    """Return filtered products as JSON."""
-    products = Product.objects.all().order_by('-created_at')
-    form = ProductFilterForm(request.GET)
+    """Return filtered products as JSON (for AJAX)."""
+    main_cat_id = request.GET.get('main_category')
+    main_category = None
+    if main_cat_id:
+        try:
+            main_category = Category.objects.get(pk=main_cat_id, parent__isnull=True)
+        except Category.DoesNotExist:
+            main_category = None
 
+    products = Product.objects.all().order_by('-created_at')
+    if main_category:
+        subcat_ids = main_category.subcategories.values_list('id', flat=True)
+        products = products.filter(category__in=[main_category.id, *subcat_ids])
+
+    form = ProductFilterForm(request.GET, main_category=main_category)
     if form.is_valid():
-        # Search Query
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        # Categories
         categories = form.cleaned_data.get('categories')
         if categories:
             products = products.filter(category__in=categories)
 
-        # Brands
         brands = form.cleaned_data.get('brands')
         if brands:
             products = products.filter(brand__in=brands)
 
-        # Min Price
         min_price = form.cleaned_data.get('min_price')
         if min_price is not None:
             products = products.filter(price__gte=min_price)
 
-        # Max Price
         max_price = form.cleaned_data.get('max_price')
         if max_price is not None:
             products = products.filter(price__lte=max_price)
 
-        # On Sale
         sale_items = form.cleaned_data.get('sale_items')
         if sale_items:
             products = products.filter(is_on_sale=True)
 
-        # Sort By
         sort_by = form.cleaned_data.get('sort_by')
         if sort_by:
             products = products.order_by(sort_by)
 
-    # Convert queryset to JSON (only fields you need)
     data = []
     for product in products:
         data.append({
@@ -122,11 +134,7 @@ def product_list_json(request):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(product=product)
-
-    # Fetch related products (limit 4)
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
-
-    # Prevent duplicate reviews by the same user
     existing_review = reviews.filter(user=request.user).exists()
 
     if request.method == 'POST':

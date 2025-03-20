@@ -49,12 +49,23 @@ class ProductFilterForm(forms.Form):
         label="On Sale",
         widget=forms.CheckboxInput(attrs={'class': 'filter-checkbox'})
     )
-
     sort_by = forms.ChoiceField(
         required=False,
         choices=SORT_CHOICES,
         widget=forms.Select(attrs={'class': 'filter-select'})
     )
+
+    def __init__(self, *args, **kwargs):
+        # Pop the main_category if passed, otherwise None
+        main_category = kwargs.pop('main_category', None)
+        super().__init__(*args, **kwargs)
+
+        if main_category:
+            # Show only subcategories of main_category
+            self.fields['categories'].queryset = Category.objects.filter(parent=main_category)
+        else:
+            # No main_category => show no categories
+            self.fields['categories'].queryset = Category.objects.none()
 
 class ReviewForm(forms.ModelForm):
     class Meta:
