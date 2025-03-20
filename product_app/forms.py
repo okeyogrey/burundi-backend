@@ -1,6 +1,12 @@
 from django import forms
 from .models import Category, Brand, Review
 
+# Sorting choices
+SORT_CHOICES = [
+    ('-created_at', 'Newest'),
+    ('price', 'Price: Low to High'),
+    ('-price', 'Price: High to Low'),
+]
 
 class ProductFilterForm(forms.Form):
     search_query = forms.CharField(
@@ -46,6 +52,11 @@ class ProductFilterForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': 'filter-checkbox'})
     )
 
+    sort_by = forms.ChoiceField(
+        required=False,
+        choices=SORT_CHOICES,
+        widget=forms.Select(attrs={'class': 'filter-select'})
+    )
 
 class ReviewForm(forms.ModelForm):
     class Meta:

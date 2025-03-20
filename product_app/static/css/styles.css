@@ -269,3 +269,18 @@ h1 {
 .row-group label {
   margin-bottom: 0;
 }
+
+.collapsible-body {
+    max-height: 999px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .collapsible-body.collapsed {
+    max-height: 0;
+  }
+  .collapsible-header {
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  

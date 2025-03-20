@@ -4,7 +4,12 @@
 <html>
 <head>
     <title>Product List</title>
+    <!-- Your existing CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- noUiSlider CSS & JS (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 </head>
 <body>
 
@@ -23,116 +28,175 @@
 
     <!-- Main Container for Sidebar + Product Listing -->
     <div class="product-page-container">
+
         <!-- Sidebar (Filters) -->
         <aside class="filter-sidebar">
             <h2>Filter</h2>
-            <form method="GET" class="filter-form">
+            <!-- The filter form now has an ID for AJAX -->
+            <form method="GET" class="filter-form" id="filterForm">
                 {% csrf_token %}
 
-                <!-- Category -->
-                <div class="filter-group">
-                    <label for="id_category">Category</label>
+                <!-- CATEGORY (Collapsible) -->
+                <div class="filter-group collapsible">
+                  <h3 class="collapsible-header">Category</h3>
+                  <div class="collapsible-body">
                     {{ form.category }}
+                  </div>
                 </div>
 
-                <!-- Brand -->
-                <div class="filter-group">
-                    <label for="id_brand">Brand</label>
+                <!-- BRAND (Collapsible) -->
+                <div class="filter-group collapsible">
+                  <h3 class="collapsible-header">Brand</h3>
+                  <div class="collapsible-body">
                     {{ form.brand }}
+                  </div>
                 </div>
 
-                <!-- Price Range -->
-                <div class="filter-group price-range">
-                    <label>Price Range</label>
-                    <div class="price-inputs">
-                        <div>
-                            <label for="id_min_price">Min</label>
-                            {{ form.min_price }}
-                        </div>
-                        <div>
-                            <label for="id_max_price">Max</label>
-                            {{ form.max_price }}
-                        </div>
-                    </div>
+                <!-- PRICE RANGE (Collapsible + noUiSlider) -->
+                <div class="filter-group collapsible">
+                  <h3 class="collapsible-header">Price Range</h3>
+                  <div class="collapsible-body price-range">
+                    <!-- Slider Container -->
+                    <div id="priceSlider"></div>
+
+                    <!-- Hidden fields to store the selected range -->
+                    <input type="hidden" name="min_price" id="minPriceField">
+                    <input type="hidden" name="max_price" id="maxPriceField">
+                  </div>
                 </div>
 
-                <!-- On Sale -->
-                <div class="filter-group">
-                    <label for="id_sale_items">On Sale</label>
+                <!-- ON SALE (Collapsible) -->
+                <div class="filter-group collapsible">
+                  <h3 class="collapsible-header">On Sale</h3>
+                  <div class="collapsible-body">
                     {{ form.sale_items }}
+                  </div>
                 </div>
 
-                <!-- Search -->
-                <div class="filter-group">
-                    <label for="id_search_query">Search</label>
+                <!-- SORT BY (Collapsible) -->
+                <div class="filter-group collapsible">
+                  <h3 class="collapsible-header">Sort By</h3>
+                  <div class="collapsible-body">
+                    <label for="id_sort_by">Sort By</label>
+                    {{ form.sort_by }}
+                  </div>
+                </div>
+
+                <!-- SEARCH (Collapsible) -->
+                <div class="filter-group collapsible">
+                  <h3 class="collapsible-header">Search</h3>
+                  <div class="collapsible-body">
                     {{ form.search_query }}
+                  </div>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="filter-button">Apply Filters</button>
+                <button type="submit" class="filter-button" id="applyFiltersBtn">
+                  Apply Filters
+                </button>
             </form>
         </aside>
 
-        <!-- Main Content (Product Grid + Pagination) -->
+        <!-- Main Content (Dynamic Product Grid) -->
         <main class="product-listing">
-            <!-- Products Grid -->
-            <div class="products-container">
-                {% for product in products %}
-                    <div class="product-card">
-                        <!-- Product Image -->
-                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
-
-                        <!-- Product Info -->
-                        <div class="product-info">
-                            <h4>{{ product.name }}</h4>
-                            <p class="product-price">Ksh {{ product.price|floatformat:0 }}</p>
-                            {% if product.is_on_sale %}
-                                <span class="badge-sale">Sale</span>
-                            {% endif %}
-                            <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">
-                                View Details
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <!-- Pagination Controls -->
-            <div class="pagination">
-                <span class="step-links">
-                    {% if products.has_previous %}
-                        <a href="?page=1">&laquo; First</a>
-                        <a href="?page={{ products.previous_page_number }}">Previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ products.number }} of {{ products.paginator.num_pages }}
-                    </span>
-
-                    {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}">Next</a>
-                        <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
+            <!-- The product cards will be dynamically inserted here by JS -->
+            <div class="products-container" id="productsContainer"></div>
         </main>
     </div>
 
-    <!-- Auto-Submit on Search Field Keyup (Optional) -->
+    <!-- JavaScript for noUiSlider + AJAX Filtering + Collapsible Toggling -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          const searchField = document.getElementById("searchQuery");
-          if (searchField) {
-            const filterForm = document.querySelector(".filter-form");
-            let typingTimer;
-            searchField.addEventListener("keyup", () => {
-              clearTimeout(typingTimer);
-              typingTimer = setTimeout(() => {
-                filterForm.submit(); // auto-submit form after 500ms
-              }, 500);
-            });
-          }
+    document.addEventListener("DOMContentLoaded", () => {
+      const filterForm = document.getElementById("filterForm");
+      const productsContainer = document.getElementById("productsContainer");
+      const applyFiltersBtn = document.getElementById("applyFiltersBtn");
+
+      // 1) Initialize noUiSlider
+      const priceSlider = document.getElementById('priceSlider');
+      noUiSlider.create(priceSlider, {
+        start: [0, 5000], // default range
+        connect: true,
+        range: {
+          'min': 0,
+          'max': 20000
+        },
+        step: 100
+      });
+
+      const minPriceField = document.getElementById('minPriceField');
+      const maxPriceField = document.getElementById('maxPriceField');
+
+      // Update hidden fields whenever the slider changes
+      priceSlider.noUiSlider.on('update', function(values, handle){
+        minPriceField.value = Math.round(values[0]);
+        maxPriceField.value = Math.round(values[1]);
+      });
+
+      // 2) Prevent default form submission
+      filterForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        fetchFilteredProducts();
+      });
+
+      // 3) Listen for changes on each field for instant updates
+      const fields = filterForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
+      fields.forEach(field => {
+        field.addEventListener("change", () => {
+          fetchFilteredProducts();
         });
+      });
+
+      // 4) AJAX Fetch
+      function fetchFilteredProducts() {
+        // Build query string from form data
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData);
+        // e.g. /product/json/?category=1&min_price=500
+        const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
+
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            renderProducts(data.products);
+          })
+          .catch(err => console.error(err));
+      }
+
+      // 5) Render Products
+      function renderProducts(products) {
+        // Clear container
+        productsContainer.innerHTML = "";
+
+        // Create product card HTML for each product
+        products.forEach(product => {
+          const card = document.createElement("div");
+          card.classList.add("product-card");
+
+          card.innerHTML = `
+            <img class="product-image" src="${product.image_url}" alt="${product.name}">
+            <div class="product-info">
+              <h4>${product.name}</h4>
+              <p class="product-price">Ksh ${product.price}</p>
+              ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
+              <a class="details-button" href="/product/${product.id}/">View Details</a>
+            </div>
+          `;
+          productsContainer.appendChild(card);
+        });
+      }
+
+      // 6) Initial load (fetch products on page load)
+      fetchFilteredProducts();
+
+      // 7) Collapsible sections
+      const headers = document.querySelectorAll('.collapsible-header');
+      headers.forEach(header => {
+        header.addEventListener('click', () => {
+          const body = header.nextElementSibling;
+          body.classList.toggle('collapsed');
+        });
+      });
+    });
     </script>
 
 </body>
