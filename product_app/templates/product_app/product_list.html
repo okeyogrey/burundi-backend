@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+
+    <nav class="navbar">
+        <div class="logo">BurundiSales</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Men's Fashion</a></li>
+            <li><a href="#">Women's Fashion</a></li>
+            <li><a href="#">Kid's Fashion</a></li>
+            <li><a href="#">Cosmetics</a></li>
+        </ul>
+    </nav>
+    
     <h1>Product List</h1>
 
     <form method="GET">
@@ -16,19 +28,30 @@
         <button type="submit">Filter</button>
     </form>
 
-    <ul>
+    <div class="products-container">
         {% for product in products %}
-            <li>
-                {{ product.name }} - {{ product.price }} Ksh
-                {% if product.is_on_sale %}
-                    <span style="color: red;">(On Sale!)</span>
-                {% endif %}
-                <a href="{% url 'product_app:product_detail' product.id %}">View Details</a>
-            </li>
-        {% empty %}
-            <li>No products found.</li>
+            <div class="product-card">
+                <!-- Product Image -->
+                <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+    
+                <!-- Product Info -->
+                <div class="product-info">
+                    <h4>{{ product.name }}</h4>
+                    <p class="product-price">Ksh {{ product.price|floatformat:0 }}</p>
+                    
+                    <!-- If on sale, show a sale badge or discount -->
+                    {% if product.is_on_sale %}
+                        <span class="badge-sale">Sale</span>
+                    {% endif %}
+                    
+                    <!-- Product Detail Link -->
+                    <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">
+                        View Details
+                    </a>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 
 
     
