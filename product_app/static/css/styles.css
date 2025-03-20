@@ -1,0 +1,107 @@
+body {
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    color: #333;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Enhanced Form Design */
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Product List Styling */
+.product-list {
+    list-style: none;
+    padding: 0;
+}
+
+.product-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.product-item.sale {
+    border-left: 5px solid #ff4500;
+    background-color: #fff5f0;
+    font-weight: bold;
+}
+
+.product-item h4 {
+    margin: 10px 0;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+}
+
+.pagination .current {
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 5px;
+}
+
+/* Page Indicator */
+.page-indicator {
+    background-color: #28a745;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    text-align: center;
+    width: 120px;
+    margin: 10px auto;
+}
