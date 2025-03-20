@@ -12,6 +12,7 @@
     <nav class="navbar">
         <div class="logo">BurundiSales</div>
         <ul class="nav-links">
+            <!-- Using category IDs for direct filter links -->
             <li><a href="{% url 'product_app:product_list' %}?category=1">Home</a></li>
             <li><a href="{% url 'product_app:product_list' %}?category=3">Men's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?category=4">Women's Fashion</a></li>
@@ -19,128 +20,120 @@
             <li><a href="{% url 'product_app:product_list' %}?category=2">Cosmetics</a></li>
         </ul>
     </nav>
-    
-    <!-- Page Title -->
 
+    <!-- Main Container for Sidebar + Product Listing -->
+    <div class="product-page-container">
+        <!-- Sidebar (Filters) -->
+        <aside class="filter-sidebar">
+            <h2>Filter</h2>
+            <form method="GET" class="filter-form">
+                {% csrf_token %}
 
-    <!-- Filter Form -->
-    <form method="GET" class="filter-form">
-        {% csrf_token %}
-        
-        <!-- Category -->
-        <div class="filter-item">
-            <label for="id_category">Category</label>
-            {{ form.category }}
-        </div>
-        
-        <!-- Brand -->
-        <div class="filter-item">
-            <label for="id_brand">Brand</label>
-            {{ form.brand }}
-        </div>
-        
-        <!-- Min Price -->
-        <div class="filter-item">
-            <label for="id_min_price">Min Price</label>
-            {{ form.min_price }}
-        </div>
-        
-        <!-- Max Price -->
-        <div class="filter-item">
-            <label for="id_max_price">Max Price</label>
-            {{ form.max_price }}
-        </div>
-        
-        <!-- On Sale Checkbox -->
-        <div class="filter-item checkbox-item">
-            <label for="id_sale_items">On Sale</label>
-            {{ form.sale_items }}
-        </div>
-        
-        <!-- Submit Button
-        <div class="filter-item">
-            <button type="submit" class="filter-button">Filter</button>
-        </div> -->
-
-        <div class="filter-item">
-            <button type="submit" class="filter-button">Apply Filters</button>
-            <label for="id_search_query"></label>
-            {{ form.search_query }}
-        </div>
-
-        
-
-        
-
-            <!-- Inside your filter form
-            <div class="filter-item align-right">
-                <a href="{% url 'product_app:product_list' %}" class="clear-button">Clear Filters</a>
-            </div> -->
-    </form>
-
-    <!-- Products Grid -->
-    <div class="products-container">
-        {% for product in products %}
-            <div class="product-card">
-                <!-- Product Image -->
-                <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
-    
-                <!-- Product Info -->
-                <div class="product-info">
-                    <h4>{{ product.name }}</h4>
-                    <p class="product-price">Ksh {{ product.price|floatformat:0 }}</p>
-                    
-                    <!-- If on sale, show a sale badge or discount -->
-                    {% if product.is_on_sale %}
-                        <span class="badge-sale">Sale</span>
-                    {% endif %}
-                    
-                    <!-- Product Detail Link -->
-                    <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">
-                        View Details
-                    </a>
+                <!-- Category -->
+                <div class="filter-group">
+                    <label for="id_category">Category</label>
+                    {{ form.category }}
                 </div>
+
+                <!-- Brand -->
+                <div class="filter-group">
+                    <label for="id_brand">Brand</label>
+                    {{ form.brand }}
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-group price-range">
+                    <label>Price Range</label>
+                    <div class="price-inputs">
+                        <div>
+                            <label for="id_min_price">Min</label>
+                            {{ form.min_price }}
+                        </div>
+                        <div>
+                            <label for="id_max_price">Max</label>
+                            {{ form.max_price }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- On Sale -->
+                <div class="filter-group">
+                    <label for="id_sale_items">On Sale</label>
+                    {{ form.sale_items }}
+                </div>
+
+                <!-- Search -->
+                <div class="filter-group">
+                    <label for="id_search_query">Search</label>
+                    {{ form.search_query }}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="filter-button">Apply Filters</button>
+            </form>
+        </aside>
+
+        <!-- Main Content (Product Grid + Pagination) -->
+        <main class="product-listing">
+            <!-- Products Grid -->
+            <div class="products-container">
+                {% for product in products %}
+                    <div class="product-card">
+                        <!-- Product Image -->
+                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+
+                        <!-- Product Info -->
+                        <div class="product-info">
+                            <h4>{{ product.name }}</h4>
+                            <p class="product-price">Ksh {{ product.price|floatformat:0 }}</p>
+                            {% if product.is_on_sale %}
+                                <span class="badge-sale">Sale</span>
+                            {% endif %}
+                            <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
+
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if products.has_previous %}
+                        <a href="?page=1">&laquo; First</a>
+                        <a href="?page={{ products.previous_page_number }}">Previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}
+                    </span>
+
+                    {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}">Next</a>
+                        <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </main>
     </div>
 
-    <!-- Pagination Controls -->
-    <div class="pagination">
-        <span class="step-links">
-            {% if products.has_previous %}
-                <a href="?page=1">&laquo; First</a>
-                <a href="?page={{ products.previous_page_number }}">Previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ products.number }} of {{ products.paginator.num_pages }}
-            </span>
-
-            {% if products.has_next %}
-                <a href="?page={{ products.next_page_number }}">Next</a>
-                <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
-            {% endif %}
-        </span>
-    </div>
-
-
+    <!-- Auto-Submit on Search Field Keyup (Optional) -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
           const searchField = document.getElementById("searchQuery");
-          const filterForm = document.querySelector(".filter-form");
-        
-          // Trigger form submit on input change (debounced)
-          let typingTimer;
-          searchField.addEventListener("keyup", () => {
-            clearTimeout(typingTimer);
-            typingTimer = setTimeout(() => {
-              filterForm.submit(); // auto-submit form
-            }, 500);
-          });
+          if (searchField) {
+            const filterForm = document.querySelector(".filter-form");
+            let typingTimer;
+            searchField.addEventListener("keyup", () => {
+              clearTimeout(typingTimer);
+              typingTimer = setTimeout(() => {
+                filterForm.submit(); // auto-submit form after 500ms
+              }, 500);
+            });
+          }
         });
-        </script>
-    
+    </script>
+
 </body>
 </html>
-
-
