@@ -38,6 +38,9 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(product=product)
 
+    # Define related products before using it in context
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
     # Prevent duplicate reviews
     existing_review = reviews.filter(user=request.user).exists()
 
