@@ -1,3 +1,4 @@
+/* Basic Page Styling */
 body {
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
@@ -11,11 +12,44 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* Enhanced Form Design */
-form {
+/* Navigation Bar */
+.navbar {
+    background-color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 20px;
+    margin-right: auto;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-links li a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-links li a:hover {
+    background-color: #f0f0f0;
+}
+
+/* Filter Form Container */
+.filter-form {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
+    gap: 20px;
     background-color: #fff;
     padding: 15px;
     border-radius: 8px;
@@ -23,52 +57,125 @@ form {
     margin-bottom: 20px;
 }
 
-.form-control {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #007bff;
-    border-radius: 5px;
+.filter-item {
+    display: flex;
+    flex-direction: column;
 }
 
-button {
+.filter-item label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.checkbox-item {
+    flex-direction: row;
+    align-items: center;
+}
+
+.checkbox-item label {
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+.filter-button {
+    padding: 10px 20px;
+    border: none;
     background-color: #007bff;
     color: #fff;
-    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    padding: 10px;
-    border-radius: 5px;
     transition: background-color 0.3s;
 }
 
-button:hover {
+.filter-button:hover {
     background-color: #0056b3;
 }
 
-/* Product List Styling */
-.product-list {
-    list-style: none;
-    padding: 0;
+/* Filter Form Widgets */
+.filter-select,
+.filter-input,
+.filter-checkbox {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }
 
-.product-item {
+/* Product Grid Container */
+.products-container {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    padding: 20px 0;
+}
+
+/* Individual Product Card */
+.product-card {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.product-item.sale {
-    border-left: 5px solid #ff4500;
-    background-color: #fff5f0;
-    font-weight: bold;
+.product-card:hover {
+    transform: translateY(-5px);
 }
 
-.product-item h4 {
+/* Product image styling */
+.product-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Product info section */
+.product-info {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Product title and price */
+.product-info h4 {
     margin: 10px 0;
+    font-size: 18px;
+    color: #333;
 }
 
+.product-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+/* Sale badge */
+.badge-sale {
+    display: inline-block;
+    background-color: #ff4500;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Details button styling */
+.details-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.details-button:hover {
+    background-color: #0056b3;
+}
+
+/* Pagination */
 .pagination {
     margin-top: 20px;
     text-align: center;
@@ -104,109 +211,4 @@ button:hover {
     text-align: center;
     width: 120px;
     margin: 10px auto;
-}
-
-/* Container for the product grid */
-.products-container {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    padding: 20px 0;
-}
-
-/* Individual product card */
-.product-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-}
-
-/* Product image styling */
-.product-image {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    display: block;
-}
-
-/* Product info section */
-.product-info {
-    padding: 10px;
-    text-align: center;
-}
-
-/* Product title and price */
-.product-info h4 {
-    margin: 10px 0;
-    font-size: 18px;
-    color: #333;
-}
-.product-price {
-    font-size: 16px;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 10px;
-}
-
-/* Sale badge */
-.badge-sale {
-    display: inline-block;
-    background-color: #ff4500;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-/* Details button styling */
-.details-button {
-    display: inline-block;
-    background-color: #007bff;
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
-.details-button:hover {
-    background-color: #0056b3;
-}
-
-.navbar {
-    background-color: #fff;
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #ddd;
-}
-
-.logo {
-    font-weight: bold;
-    font-size: 20px;
-    margin-right: auto;
-}
-
-.nav-links {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-}
-
-.nav-links li a {
-    color: #333;
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.nav-links li a:hover {
-    background-color: #f0f0f0;
 }

@@ -5,29 +5,42 @@ class ProductFilterForm(forms.Form):
     category = forms.ModelChoiceField(
         queryset=Category.objects.all(),
         required=False,
-        empty_label="All Categories"
+        empty_label="All Categories",
+        widget=forms.Select(attrs={
+            'class': 'filter-select'
+        })
     )
     brand = forms.ModelChoiceField(
         queryset=Brand.objects.all(),
         required=False,
-        empty_label="All Brands"
+        empty_label="All Brands",
+        widget=forms.Select(attrs={
+            'class': 'filter-select'
+        })
     )
     min_price = forms.DecimalField(
         required=False,
         label="Min Price",
-        widget=forms.NumberInput(attrs={'placeholder': 'Min Price'})
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Min Price',
+            'class': 'filter-input'
+        })
     )
     max_price = forms.DecimalField(
         required=False,
         label="Max Price",
-        widget=forms.NumberInput(attrs={'placeholder': 'Max Price'})
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'Max Price',
+            'class': 'filter-input'
+        })
     )
     sale_items = forms.BooleanField(
         required=False,
-        label="On Sale"
+        label="On Sale",
+        widget=forms.CheckboxInput(attrs={
+            'class': 'filter-checkbox'
+        })
     )
-
-
 
 class ReviewForm(forms.ModelForm):
     class Meta:

@@ -4,11 +4,11 @@
 <html>
 <head>
     <title>Product List</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
 
+    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo">BurundiSales</div>
         <ul class="nav-links">
@@ -20,14 +20,50 @@
         </ul>
     </nav>
     
-    <h1>Product List</h1>
+    <!-- Page Title -->
 
-    <form method="GET">
-        {% csrf_token %}  <!-- Important for security -->
-        {{ form.as_p }}
-        <button type="submit">Filter</button>
+
+    <!-- Filter Form -->
+    <form method="GET" class="filter-form">
+        {% csrf_token %}
+        
+        <!-- Category -->
+        <div class="filter-item">
+            <label for="id_category">Category</label>
+            {{ form.category }}
+        </div>
+        
+        <!-- Brand -->
+        <div class="filter-item">
+            <label for="id_brand">Brand</label>
+            {{ form.brand }}
+        </div>
+        
+        <!-- Min Price -->
+        <div class="filter-item">
+            <label for="id_min_price">Min Price</label>
+            {{ form.min_price }}
+        </div>
+        
+        <!-- Max Price -->
+        <div class="filter-item">
+            <label for="id_max_price">Max Price</label>
+            {{ form.max_price }}
+        </div>
+        
+        <!-- On Sale Checkbox -->
+        <div class="filter-item checkbox-item">
+            <label for="id_sale_items">On Sale</label>
+            {{ form.sale_items }}
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="filter-item">
+            <button type="submit" class="filter-button">Filter</button>
+        </div>
     </form>
 
+    <!-- Products Grid -->
     <div class="products-container">
         {% for product in products %}
             <div class="product-card">
@@ -53,9 +89,6 @@
         {% endfor %}
     </div>
 
-
-    
-
     <!-- Pagination Controls -->
     <div class="pagination">
         <span class="step-links">
@@ -75,8 +108,5 @@
         </span>
     </div>
 
-
-
-    
 </body>
 </html>
