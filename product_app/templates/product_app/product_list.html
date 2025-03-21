@@ -26,7 +26,6 @@
             <h2>Filter</h2>
             <form method="GET" class="filter-form" id="filterForm">
                 {% csrf_token %}
-
                 <!-- On Sale -->
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">On Sale</h3>
@@ -39,12 +38,10 @@
                 <div class="filter-group collapsible">
                     <h3 class="collapsible-header">Price Range</h3>
                     <div class="collapsible-body price-range">
-
                         <!-- Slider -->
                         <div id="priceSlider"></div>
                         <input type="hidden" name="min_price" id="minPriceField">
                         <input type="hidden" name="max_price" id="maxPriceField">
-
                     </div><br>
 
                     <!-- Input fields for manual min/max entry -->
@@ -76,16 +73,56 @@
                 {% csrf_token %}
                 <div class="sort-bar">
                     <div class="search-container">
-                        <label for="id_search_query" class="search-label">Search</label>
+                        <label for="id_search_query" class="search-label"></label>
                         {{ form.search_query }}
                     </div>
-                    <label for="id_sort_by" class="sort-label">Sort By:</label>
+                    <label for="id_sort_by" class="sort-label"></label>
                     {{ form.sort_by }}
                 </div>
             </form>
 
-            <!-- Product Grid -->
+            <!-- Product Grid (used by your AJAX approach) -->
             <div class="products-container" id="productsContainer"></div>
+
+            <!-- OPTIONAL: Traditional Server-Rendered Loop
+            {% if products %}
+                {% for product in products %}
+                    <div class="product-card">
+                        {% if product.is_on_sale %}
+                            <span class="badge-sale">Sale</span>
+                        {% endif %}
+                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+                        <div class="product-info">
+                            <h4>{{ product.name }}</h4>
+                            <p class="product-price">Ksh {{ product.price }}</p>
+                            <a class="details-button" href="/product/{{ product.id }}/">View Details</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            -->
+
+            <!-- PAGINATION CONTROLS -->
+            {% if products.has_other_pages %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% comment %}We just append &page=1 to ?{{ request_get }}{% endcomment %}
+                    {% if products.has_previous %}
+                        <a href="?{{ request_get }}&page=1">&laquo; First</a>
+                        <a href="?{{ request_get }}&page={{ products.previous_page_number }}">Previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}
+                    </span>
+
+                    {% if products.has_next %}
+                        <a href="?{{ request_get }}&page={{ products.next_page_number }}">Next</a>
+                        <a href="?{{ request_get }}&page={{ products.paginator.num_pages }}">Last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
         </main>
     </div>
 
@@ -108,56 +145,41 @@
       const maxValueDisplay = document.getElementById('maxValueDisplay');
 
       // 1) SLIDER => INPUT FIELDS
-      // Fire on 'update' if you want continuous feedback, or 'change' if only on release
       priceSlider.noUiSlider.on('update', function(values, handle) {
         const minVal = Math.round(values[0]);
         const maxVal = Math.round(values[1]);
-
-        // Update the visible input boxes
         minValueDisplay.value = minVal;
         maxValueDisplay.value = maxVal;
-
-        // Also update the hidden fields for the form
         minPriceField.value = minVal;
         maxPriceField.value = maxVal;
       });
 
-      // Fire on 'change' to trigger the fetch once user stops dragging
       priceSlider.noUiSlider.on('change', function() {
         fetchFilteredProducts();
       });
 
       // 2) INPUT FIELDS => SLIDER
-      // When user types in the min input, update the slider
       minValueDisplay.addEventListener('change', () => {
         let newMin = parseInt(minValueDisplay.value, 10) || 0;
         let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
         priceSlider.noUiSlider.set([newMin, newMax]);
-
-        // Optionally auto-fetch here if you want immediate filter
         fetchFilteredProducts();
       });
 
-      // When user types in the max input, update the slider
       maxValueDisplay.addEventListener('change', () => {
         let newMin = parseInt(minValueDisplay.value, 10) || 0;
         let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
         priceSlider.noUiSlider.set([newMin, newMax]);
-
-        // Optionally auto-fetch here if you want immediate filter
         fetchFilteredProducts();
       });
 
-      // Prevent normal form submission
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
       sidebarForm.addEventListener("submit", e => e.preventDefault());
       topBarForm.addEventListener("submit", e => e.preventDefault());
 
-      // Fields that will trigger a filter on "change"
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
       const topFields = topBarForm.querySelectorAll("select, input[type='text']");
-
       sideFields.forEach(field => {
         field.addEventListener("change", () => fetchFilteredProducts());
       });
@@ -165,9 +187,7 @@
         field.addEventListener("change", () => fetchFilteredProducts());
       });
 
-      // The main function to merge form data & fetch products
       function fetchFilteredProducts() {
-        // Merge data from both forms
         const formData = new FormData(sidebarForm);
         const topBarData = new FormData(topBarForm);
         for (let [key, val] of topBarData.entries()) {
@@ -197,12 +217,11 @@
           const card = document.createElement("div");
           card.classList.add("product-card");
           card.innerHTML = `
-          ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
+            ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
             <img class="product-image" src="${product.image_url}" alt="${product.name}">
             <div class="product-info">
               <h4>${product.name}</h4>
               <p class="product-price">Ksh ${product.price}</p>
-              
               <a class="details-button" href="/product/${product.id}/">View Details</a>
             </div>
           `;

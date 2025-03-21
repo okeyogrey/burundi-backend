@@ -13,7 +13,6 @@ def product_list(request):
     main_category = None
     if main_cat_id:
         try:
-            # No parent logic here, just get the Category by pk
             main_category = Category.objects.get(pk=main_cat_id)
         except Category.DoesNotExist:
             main_category = None
@@ -23,7 +22,6 @@ def product_list(request):
 
     # 3. Filter products by main_category if valid
     if main_category:
-        # Directly filter by the category field
         products = products.filter(category=main_category)
 
     # 4. Pass main_category to ProductFilterForm
@@ -62,7 +60,7 @@ def product_list(request):
             products = products.order_by(sort_by)
 
     # 6. Pagination
-    paginator = Paginator(products, 10)
+    paginator = Paginator(products, 6)
     page = request.GET.get('page')
     try:
         products = paginator.page(page)
@@ -71,9 +69,11 @@ def product_list(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
 
+    # Pass the entire query string so we can preserve it in the template
     context = {
         'products': products,
-        'form': form
+        'form': form,
+        'request_get': request.GET.urlencode()  # e.g. "main_category=20&search_query=something"
     }
     return render(request, 'product_app/product_list.html', context)
 
@@ -107,7 +107,6 @@ def product_list_json(request):
             print("DEBUG: final SQL =>", products.query)
             print("DEBUG: final product list =>", list(products))
         
-        # Right here, print the final SQL query
         print("DEBUG: final subcategory filter SQL =>", products.query)
         print("DEBUG: final product list =>", list(products))
 
@@ -131,8 +130,18 @@ def product_list_json(request):
         if sort_by:
             products = products.order_by(sort_by)
 
+    # 6. PAGINATION FOR AJAX (9 items per page, as you have)
+    paginator = Paginator(products, 9)
+    page = request.GET.get('page')
+    try:
+        products_page = paginator.page(page)
+    except PageNotAnInteger:
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
+
     data = []
-    for product in products:
+    for product in products_page:
         data.append({
             'id': product.id,
             'name': product.name,

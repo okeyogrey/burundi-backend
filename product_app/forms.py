@@ -57,6 +57,8 @@ class ProductFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         main_category = kwargs.pop('main_category', None)
         super().__init__(*args, **kwargs)
+        print("DEBUG: main_category =>", main_category)
+        print("DEBUG: subcat queryset =>", self.fields['subcategories'].queryset)
 
         if main_category:
             # Show subcategories linked to the main category
