@@ -8,7 +8,6 @@ from .models import Product, Review, Category
 from .forms import ProductFilterForm, ReviewForm
 
 def product_list(request):
-    # 1. Identify main_category from query string
     main_cat_id = request.GET.get('main_category')
     main_category = None
     if main_cat_id:
@@ -17,28 +16,27 @@ def product_list(request):
         except Category.DoesNotExist:
             main_category = None
 
-    # 2. Base queryset
     products = Product.objects.all().order_by('-created_at')
-
-    # 3. Filter products by main_category if valid
     if main_category:
         products = products.filter(category=main_category)
 
-    # 4. Pass main_category to ProductFilterForm
+    # Pass main_category to filter form
     form = ProductFilterForm(request.GET, main_category=main_category)
-
-    # 5. Additional filters if form is valid
     if form.is_valid():
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
 
         subcategories = form.cleaned_data.get('subcategories')
-        print("DEBUG: Selected subcategories =>", subcategories)
         if subcategories:
             products = products.filter(subcategory__in=subcategories)
-        print("DEBUG: Final products after subcategory filter =>", products)
 
+        # NEW: sizes
+        sizes = form.cleaned_data.get('sizes')
+        if sizes:
+            products = products.filter(sizes__in=sizes).distinct()
+
+        # UPDATED: brand
         brands = form.cleaned_data.get('brands')
         if brands:
             products = products.filter(brand__in=brands)
@@ -59,7 +57,7 @@ def product_list(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # 6. Pagination
+    # Pagination
     paginator = Paginator(products, 6)
     page = request.GET.get('page')
     try:
@@ -69,14 +67,11 @@ def product_list(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
 
-    # Pass the entire query string so we can preserve it in the template
     context = {
         'products': products,
-        'form': form,
-        'request_get': request.GET.urlencode()  # e.g. "main_category=20&search_query=something"
+        'form': form
     }
     return render(request, 'product_app/product_list.html', context)
-
 
 def product_list_json(request):
     """Return filtered products as JSON (for AJAX)."""
@@ -89,27 +84,25 @@ def product_list_json(request):
             main_category = None
 
     products = Product.objects.all().order_by('-created_at')
-
     if main_category:
         products = products.filter(category=main_category)
 
     form = ProductFilterForm(request.GET, main_category=main_category)
     if form.is_valid():
-        print("DEBUG: subcategories raw =>", request.GET.getlist('subcategories'))
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
 
         subcategories = form.cleaned_data.get('subcategories')
-        print("DEBUG: subcategories from cleaned_data =>", subcategories)
         if subcategories:
             products = products.filter(subcategory__in=subcategories)
-            print("DEBUG: final SQL =>", products.query)
-            print("DEBUG: final product list =>", list(products))
-        
-        print("DEBUG: final subcategory filter SQL =>", products.query)
-        print("DEBUG: final product list =>", list(products))
 
+        # sizes
+        sizes = form.cleaned_data.get('sizes')
+        if sizes:
+            products = products.filter(sizes__in=sizes).distinct()
+
+        # brand
         brands = form.cleaned_data.get('brands')
         if brands:
             products = products.filter(brand__in=brands)
@@ -130,7 +123,8 @@ def product_list_json(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # 6. PAGINATION FOR AJAX (9 items per page, as you have)
+    # For the JSON pagination approach, if you want it:
+    # e.g., 9 items per page
     paginator = Paginator(products, 9)
     page = request.GET.get('page')
     try:
@@ -150,7 +144,6 @@ def product_list_json(request):
             'is_on_sale': product.is_on_sale
         })
     return JsonResponse({'products': data})
-
 
 @login_required
 def product_detail(request, product_id):

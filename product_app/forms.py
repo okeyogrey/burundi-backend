@@ -1,5 +1,5 @@
 from django import forms
-from .models import Category, Subcategory, Brand, Review
+from .models import Category, Subcategory, Size, Brand, Review
 
 SORT_CHOICES = [
     ('-created_at', 'Newest'),
@@ -17,16 +17,28 @@ class ProductFilterForm(forms.Form):
             'id': 'searchQuery'
         })
     )
+
+    # Subcategories
     subcategories = forms.ModelMultipleChoiceField(
         queryset=Subcategory.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple
     )
+
+    # NEW: sizes
+    sizes = forms.ModelMultipleChoiceField(
+        queryset=Size.objects.all(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    # UPDATED: brand references brand objects
     brands = forms.ModelMultipleChoiceField(
         queryset=Brand.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple
     )
+
     min_price = forms.DecimalField(
         required=False,
         label="Min Price",
@@ -57,15 +69,22 @@ class ProductFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         main_category = kwargs.pop('main_category', None)
         super().__init__(*args, **kwargs)
-        print("DEBUG: main_category =>", main_category)
-        print("DEBUG: subcat queryset =>", self.fields['subcategories'].queryset)
 
+        # If we have a main_category, filter subcategories, sizes, brands by that category
         if main_category:
-            # Show subcategories linked to the main category
+            # Subcategories that belong to that main_category
             self.fields['subcategories'].queryset = Subcategory.objects.filter(category=main_category)
+
+            # Sizes that belong to that main_category
+            self.fields['sizes'].queryset = Size.objects.filter(category=main_category)
+
+            # Brands that belong to that main_category
+            self.fields['brands'].queryset = Brand.objects.filter(category=main_category)
         else:
-            # Otherwise, show none (or you can show all if you prefer)
+            # If no main_category is chosen, you could show none or all
             self.fields['subcategories'].queryset = Subcategory.objects.none()
+            self.fields['sizes'].queryset = Size.objects.none()
+            self.fields['brands'].queryset = Brand.objects.none()
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -80,14 +99,12 @@ class ReviewForm(forms.ModelForm):
                 (4, '4 - Very Good'),
                 (5, '5 - Excellent')
             ], attrs={'class': 'form-control'}),
-            
             'content': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Share your experience...'
             })
         }
-
         labels = {
             'rating': 'Rating',
             'content': 'Your Review'
