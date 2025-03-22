@@ -12,7 +12,7 @@
     <nav class="navbar">
         <div class="logo">KingOfSpeed</div>
         <ul class="nav-links">
-            <!-- Link main_category to top-level categories in DB (pk=10,13,12,2) -->
+            <!-- Link main_category to top-level categories in DB -->
             <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
@@ -81,44 +81,26 @@
                 </div>
             </form>
 
-            <!-- Product Grid (used by your AJAX approach) -->
+            <!-- Product Grid (AJAX results go here) -->
             <div class="products-container" id="productsContainer"></div>
 
-            <!-- OPTIONAL: Traditional Server-Rendered Loop
-            {% if products %}
-                {% for product in products %}
-                    <div class="product-card">
-                        {% if product.is_on_sale %}
-                            <span class="badge-sale">Sale</span>
-                        {% endif %}
-                        <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
-                        <div class="product-info">
-                            <h4>{{ product.name }}</h4>
-                            <p class="product-price">Ksh {{ product.price }}</p>
-                            <a class="details-button" href="/product/{{ product.id }}/">View Details</a>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
+            <!-- OPTIONAL: Traditional Server-Rendered Loop ...
+                 ... plus pagination snippet ...
+                 We keep them but won't rely on them if using AJAX
             -->
-
-            <!-- PAGINATION CONTROLS -->
             {% if products.has_other_pages %}
             <div class="pagination">
                 <span class="step-links">
-                    {% comment %}We just append &page=1 to ?{{ request_get }}{% endcomment %}
                     {% if products.has_previous %}
-                        <a href="?{{ request_get }}&page=1">&laquo; First</a>
-                        <a href="?{{ request_get }}&page={{ products.previous_page_number }}">Previous</a>
+                        <a href="?page=1">&laquo; First</a>
+                        <a href="?page={{ products.previous_page_number }}">Previous</a>
                     {% endif %}
-
                     <span class="current">
                         Page {{ products.number }} of {{ products.paginator.num_pages }}
                     </span>
-
                     {% if products.has_next %}
-                        <a href="?{{ request_get }}&page={{ products.next_page_number }}">Next</a>
-                        <a href="?{{ request_get }}&page={{ products.paginator.num_pages }}">Last &raquo;</a>
+                        <a href="?page={{ products.next_page_number }}">Next</a>
+                        <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
                     {% endif %}
                 </span>
             </div>
@@ -128,6 +110,7 @@
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // ========== SLIDER SETUP ==========
       const priceSlider = document.getElementById('priceSlider');
       noUiSlider.create(priceSlider, {
         start: [0, 20000],
@@ -140,7 +123,7 @@
       const minPriceField = document.getElementById('minPriceField');
       const maxPriceField = document.getElementById('maxPriceField');
 
-      // Visible input fields for manual entry
+      // Visible input fields
       const minValueDisplay = document.getElementById('minValueDisplay');
       const maxValueDisplay = document.getElementById('maxValueDisplay');
 
@@ -154,6 +137,7 @@
         maxPriceField.value = maxVal;
       });
 
+      // Fire on 'change' to re-fetch
       priceSlider.noUiSlider.on('change', function() {
         fetchFilteredProducts();
       });
@@ -173,11 +157,13 @@
         fetchFilteredProducts();
       });
 
+      // ========== PREVENT NORMAL SUBMISSION ==========
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
       sidebarForm.addEventListener("submit", e => e.preventDefault());
       topBarForm.addEventListener("submit", e => e.preventDefault());
 
+      // Fields that trigger re-fetch
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
       const topFields = topBarForm.querySelectorAll("select, input[type='text']");
       sideFields.forEach(field => {
@@ -187,19 +173,28 @@
         field.addEventListener("change", () => fetchFilteredProducts());
       });
 
+      // ========== MERGE FORMS & PASS PAGE PARAM ==========
       function fetchFilteredProducts() {
+        // Merge data from both forms
         const formData = new FormData(sidebarForm);
         const topBarData = new FormData(topBarForm);
         for (let [key, val] of topBarData.entries()) {
           formData.append(key, val);
         }
 
-        // read ?main_category=20 from the URL
+        // read main_category from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const mainCatParam = urlParams.get('main_category');
         if (mainCatParam) {
           formData.set('main_category', mainCatParam);
         }
+
+        // ========== KEY PART: also read 'page' from the URL if present ==========
+        const pageParam = urlParams.get('page');
+        if (pageParam) {
+          formData.set('page', pageParam);
+        }
+        // Now if you're on ?page=2, we pass page=2 to product_list_json as well
 
         const params = new URLSearchParams(formData);
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
@@ -210,6 +205,7 @@
           .catch(err => console.error(err));
       }
 
+      // ========== RENDER JSON PRODUCTS ==========
       function renderProducts(products) {
         const productsContainer = document.getElementById("productsContainer");
         productsContainer.innerHTML = "";
