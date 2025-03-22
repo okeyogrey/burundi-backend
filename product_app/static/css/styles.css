@@ -1,6 +1,4 @@
-/* -------------------------------------
-   BASIC PAGE STYLING
--------------------------------------- */
+/* BASIC PAGE STYLING */
 body {
     background-color: #f5f5f5;
     font-family: Arial, sans-serif;
@@ -14,9 +12,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* -------------------------------------
-   TOP BAR (NEW)
--------------------------------------- */
+/* TOP BAR */
 .top-bar {
   background-color: #f8f8f8;
   font-size: 14px;
@@ -30,12 +26,17 @@ h1 {
   font-weight: bold;
 }
 .top-bar-right {
-  /* e.g. text or icons on the right side */
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.top-bar-right a {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
 }
 
-/* -------------------------------------
-   NAVIGATION BAR (STICKY)
--------------------------------------- */
+/* NAVIGATION BAR (STICKY) */
 .navbar {
     background-color: #fff;
     padding: 10px 20px;
@@ -50,14 +51,14 @@ h1 {
 .logo {
     font-weight: bold;
     font-size: 20px;
-    margin-right: 20px; /* small gap from the search */
+    margin-right: 20px;
 }
 
-/* Middle search area in nav */
-.nav-search {
-  flex: 1; /* let it grow to fill space between logo and nav-links */
-  display: flex;
-  justify-content: center;
+/* Step 1: .nav-search-form for the topBarForm search */
+.nav-search-form {
+    flex: 1; /* Let it fill space between logo & nav-links */
+    display: flex;
+    justify-content: center;
 }
 .nav-search-input {
   width: 60%;
@@ -86,7 +87,6 @@ h1 {
     border-radius: 4px;
     transition: background-color 0.3s;
 }
-
 .nav-links li a:hover {
     background-color: #f0f0f0;
 }
@@ -104,9 +104,7 @@ h1 {
   background-color: #444;
 }
 
-/* -------------------------------------
-   TWO-COLUMN LAYOUT (SIDEBAR + MAIN)
--------------------------------------- */
+/* TWO-COLUMN LAYOUT (SIDEBAR + MAIN) */
 .product-page-container {
   display: grid;
   grid-template-columns: 250px 1fr;
@@ -115,45 +113,36 @@ h1 {
   max-width: 1200px;
 }
 
-/* -------------------------------------
-   SIDEBAR STYLING
--------------------------------------- */
+/* SIDEBAR STYLING */
 .filter-sidebar {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
 .filter-sidebar h2 {
   margin-bottom: 15px;
   font-size: 18px;
 }
-
-/* Filter Form (Vertical) */
 .filter-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
-
 .filter-group {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
 }
-
 .filter-group h3 {
   font-size: 16px;
   margin-bottom: 10px;
   color: #444;
 }
-
 .price-range .price-inputs {
   display: flex;
   gap: 10px;
 }
-
 .filter-button {
   background-color: #007bff;
   color: #fff;
@@ -168,18 +157,14 @@ h1 {
   background-color: #0056b3;
 }
 
-/* -------------------------------------
-   MAIN PRODUCT LISTING
--------------------------------------- */
+/* MAIN PRODUCT LISTING */
 .product-listing {
   display: flex;
   flex-direction: column;
 }
-
-/* Sort Bar */
 .sort-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* or space-between if you prefer */
   align-items: center;
   margin-bottom: 20px;
   gap: 10px;
@@ -209,9 +194,7 @@ h1 {
     border-radius: 4px;
 }
 
-/* -------------------------------------
-   PRODUCT GRID & CARDS
--------------------------------------- */
+/* PRODUCT GRID & CARDS */
 .products-container {
   display: grid;
   gap: 20px;
@@ -271,9 +254,7 @@ h1 {
   background-color: #0056b3;
 }
 
-/* -------------------------------------
-   PAGINATION
--------------------------------------- */
+/* PAGINATION */
 .pagination {
   margin-top: 20px;
   text-align: center;
@@ -297,9 +278,7 @@ h1 {
   border-radius: 5px;
 }
 
-/* -------------------------------------
-   OPTIONAL UTILITY CLASSES
--------------------------------------- */
+/* OPTIONAL UTILITY CLASSES */
 .page-indicator {
   background-color: #28a745;
   color: #fff;
@@ -340,9 +319,7 @@ h1 {
   margin-bottom: 0;
 }
 
-/* -------------------------------------
-   COLLAPSIBLE SECTIONS
--------------------------------------- */
+/* COLLAPSIBLE SECTIONS */
 .collapsible-body {
   max-height: 999px;
   overflow: hidden;

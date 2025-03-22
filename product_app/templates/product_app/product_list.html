@@ -4,10 +4,10 @@
 <html>
 <head>
     <title>Product List</title>
-    <!-- Your existing CSS -->
+    <!-- Existing CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-    <!-- Font Awesome for icons (updated to a stable 6.x link) -->
+    <!-- Font Awesome for icons (stable 6.x link) -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -22,59 +22,44 @@
 </head>
 <body>
 
-    <!-- Step 1: Top Bar (like Kicks Kenya) -->
+    <!-- Top Bar -->
     <div class="top-bar">
       <div class="top-bar-left">
         FAST DELIVERY
       </div>
       <div class="top-bar-right">
-        <!-- Possibly location info, or extra text, or phone number -->
-        <!-- e.g., "Call us: +123 4567" or "Shipping Worldwide" -->
-        Shipping Worldwide
+        <a href="#"><i class="fa-solid fa-user"></i></a>
+        <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
       </div>
     </div>
 
-    <!-- Step 2: Main Navbar -->
+    <!-- Main Navbar -->
     <nav class="navbar">
         <!-- Left side: Logo -->
         <div class="logo">KingOfSpeed</div>
 
-        <!-- Middle: Big Search (like Kicks Kenya) -->
-        <div class="nav-search">
+        <!-- Step 1: Add a FORM in the nav bar that includes "search_query" -->
+        <form method="GET" class="filter-form nav-search-form" id="topBarForm">
+          <!-- This input has the same name="search_query" so it ties into the same filter logic -->
           <input
             type="text"
+            name="search_query"
             class="nav-search-input"
             placeholder="What are you looking for?"
           />
-        </div>
+        </form>
 
-        <!-- Right side: "View Catalog" + Category Links + Icons -->
+        <!-- Right side: "View Catalog" + Category Links -->
         <ul class="nav-links">
-            <!-- A big "View Catalog" button -->
             <li>
               <a class="catalog-button" href="#">
                 View Catalog
               </a>
             </li>
-
-            <!-- Existing Category Links (renamed for example) -->
             <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Kicks</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Kicks</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
-
-            <!-- User icon -->
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-user"></i>
-                </a>
-            </li>
-            <!-- Cart icon -->
-            <li>
-                <a href="#">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                </a>
-            </li>
         </ul>
     </nav>
 
@@ -126,15 +111,13 @@
 
         <!-- Main Content -->
         <main class="product-listing">
-            <!-- Top Bar for Search + Sort -->
-            <form method="GET" class="filter-form" id="topBarForm">
+            <!-- Step 2: Keep only "sort_by" in the top bar form here -->
+            <!-- We remove the search field from this form so there's no duplication -->
+            <form method="GET" class="filter-form" id="sortForm">
                 {% csrf_token %}
                 <div class="sort-bar">
-                    <div class="search-container">
-                        <label for="id_search_query" class="search-label"></label>
-                        {{ form.search_query }}
-                    </div>
-                    <label for="id_sort_by" class="sort-label"></label>
+                    <!-- We no longer show the search container here, since the nav bar handles search_query -->
+                    <label for="id_sort_by" class="sort-label">Sort By:</label>
                     {{ form.sort_by }}
                 </div>
             </form>
@@ -165,9 +148,9 @@
         </main>
     </div>
 
-    <!-- ========== JAVASCRIPT LOGIC (unchanged) ========== -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // ========== SLIDER SETUP ==========
       const priceSlider = document.getElementById('priceSlider');
       noUiSlider.create(priceSlider, {
         start: [0, 20000],
@@ -178,7 +161,6 @@
 
       const minPriceField = document.getElementById('minPriceField');
       const maxPriceField = document.getElementById('maxPriceField');
-
       const minValueDisplay = document.getElementById('minValueDisplay');
       const maxValueDisplay = document.getElementById('maxValueDisplay');
 
@@ -209,38 +191,63 @@
         fetchFilteredProducts();
       });
 
+      // Step 3: We now have 3 forms:
+      // 1) #filterForm (sidebar) for categories, brand, on sale, min/max
+      // 2) #topBarForm (in nav) for search_query
+      // 3) #sortForm (in main content) for sort_by
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
+      const sortForm = document.getElementById("sortForm");
+
+      // Prevent normal submission
       sidebarForm.addEventListener("submit", e => e.preventDefault());
       topBarForm.addEventListener("submit", e => e.preventDefault());
+      sortForm.addEventListener("submit", e => e.preventDefault());
 
+      // We gather fields from all 3 forms
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
-      const topFields = topBarForm.querySelectorAll("select, input[type='text']");
+      const topFields = topBarForm.querySelectorAll("input[name='search_query']"); // only the search input
+      const sortFields = sortForm.querySelectorAll("select");
+
       sideFields.forEach(field => {
         field.addEventListener("change", () => fetchFilteredProducts());
       });
       topFields.forEach(field => {
         field.addEventListener("change", () => fetchFilteredProducts());
       });
+      sortFields.forEach(field => {
+        field.addEventListener("change", () => fetchFilteredProducts());
+      });
 
+      // ========== MERGE ALL FORMS & PASS PAGE PARAM ==========
       function fetchFilteredProducts() {
+        // Merge data from #filterForm, #topBarForm, #sortForm
         const formData = new FormData(sidebarForm);
-        const topBarData = new FormData(topBarForm);
-        for (let [key, val] of topBarData.entries()) {
+        const navData = new FormData(topBarForm);
+        const sortData = new FormData(sortForm);
+
+        // Merge them
+        for (let [key, val] of navData.entries()) {
+          formData.append(key, val);
+        }
+        for (let [key, val] of sortData.entries()) {
           formData.append(key, val);
         }
 
+        // read main_category from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const mainCatParam = urlParams.get('main_category');
         if (mainCatParam) {
           formData.set('main_category', mainCatParam);
         }
 
+        // If the page param is present in the URL, pass it too
         const pageParam = urlParams.get('page');
         if (pageParam) {
           formData.set('page', pageParam);
         }
 
+        // Build final query
         const params = new URLSearchParams(formData);
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
@@ -269,8 +276,10 @@
         });
       }
 
+      // Initial load
       fetchFilteredProducts();
 
+      // Collapsible
       const headers = document.querySelectorAll('.collapsible-header');
       headers.forEach(header => {
         header.addEventListener('click', () => {
