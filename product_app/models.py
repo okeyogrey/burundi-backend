@@ -3,22 +3,21 @@ from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-
     def __str__(self):
         return self.name
 
 class Subcategory(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(
-        Category,
+        Category, 
         on_delete=models.SET_NULL,
-        null=True,
+        null=True, 
         blank=True
     )
     def __str__(self):
         return self.name
 
-# NEW: A “Size” model that also belongs to a main Category
+# Example "Size" model if you introduced it
 class Size(models.Model):
     name = models.CharField(max_length=50)
     category = models.ForeignKey(
@@ -30,7 +29,6 @@ class Size(models.Model):
     def __str__(self):
         return self.name
 
-# UPDATED: Brand now references Category
 class Brand(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(
@@ -48,11 +46,9 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, null=True, blank=True)
-
-    # UPDATED: brand references the new Brand model
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
 
-    # NEW: sizes ManyToMany
+    # If you have a ManyToMany for sizes
     sizes = models.ManyToManyField(Size, blank=True)
 
     stock = models.PositiveIntegerField(default=0)
@@ -63,7 +59,17 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-# The rest of your code, e.g. Review, etc.
+    # ADD or CONFIRM this method for average_rating
+    def average_rating(self):
+        """Compute average of all associated reviews' ratings."""
+        reviews = self.reviews.all()  # 'reviews' is the related_name from Review
+        if reviews:
+            total = sum(r.rating for r in reviews)
+            return round(total / reviews.count(), 1)
+        return 0
+
+    average_rating.short_description = "Avg Rating"
+
 class Review(models.Model):
     product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
