@@ -7,37 +7,70 @@
     <!-- Your existing CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-    <!-- Step 1: Add Font Awesome CDN for icons -->
+    <!-- Font Awesome for icons (updated to a stable 6.x link) -->
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-      integrity="sha512-Df8M2yZ7aRWT/4qSM+wo0pKfcU+4s6nC1U9+j20LeWLB1gyjO6DYw1FZfMm9NKn5nz80q5n1pj7z0UbYp+5Pmg=="
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-5Sb0V80He+YObxLzGgA2q5t+rUSJ1xRfO9bsL3smCswxH9enS4BXbC8nXbqsqGcCVHWCb6WfVRrhqfTe4yHCkA=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
 
+    <!-- noUiSlider CSS & JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 </head>
 <body>
+
+    <!-- Step 1: Top Bar (like Kicks Kenya) -->
+    <div class="top-bar">
+      <div class="top-bar-left">
+        FAST DELIVERY
+      </div>
+      <div class="top-bar-right">
+        <!-- Possibly location info, or extra text, or phone number -->
+        <!-- e.g., "Call us: +123 4567" or "Shipping Worldwide" -->
+        Shipping Worldwide
+      </div>
+    </div>
+
+    <!-- Step 2: Main Navbar -->
     <nav class="navbar">
+        <!-- Left side: Logo -->
         <div class="logo">KingOfSpeed</div>
+
+        <!-- Middle: Big Search (like Kicks Kenya) -->
+        <div class="nav-search">
+          <input
+            type="text"
+            class="nav-search-input"
+            placeholder="What are you looking for?"
+          />
+        </div>
+
+        <!-- Right side: "View Catalog" + Category Links + Icons -->
         <ul class="nav-links">
-            <!-- Existing Category Links -->
-            <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
+            <!-- A big "View Catalog" button -->
+            <li>
+              <a class="catalog-button" href="#">
+                View Catalog
+              </a>
+            </li>
+
+            <!-- Existing Category Links (renamed for example) -->
+            <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Kicks</a></li>
+            <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Kicks</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
 
-            <!-- Step 2: Add user & cart icons (Font Awesome) -->
+            <!-- User icon -->
             <li>
-                <!-- Suppose you have a user profile page -->
                 <a href="#">
                     <i class="fa-solid fa-user"></i>
                 </a>
             </li>
+            <!-- Cart icon -->
             <li>
-                <!-- Suppose you have a cart page -->
                 <a href="#">
                     <i class="fa-solid fa-cart-shopping"></i>
                 </a>
@@ -132,9 +165,9 @@
         </main>
     </div>
 
+    <!-- ========== JAVASCRIPT LOGIC (unchanged) ========== -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // ========== SLIDER SETUP ==========
       const priceSlider = document.getElementById('priceSlider');
       noUiSlider.create(priceSlider, {
         start: [0, 20000],
@@ -143,15 +176,12 @@
         step: 100
       });
 
-      // Hidden fields for the Django form
       const minPriceField = document.getElementById('minPriceField');
       const maxPriceField = document.getElementById('maxPriceField');
 
-      // Visible input fields
       const minValueDisplay = document.getElementById('minValueDisplay');
       const maxValueDisplay = document.getElementById('maxValueDisplay');
 
-      // 1) SLIDER => INPUT FIELDS
       priceSlider.noUiSlider.on('update', function(values, handle) {
         const minVal = Math.round(values[0]);
         const maxVal = Math.round(values[1]);
@@ -161,12 +191,10 @@
         maxPriceField.value = maxVal;
       });
 
-      // Fire on 'change' to re-fetch
       priceSlider.noUiSlider.on('change', function() {
         fetchFilteredProducts();
       });
 
-      // 2) INPUT FIELDS => SLIDER
       minValueDisplay.addEventListener('change', () => {
         let newMin = parseInt(minValueDisplay.value, 10) || 0;
         let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
@@ -181,13 +209,11 @@
         fetchFilteredProducts();
       });
 
-      // ========== PREVENT NORMAL SUBMISSION ==========
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
       sidebarForm.addEventListener("submit", e => e.preventDefault());
       topBarForm.addEventListener("submit", e => e.preventDefault());
 
-      // Fields that trigger re-fetch
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
       const topFields = topBarForm.querySelectorAll("select, input[type='text']");
       sideFields.forEach(field => {
@@ -197,23 +223,19 @@
         field.addEventListener("change", () => fetchFilteredProducts());
       });
 
-      // ========== MERGE FORMS & PASS PAGE PARAM ==========
       function fetchFilteredProducts() {
-        // Merge data from both forms
         const formData = new FormData(sidebarForm);
         const topBarData = new FormData(topBarForm);
         for (let [key, val] of topBarData.entries()) {
           formData.append(key, val);
         }
 
-        // read main_category from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const mainCatParam = urlParams.get('main_category');
         if (mainCatParam) {
           formData.set('main_category', mainCatParam);
         }
 
-        // If the page param is present in the URL, pass it too
         const pageParam = urlParams.get('page');
         if (pageParam) {
           formData.set('page', pageParam);
@@ -228,7 +250,6 @@
           .catch(err => console.error(err));
       }
 
-      // ========== RENDER JSON PRODUCTS ==========
       function renderProducts(products) {
         const productsContainer = document.getElementById("productsContainer");
         productsContainer.innerHTML = "";
@@ -248,10 +269,8 @@
         });
       }
 
-      // Initial fetch on page load
       fetchFilteredProducts();
 
-      // Collapsible sections
       const headers = document.querySelectorAll('.collapsible-header');
       headers.forEach(header => {
         header.addEventListener('click', () => {
