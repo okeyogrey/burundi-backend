@@ -56,7 +56,7 @@ h1 {
 
 /* nav-search-form in the nav bar */
 .nav-search-form {
-    flex: 1; /* let it fill space between logo & nav-links */
+    flex: 1; /* fill space between logo & nav-links */
     display: flex;
     justify-content: center;
 }
@@ -104,7 +104,7 @@ h1 {
   background-color: #444;
 }
 
-/* TWO-COLUMN LAYOUT (SIDEBAR + MAIN) */
+/* TWO-COLUMN LAYOUT (SIDEBAR + MAIN) for listing pages */
 .product-page-container {
   display: grid;
   grid-template-columns: 250px 1fr;
@@ -113,7 +113,7 @@ h1 {
   max-width: 1200px;
 }
 
-/* SIDEBAR STYLING */
+/* SIDEBAR STYLING (filters) */
 .filter-sidebar {
   background-color: #fff;
   padding: 20px;
@@ -163,10 +163,10 @@ h1 {
   flex-direction: column;
 }
 
-/* Step 1: .sort-bar now right aligned */
+/* Sort bar right-aligned */
 .sort-bar {
   display: flex;
-  justify-content: flex-end; /* push Sort By to the right */
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 20px;
   gap: 10px;
@@ -197,7 +197,7 @@ h1 {
     border-radius: 4px;
 }
 
-/* PRODUCT GRID & CARDS */
+/* PRODUCT GRID & CARDS (listing) */
 .products-container {
   display: grid;
   gap: 20px;
@@ -363,195 +363,190 @@ h1 {
 }
 
 
-/* (Keep your existing code above; we only add new classes for detail page) */
-
 /* ========== PRODUCT DETAIL PAGE STYLING ========== */
 
-/* Main container around everything in product_detail.html */
+/* Container for the detail page content */
 .detail-page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  /* Top section: image on left, product info on right */
-  .product-detail-top {
-    display: flex;
-    flex-wrap: wrap; /* if screen is small, wrap columns */
-    gap: 30px;
-    margin-bottom: 30px;
-  }
-  
-  /* Left column: big product image */
-  .product-detail-image {
-    flex: 1 1 400px; /* minimum 400px wide if possible */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .product-detail-image img {
-    width: 100%;
-    max-width: 400px;
-    object-fit: cover;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  
-  /* Right column: name, price, short desc, etc. */
-  .product-detail-info {
-    flex: 1 1 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-  
-  .detail-title {
-    font-size: 28px;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .detail-price {
-    font-size: 20px;
-    font-weight: bold;
-    color: #007bff;
-    margin-bottom: 15px;
-  }
-  
-  .detail-short-desc {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 20px;
-  }
-  
-  /* Example "Add to Cart" or "Buy Now" button */
-  .detail-add-to-cart-btn,
-  .detail-buy-now-btn {
-    background-color: #000;
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 4px;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    margin-right: 10px;
-    margin-bottom: 10px;
-  }
-  .detail-add-to-cart-btn:hover,
-  .detail-buy-now-btn:hover {
-    background-color: #333;
-  }
-  
-  /* Full description area */
-  .detail-description-section {
-    margin-bottom: 30px;
-  }
-  .detail-description-section h2 {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-  .detail-description-section p {
-    line-height: 1.6;
-    color: #444;
-  }
-  
-  /* Reviews area */
-  .detail-reviews-section {
-    margin-bottom: 30px;
-  }
-  .detail-reviews-section h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
-  .detail-review-list {
-    margin-bottom: 20px;
-  }
-  .review-item {
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  .review-rating {
-    margin-left: 10px;
-    color: #007bff;
-  }
-  .review-content {
-    margin: 5px 0;
-  }
-  .review-submit-btn {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .review-submit-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Related Products */
-  .detail-related-section {
-    margin-bottom: 30px;
-  }
-  .detail-related-section h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
-  .related-products-container {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto; /* let it scroll horizontally if too many */
-    padding-bottom: 10px;
-  }
-  .related-product-card {
-    min-width: 180px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    text-align: center;
-    transition: transform 0.2s;
-    flex-shrink: 0; /* so it doesn't collapse in horizontal scroll */
-  }
-  .related-product-card:hover {
-    transform: translateY(-3px);
-  }
-  .related-product-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-  }
-  .related-product-card h4 {
-    margin: 10px 0 5px;
-    font-size: 16px;
-    color: #333;
-  }
-  .related-product-card p {
-    font-size: 14px;
-    color: #007bff;
-    margin-bottom: 5px;
-  }
-  .related-view-details {
-    display: inline-block;
-    color: #fff;
-    background-color: #007bff;
-    padding: 5px 10px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 12px;
-    margin-bottom: 10px;
-  }
-  .related-view-details:hover {
-    background-color: #0056b3;
-  }
-  .related-product-card a {
-    color: inherit; /* let the card handle color */
-    text-decoration: none;
-    display: block;
-    padding: 10px;
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Top section: image on left, info on right */
+.product-detail-top {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+/* Left column: product image */
+.product-detail-image {
+  flex: 1 1 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.product-detail-image img {
+  width: 100%;
+  max-width: 400px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Right column: name, price, short desc, etc. */
+.product-detail-info {
+  flex: 1 1 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.detail-title {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #333;
+}
+.detail-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 15px;
+}
+.detail-short-desc {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Add to Cart / Buy Now button */
+.detail-add-to-cart-btn,
+.detail-buy-now-btn {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 4px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.detail-add-to-cart-btn:hover,
+.detail-buy-now-btn:hover {
+  background-color: #333;
+}
+
+/* Full description */
+.detail-description-section {
+  margin-bottom: 30px;
+}
+.detail-description-section h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.detail-description-section p {
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Reviews */
+.detail-reviews-section {
+  margin-bottom: 30px;
+}
+.detail-reviews-section h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+.detail-review-list {
+  margin-bottom: 20px;
+}
+.review-item {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.review-rating {
+  margin-left: 10px;
+  color: #007bff;
+}
+.review-content {
+  margin: 5px 0;
+}
+.review-submit-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.review-submit-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Related Products */
+.detail-related-section {
+  margin-bottom: 30px;
+}
+.detail-related-section h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+.related-products-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+.related-product-card {
+  min-width: 180px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.related-product-card:hover {
+  transform: translateY(-3px);
+}
+.related-product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+.related-product-card h4 {
+  margin: 10px 0 5px;
+  font-size: 16px;
+  color: #333;
+}
+.related-product-card p {
+  font-size: 14px;
+  color: #007bff;
+  margin-bottom: 5px;
+}
+.related-view-details {
+  display: inline-block;
+  color: #fff;
+  background-color: #007bff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.related-view-details:hover {
+  background-color: #0056b3;
+}
+.related-product-card a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+}

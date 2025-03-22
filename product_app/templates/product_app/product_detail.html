@@ -6,26 +6,73 @@
     <title>{{ product.name }}</title>
     <!-- Link your main CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-5Sb0V80He+YObxLzGgA2q5t+rUSJ1xRfO9bsL3smCswxH9enS4BXbC8nXbqsqGcCVHWCb6WfVRrhqfTe4yHCkA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 </head>
 <body>
 
+<!-- ========== TOP BAR ========== -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    FAST DELIVERY
+  </div>
+  <div class="top-bar-right">
+    <!-- User & cart icons, same as listing page -->
+    <a href="#"><i class="fa-solid fa-user"></i></a>
+    <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
+  </div>
+</div>
+
+<!-- ========== MAIN NAVBAR ========== -->
+<nav class="navbar">
+    <!-- Left side: Logo -->
+    <div class="logo">KingOfSpeed</div>
+
+    <!-- Middle: Search box (like listing page) 
+         Submits to your product list route with search_query -->
+    <!-- <form method="GET" class="filter-form nav-search-form" action="{% url 'product_app:product_list' %}">
+      <input
+        type="text"
+        name="search_query"
+        class="nav-search-input"
+        placeholder="What are you looking for?"
+      />
+    </form> -->
+
+    <!-- Right side: "View Catalog" + Category Links -->
+    <ul class="nav-links">
+        <!-- <li>
+          <a class="catalog-button" href="#">
+            View Catalog
+          </a>
+        </li> -->
+        <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
+        <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
+        <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
+        <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
+    </ul>
+</nav>
+
+<!-- ========== MAIN CONTENT: PRODUCT DETAIL ========== -->
 <div class="detail-page-container">
-    <!-- Product Detail Main Section -->
+    <!-- Top section: Product image (left) + info (right) -->
     <div class="product-detail-top">
-        <!-- Left Column: Product Image -->
+        <!-- Left Column: Big Product Image -->
         <div class="product-detail-image">
             <img src="{{ product.image.url }}" alt="{{ product.name }}">
         </div>
 
-        <!-- Right Column: Title, Price, Add to Cart, Short Info -->
+        <!-- Right Column: Name, Price, short snippet, Add to Cart, etc. -->
         <div class="product-detail-info">
             <h1 class="detail-title">{{ product.name }}</h1>
             <p class="detail-price">Price: Ksh {{ product.price|floatformat:0 }}</p>
 
-            <!-- A short snippet or bullet points if needed. 
-                 If you have a short_description field, use it; 
-                 otherwise, we can just show part of product.description.
-            -->
             <p class="detail-short-desc">
                 {% if product.description|length > 150 %}
                     {{ product.description|slice:":150" }}...
@@ -34,28 +81,22 @@
                 {% endif %}
             </p>
 
-            <!-- Example "Add to Cart" or "Buy Now" button 
-                 (No real cart logic unless you add it in your code.)
-            -->
+            <!-- Example "Add to Cart" or "Buy Now" button -->
             <button class="detail-add-to-cart-btn">Add to Cart</button>
-
-            <!-- If you want a "Buy Now" or second button, uncomment:
-            <button class="detail-buy-now-btn">Buy Now</button>
-            -->
         </div>
     </div>
 
-    <!-- Full Description -->
+    <!-- Full Description Section -->
     <div class="detail-description-section">
         <h2>Description</h2>
         <p>{{ product.description }}</p>
     </div>
 
-    <!-- Customer Reviews Section -->
+    <!-- Customer Reviews -->
     <div class="detail-reviews-section">
         <h2>Customer Reviews</h2>
 
-        <!-- List existing reviews -->
+        <!-- Existing Reviews -->
         {% if reviews %}
             <div class="detail-review-list">
                 {% for review in reviews %}
@@ -71,7 +112,7 @@
             <p>No reviews yet. Be the first to review this product!</p>
         {% endif %}
 
-        <!-- If user hasn't reviewed, show the form; else, show a message. -->
+        <!-- Review Form (if user hasn't reviewed) -->
         {% if not existing_review %}
             <h3>Leave a Review</h3>
             <form method="post">
@@ -102,7 +143,6 @@
         </div>
     </div>
     {% endif %}
-
 </div>
 
 </body>
