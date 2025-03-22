@@ -4,7 +4,18 @@
 <html>
 <head>
     <title>Product List</title>
+    <!-- Your existing CSS -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Step 1: Add Font Awesome CDN for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha512-Df8M2yZ7aRWT/4qSM+wo0pKfcU+4s6nC1U9+j20LeWLB1gyjO6DYw1FZfMm9NKn5nz80q5n1pj7z0UbYp+5Pmg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 </head>
@@ -12,11 +23,25 @@
     <nav class="navbar">
         <div class="logo">KingOfSpeed</div>
         <ul class="nav-links">
-            <!-- Link main_category to top-level categories in DB -->
+            <!-- Existing Category Links -->
             <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
+
+            <!-- Step 2: Add user & cart icons (Font Awesome) -->
+            <li>
+                <!-- Suppose you have a user profile page -->
+                <a href="#">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+            </li>
+            <li>
+                <!-- Suppose you have a cart page -->
+                <a href="#">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -86,7 +111,6 @@
 
             <!-- OPTIONAL: Traditional Server-Rendered Loop ...
                  ... plus pagination snippet ...
-                 We keep them but won't rely on them if using AJAX
             -->
             {% if products.has_other_pages %}
             <div class="pagination">
@@ -189,12 +213,11 @@
           formData.set('main_category', mainCatParam);
         }
 
-        // ========== KEY PART: also read 'page' from the URL if present ==========
+        // If the page param is present in the URL, pass it too
         const pageParam = urlParams.get('page');
         if (pageParam) {
           formData.set('page', pageParam);
         }
-        // Now if you're on ?page=2, we pass page=2 to product_list_json as well
 
         const params = new URLSearchParams(formData);
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
