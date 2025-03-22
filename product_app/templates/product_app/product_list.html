@@ -23,7 +23,7 @@
 <body>
 
     <!-- Top Bar -->
-    <div class="top-bar">
+    <!-- <div class="top-bar">
       <div class="top-bar-left">
         FAST DELIVERY
       </div>
@@ -31,16 +31,15 @@
         <a href="#"><i class="fa-solid fa-user"></i></a>
         <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
       </div>
-    </div>
+    </div> -->
 
     <!-- Main Navbar -->
     <nav class="navbar">
         <!-- Left side: Logo -->
         <div class="logo">KingOfSpeed</div>
 
-        <!-- Step 1: Add a FORM in the nav bar that includes "search_query" -->
+        <!-- Single search box in nav bar -->
         <form method="GET" class="filter-form nav-search-form" id="topBarForm">
-          <!-- This input has the same name="search_query" so it ties into the same filter logic -->
           <input
             type="text"
             name="search_query"
@@ -52,9 +51,9 @@
         <!-- Right side: "View Catalog" + Category Links -->
         <ul class="nav-links">
             <li>
-              <a class="catalog-button" href="#">
+              <!-- <a class="catalog-button" href="#">
                 View Catalog
-              </a>
+              </a> -->
             </li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Kicks</a></li>
             <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Kicks</a></li>
@@ -111,12 +110,10 @@
 
         <!-- Main Content -->
         <main class="product-listing">
-            <!-- Step 2: Keep only "sort_by" in the top bar form here -->
-            <!-- We remove the search field from this form so there's no duplication -->
+            <!-- Sort form: only "sort_by" now, on the right side -->
             <form method="GET" class="filter-form" id="sortForm">
                 {% csrf_token %}
                 <div class="sort-bar">
-                    <!-- We no longer show the search container here, since the nav bar handles search_query -->
                     <label for="id_sort_by" class="sort-label">Sort By:</label>
                     {{ form.sort_by }}
                 </div>
@@ -191,10 +188,7 @@
         fetchFilteredProducts();
       });
 
-      // Step 3: We now have 3 forms:
-      // 1) #filterForm (sidebar) for categories, brand, on sale, min/max
-      // 2) #topBarForm (in nav) for search_query
-      // 3) #sortForm (in main content) for sort_by
+      // We have 3 forms: #filterForm (sidebar), #topBarForm (nav search), #sortForm
       const sidebarForm = document.getElementById("filterForm");
       const topBarForm = document.getElementById("topBarForm");
       const sortForm = document.getElementById("sortForm");
@@ -204,9 +198,8 @@
       topBarForm.addEventListener("submit", e => e.preventDefault());
       sortForm.addEventListener("submit", e => e.preventDefault());
 
-      // We gather fields from all 3 forms
       const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
-      const topFields = topBarForm.querySelectorAll("input[name='search_query']"); // only the search input
+      const topFields = topBarForm.querySelectorAll("input[name='search_query']");
       const sortFields = sortForm.querySelectorAll("select");
 
       sideFields.forEach(field => {
@@ -219,14 +212,12 @@
         field.addEventListener("change", () => fetchFilteredProducts());
       });
 
-      // ========== MERGE ALL FORMS & PASS PAGE PARAM ==========
       function fetchFilteredProducts() {
         // Merge data from #filterForm, #topBarForm, #sortForm
         const formData = new FormData(sidebarForm);
         const navData = new FormData(topBarForm);
         const sortData = new FormData(sortForm);
 
-        // Merge them
         for (let [key, val] of navData.entries()) {
           formData.append(key, val);
         }
@@ -234,20 +225,17 @@
           formData.append(key, val);
         }
 
-        // read main_category from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const mainCatParam = urlParams.get('main_category');
         if (mainCatParam) {
           formData.set('main_category', mainCatParam);
         }
 
-        // If the page param is present in the URL, pass it too
         const pageParam = urlParams.get('page');
         if (pageParam) {
           formData.set('page', pageParam);
         }
 
-        // Build final query
         const params = new URLSearchParams(formData);
         const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
