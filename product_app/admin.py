@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import Product, Category, Subcategory, Brand, Review
+from .models import (
+    Category,
+    Subcategory,
+    Brand,
+    Size,       # <-- Make sure we import Size
+    Product,
+    Review
+)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -13,10 +20,22 @@ class SubcategoryAdmin(admin.ModelAdmin):
 class BrandAdmin(admin.ModelAdmin):
     list_display = ['name', 'category']
 
+# NEW: Register the Size model so you can add/edit sizes in admin
+@admin.register(Size)
+class SizeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category']  # show these columns in admin list
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'brand', 'price', 'stock', 'average_rating']
-    # ^ "average_rating" must be a valid callable on Product
+    list_display = [
+        'name',
+        'category',
+        'subcategory',
+        'brand',
+        'stock',
+        'image',
+        'average_rating'  # ensure "average_rating" is a valid method on Product
+    ]
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
