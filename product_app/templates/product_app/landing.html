@@ -9,17 +9,41 @@
   <aside class="landing-sidebar">
     <h3>Categories</h3>
     <ul class="mega-menu">
-        <!-- Instead of hard-coded "Phones & Tablets" and "Fashion", do: -->
-{% for main_cat in categories %}
-<li class="mega-menu-item has-mega-menu">
-  <a href="#">{{ main_cat.name }}</a>
-  <div class="mega-menu-content">
-    <!-- Possibly loop over sub-sub categories in columns -->
-    <!-- For example, if main_cat has a related "subcategories" ManyToMany -->
-  </div>
-</li>
-{% endfor %}
-
+      {% for main_cat in categories %}
+      <li class="mega-menu-item has-mega-menu">
+        <!-- The main category name -->
+        <a href="#">{{ main_cat.name }}</a>
+        
+        <!-- The mega-menu panel on hover -->
+        <div class="mega-menu-content">
+          <!-- You can optionally wrap columns in a "row" if you like -->
+          <div class="mega-menu-row">
+            {% for subcat in main_cat.subcategories.all %}
+              <div class="mega-menu-column">
+                <!-- Subcategory as a heading -->
+                <h4>{{ subcat.name }}</h4>
+                <ul>
+                  {% if subcat.sub_subcategories.all %}
+                    {% for subsub in subcat.sub_subcategories.all %}
+                      <li>
+                        <a href="#">{{ subsub.name }}</a>
+                      </li>
+                    {% endfor %}
+                  {% else %}
+                    <li><em>No sub-subcategories yet</em></li>
+                  {% endif %}
+                </ul>
+              </div>
+            {% empty %}
+              <!-- If main_cat has no subcategories at all -->
+              <div class="mega-menu-column">
+                <p><em>No subcategories yet.</em></p>
+              </div>
+            {% endfor %}
+          </div> <!-- /.mega-menu-row -->
+        </div> <!-- /.mega-menu-content -->
+      </li>
+      {% endfor %}
     </ul>
   </aside>
 
