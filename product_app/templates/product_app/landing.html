@@ -5,21 +5,25 @@
 
 {% block content %}
 <div class="landing-container">
-  <!-- LEFT SIDEBAR with categories -->
+  <!-- LEFT SIDEBAR with multi-column hover (mega menu) -->
   <aside class="landing-sidebar">
     <h3>Categories</h3>
-    <ul class="landing-categories">
-      {% for cat in categories %}
-        <li>
-          <a href="{% url 'product_app:product_list' %}?main_category={{ cat.id }}">
-            {{ cat.name }}
-          </a>
-        </li>
-      {% endfor %}
+    <ul class="mega-menu">
+        <!-- Instead of hard-coded "Phones & Tablets" and "Fashion", do: -->
+{% for main_cat in categories %}
+<li class="mega-menu-item has-mega-menu">
+  <a href="#">{{ main_cat.name }}</a>
+  <div class="mega-menu-content">
+    <!-- Possibly loop over sub-sub categories in columns -->
+    <!-- For example, if main_cat has a related "subcategories" ManyToMany -->
+  </div>
+</li>
+{% endfor %}
+
     </ul>
   </aside>
 
-  <!-- RIGHT SECTION: BANNER / HERO -->
+  <!-- RIGHT SECTION: BANNER / HERO / FEATURED PRODUCTS -->
   <div class="landing-main-content">
     <div class="landing-hero">
       <img
