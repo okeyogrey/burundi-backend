@@ -1,106 +1,54 @@
+{% extends 'product_app/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Landing Page</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <!-- Optionally add a slider or icon library, e.g. Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      integrity="sha512-..."
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-</head>
-<body>
-    <!-- EXAMPLE TOP BAR (like Jumia) -->
-    <div class="top-bar">
-      <div class="top-bar-left">
-        FAST DELIVERY
-      </div>
-      <div class="top-bar-right">
-        <!-- user & cart icons or anything else -->
-        <a href="#"><i class="fa-solid fa-user"></i></a>
-        <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
-      </div>
+{% block title %}Landing Page{% endblock %}
+
+{% block content %}
+<div class="landing-container">
+  <!-- LEFT SIDEBAR with categories -->
+  <aside class="landing-sidebar">
+    <h3>Categories</h3>
+    <ul class="landing-categories">
+      {% for cat in categories %}
+        <li>
+          <a href="{% url 'product_app:product_list' %}?main_category={{ cat.id }}">
+            {{ cat.name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- RIGHT SECTION: BANNER / HERO -->
+  <div class="landing-main-content">
+    <div class="landing-hero">
+      <img
+        src="{% static 'images/hero-banner.jpg' %}"
+        alt="Hero Banner"
+        class="landing-hero-image"
+      />
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <div class="logo">KingOfSpeed</div>
-        <!-- Search form in nav, if you want it -->
-        <form method="GET" class="filter-form nav-search-form" action="{% url 'product_app:product_list' %}">
-          <input
-            type="text"
-            name="search_query"
-            class="nav-search-input"
-            placeholder="What are you looking for?"
-          />
-        </form>
-        <ul class="nav-links">
-            <!-- "View Catalog" button, etc. -->
-            <li>
-              <a class="catalog-button" href="#">View Catalog</a>
-            </li>
-            <!-- If you want direct links to main categories or subcategories here -->
-            <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
-            <!-- etc. -->
-        </ul>
-    </nav>
+    <div class="landing-promo">
+      <h2>KingOfSpeed Tech Week</h2>
+      <p>Find the best deals on your favorite products!</p>
+    </div>
 
-    <!-- MAIN LANDING CONTENT -->
-    <div class="landing-container">
-      <!-- LEFT SIDEBAR with categories -->
-      <aside class="landing-sidebar">
-        <h3>Categories</h3>
-        <ul class="landing-categories">
-          {% for cat in categories %}
-            <li>
-              <a href="{% url 'product_app:product_list' %}?main_category={{ cat.id }}">
-                {{ cat.name }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      </aside>
-
-      <!-- RIGHT SECTION: BANNER / HERO -->
-      <div class="landing-main-content">
-        <!-- HERO / BANNER -->
-        <div class="landing-hero">
-          <img
-            src="{% static 'images/hero-banner.jpg' %}"
-            alt="Hero Banner"
-            class="landing-hero-image"
-          />
-        </div>
-
-        <!-- Maybe a “Tech Week” or “Sale” area -->
-        <div class="landing-promo">
-          <h2>KingOfSpeed Tech Week</h2>
-          <p>Find the best deals on your favorite products!</p>
-        </div>
-
-        <!-- Optional: Display featured/on-sale products -->
-        <div class="landing-featured">
-          <h3>Featured Deals</h3>
-          <div class="featured-grid">
-            {% for prod in featured_products %}
-              <div class="featured-card">
-                <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
-                <h4>{{ prod.name }}</h4>
-                <p>Ksh {{ prod.price|floatformat:0 }}</p>
-                <a href="{% url 'product_app:product_detail' prod.id %}" class="details-button">
-                  View Details
-                </a>
-              </div>
-            {% endfor %}
+    <div class="landing-featured">
+      <h3>Featured Deals</h3>
+      <div class="featured-grid">
+        {% for prod in featured_products %}
+          <div class="featured-card">
+            <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
+            <h4>{{ prod.name }}</h4>
+            <p>Ksh {{ prod.price|floatformat:0 }}</p>
+            <a href="{% url 'product_app:product_detail' prod.id %}" class="details-button">
+              View Details
+            </a>
           </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
-</body>
-</html>
+  </div>
+</div>
+{% endblock %}

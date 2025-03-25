@@ -61,7 +61,10 @@ ROOT_URLCONF = 'burundisales.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # Add this if you keep templates in "product_app/templates"
+            BASE_DIR / 'product_app' / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

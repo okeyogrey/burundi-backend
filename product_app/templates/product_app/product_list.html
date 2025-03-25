@@ -1,287 +1,218 @@
+{% extends 'product_app/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Product List</title>
-    <!-- Existing CSS -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% block title %}Product List{% endblock %}
 
-    <!-- Font Awesome for icons (stable 6.x link) -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      integrity="sha512-5Sb0V80He+YObxLzGgA2q5t+rUSJ1xRfO9bsL3smCswxH9enS4BXbC8nXbqsqGcCVHWCb6WfVRrhqfTe4yHCkA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-
-    <!-- noUiSlider CSS & JS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
-</head>
-<body>
-
-    <!-- Top Bar -->
-    <!-- <div class="top-bar">
-      <div class="top-bar-left">
-        FAST DELIVERY
+{% block content %}
+<div class="product-page-container">
+  <!-- Sidebar (Filters) -->
+  <aside class="filter-sidebar">
+    <h2>Filter</h2>
+    <form method="GET" class="filter-form" id="filterForm">
+      {% csrf_token %}
+      <!-- On Sale -->
+      <div class="filter-group collapsible">
+        <h3 class="collapsible-header">On Sale</h3>
+        <div class="collapsible-body">
+          {{ form.sale_items }}
+        </div>
       </div>
-      <div class="top-bar-right">
-        <a href="#"><i class="fa-solid fa-user"></i></a>
-        <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
+
+      <!-- Price Range -->
+      <div class="filter-group collapsible">
+        <h3 class="collapsible-header">Price Range</h3>
+        <div class="collapsible-body price-range">
+          <div id="priceSlider"></div>
+          <input type="hidden" name="min_price" id="minPriceField">
+          <input type="hidden" name="max_price" id="maxPriceField">
+        </div><br>
+
+        <div class="price-display">
+          <input type="number" id="minValueDisplay" value="0" class="price-input"> 
+          -
+          <input type="number" id="maxValueDisplay" value="20000" class="price-input">
+        </div>
       </div>
-    </div> -->
 
-    <!-- Main Navbar -->
-    <nav class="navbar">
-        <!-- Left side: Logo -->
-        <div class="logo">KingOfSpeed</div>
+      <!-- Category (Subcategories) -->
+      <div class="filter-group">
+        <h3>Category</h3>
+        {{ form.subcategories }}
+      </div>
 
-        <!-- Single search box in nav bar -->
-        <form method="GET" class="filter-form nav-search-form" id="topBarForm">
-          <input
-            type="text"
-            name="search_query"
-            class="nav-search-input"
-            placeholder="What are you looking for?"
-          />
-        </form>
+      <!-- Brand -->
+      <div class="filter-group">
+        <h3>Brand</h3>
+        {{ form.brands }}
+      </div>
 
-        <!-- Right side: "View Catalog" + Category Links -->
-        <ul class="nav-links">
-            <li>
-              <!-- <a class="catalog-button" href="#">
-                View Catalog
-              </a> -->
-            </li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Kicks</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Kicks</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
-            <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
-        </ul>
-    </nav>
+      <!-- Sizes -->
+      <div class="filter-group">
+        <h3>Sizes</h3>
+        {{ form.sizes }}
+      </div>
+    </form>
+  </aside>
 
-    <div class="product-page-container">
-        <!-- Sidebar (Filters) -->
-        <aside class="filter-sidebar">
-            <h2>Filter</h2>
-            <form method="GET" class="filter-form" id="filterForm">
-                {% csrf_token %}
-                <!-- On Sale -->
-                <div class="filter-group collapsible">
-                    <h3 class="collapsible-header">On Sale</h3>
-                    <div class="collapsible-body">
-                        {{ form.sale_items }}
-                    </div>
-                </div>
+  <!-- Main Content -->
+  <main class="product-listing">
+    <!-- Sort form on the right side -->
+    <form method="GET" class="filter-form" id="sortForm">
+      {% csrf_token %}
+      <div class="sort-bar">
+        <label for="id_sort_by" class="sort-label">Sort By:</label>
+        {{ form.sort_by }}
+      </div>
+    </form>
 
-                <!-- Price Range -->
-                <div class="filter-group collapsible">
-                    <h3 class="collapsible-header">Price Range</h3>
-                    <div class="collapsible-body price-range">
-                        <!-- Slider -->
-                        <div id="priceSlider"></div>
-                        <input type="hidden" name="min_price" id="minPriceField">
-                        <input type="hidden" name="max_price" id="maxPriceField">
-                    </div><br>
+    <!-- Product Grid (AJAX results) -->
+    <div class="products-container" id="productsContainer"></div>
 
-                    <!-- Input fields for manual min/max entry -->
-                    <div class="price-display">
-                        <input type="number" id="minValueDisplay" value="0" class="price-input"> 
-                        -
-                        <input type="number" id="maxValueDisplay" value="20000" class="price-input">
-                    </div>
-                </div>
-
-                <!-- Category (Subcategories Only) -->
-                <div class="filter-group">
-                    <h3>Category</h3>
-                    {{ form.subcategories }}
-                </div>
-
-                <!-- Brands (Multiple Checkboxes) -->
-                <div class="filter-group">
-                    <h3>Brand</h3>
-                    {{ form.brands }}
-                </div>
-
-                <!-- NEW: Sizes -->
-                <div class="filter-group">
-                    <h3>Sizes</h3>
-                    {{ form.sizes }}
-                </div>
-            </form>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="product-listing">
-            <!-- Sort form: only "sort_by" now, on the right side -->
-            <form method="GET" class="filter-form" id="sortForm">
-                {% csrf_token %}
-                <div class="sort-bar">
-                    <label for="id_sort_by" class="sort-label">Sort By:</label>
-                    {{ form.sort_by }}
-                </div>
-            </form>
-
-            <!-- Product Grid (AJAX results go here) -->
-            <div class="products-container" id="productsContainer"></div>
-
-            <!-- OPTIONAL: Traditional Server-Rendered Loop ...
-                 ... plus pagination snippet ...
-            -->
-            {% if products.has_other_pages %}
-            <div class="pagination">
-                <span class="step-links">
-                    {% if products.has_previous %}
-                        <a href="?page=1">&laquo; First</a>
-                        <a href="?page={{ products.previous_page_number }}">Previous</a>
-                    {% endif %}
-                    <span class="current">
-                        Page {{ products.number }} of {{ products.paginator.num_pages }}
-                    </span>
-                    {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}">Next</a>
-                        <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
-            {% endif %}
-        </main>
+    <!-- OPTIONAL: Traditional loop + pagination if you want server-render fallback -->
+    {% if products.has_other_pages %}
+    <div class="pagination">
+      <span class="step-links">
+        {% if products.has_previous %}
+          <a href="?page=1">&laquo; First</a>
+          <a href="?page={{ products.previous_page_number }}">Previous</a>
+        {% endif %}
+        <span class="current">
+          Page {{ products.number }} of {{ products.paginator.num_pages }}
+        </span>
+        {% if products.has_next %}
+          <a href="?page={{ products.next_page_number }}">Next</a>
+          <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+      </span>
     </div>
+    {% endif %}
+  </main>
+</div>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // ========== SLIDER SETUP ==========
-      const priceSlider = document.getElementById('priceSlider');
-      noUiSlider.create(priceSlider, {
-        start: [0, 20000],
-        connect: true,
-        range: { 'min': 0, 'max': 20000 },
-        step: 100
-      });
+<!-- noUiSlider + AJAX Script -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // noUiSlider setup
+  const priceSlider = document.getElementById('priceSlider');
+  noUiSlider.create(priceSlider, {
+    start: [0, 20000],
+    connect: true,
+    range: { 'min': 0, 'max': 20000 },
+    step: 100
+  });
 
-      const minPriceField = document.getElementById('minPriceField');
-      const maxPriceField = document.getElementById('maxPriceField');
-      const minValueDisplay = document.getElementById('minValueDisplay');
-      const maxValueDisplay = document.getElementById('maxValueDisplay');
+  const minPriceField = document.getElementById('minPriceField');
+  const maxPriceField = document.getElementById('maxPriceField');
+  const minValueDisplay = document.getElementById('minValueDisplay');
+  const maxValueDisplay = document.getElementById('maxValueDisplay');
 
-      priceSlider.noUiSlider.on('update', function(values, handle) {
-        const minVal = Math.round(values[0]);
-        const maxVal = Math.round(values[1]);
-        minValueDisplay.value = minVal;
-        maxValueDisplay.value = maxVal;
-        minPriceField.value = minVal;
-        maxPriceField.value = maxVal;
-      });
+  priceSlider.noUiSlider.on('update', function(values, handle) {
+    const minVal = Math.round(values[0]);
+    const maxVal = Math.round(values[1]);
+    minValueDisplay.value = minVal;
+    maxValueDisplay.value = maxVal;
+    minPriceField.value = minVal;
+    maxPriceField.value = maxVal;
+  });
 
-      priceSlider.noUiSlider.on('change', function() {
-        fetchFilteredProducts();
-      });
+  priceSlider.noUiSlider.on('change', function() {
+    fetchFilteredProducts();
+  });
 
-      minValueDisplay.addEventListener('change', () => {
-        let newMin = parseInt(minValueDisplay.value, 10) || 0;
-        let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
-        priceSlider.noUiSlider.set([newMin, newMax]);
-        fetchFilteredProducts();
-      });
+  minValueDisplay.addEventListener('change', () => {
+    let newMin = parseInt(minValueDisplay.value, 10) || 0;
+    let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
+    priceSlider.noUiSlider.set([newMin, newMax]);
+    fetchFilteredProducts();
+  });
 
-      maxValueDisplay.addEventListener('change', () => {
-        let newMin = parseInt(minValueDisplay.value, 10) || 0;
-        let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
-        priceSlider.noUiSlider.set([newMin, newMax]);
-        fetchFilteredProducts();
-      });
+  maxValueDisplay.addEventListener('change', () => {
+    let newMin = parseInt(minValueDisplay.value, 10) || 0;
+    let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
+    priceSlider.noUiSlider.set([newMin, newMax]);
+    fetchFilteredProducts();
+  });
 
-      // We have 3 forms: #filterForm (sidebar), #topBarForm (nav search), #sortForm
-      const sidebarForm = document.getElementById("filterForm");
-      const topBarForm = document.getElementById("topBarForm");
-      const sortForm = document.getElementById("sortForm");
+  // 3 forms: #filterForm, #topBarForm, #sortForm
+  const sidebarForm = document.getElementById("filterForm");
+  const sortForm = document.getElementById("sortForm");
+  // If you have a topBarForm in the nav, getElementById or querySelector it
 
-      // Prevent normal submission
-      sidebarForm.addEventListener("submit", e => e.preventDefault());
-      topBarForm.addEventListener("submit", e => e.preventDefault());
-      sortForm.addEventListener("submit", e => e.preventDefault());
+  // Prevent normal submission
+  sidebarForm.addEventListener("submit", e => e.preventDefault());
+  sortForm.addEventListener("submit", e => e.preventDefault());
 
-      const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
-      const topFields = topBarForm.querySelectorAll("input[name='search_query']");
-      const sortFields = sortForm.querySelectorAll("select");
+  // Add event listeners
+  const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
+  const sortFields = sortForm.querySelectorAll("select");
 
-      sideFields.forEach(field => {
-        field.addEventListener("change", () => fetchFilteredProducts());
-      });
-      topFields.forEach(field => {
-        field.addEventListener("change", () => fetchFilteredProducts());
-      });
-      sortFields.forEach(field => {
-        field.addEventListener("change", () => fetchFilteredProducts());
-      });
+  sideFields.forEach(field => {
+    field.addEventListener("change", () => fetchFilteredProducts());
+  });
+  sortFields.forEach(field => {
+    field.addEventListener("change", () => fetchFilteredProducts());
+  });
 
-      function fetchFilteredProducts() {
-        // Merge data from #filterForm, #topBarForm, #sortForm
-        const formData = new FormData(sidebarForm);
-        const navData = new FormData(topBarForm);
-        const sortData = new FormData(sortForm);
+  function fetchFilteredProducts() {
+    // Merge data from #filterForm and #sortForm
+    const formData = new FormData(sidebarForm);
+    const sortData = new FormData(sortForm);
+    for (let [key, val] of sortData.entries()) {
+      formData.append(key, val);
+    }
 
-        for (let [key, val] of navData.entries()) {
-          formData.append(key, val);
-        }
-        for (let [key, val] of sortData.entries()) {
-          formData.append(key, val);
-        }
+    // read ?main_category= from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const mainCatParam = urlParams.get('main_category');
+    if (mainCatParam) {
+      formData.set('main_category', mainCatParam);
+    }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const mainCatParam = urlParams.get('main_category');
-        if (mainCatParam) {
-          formData.set('main_category', mainCatParam);
-        }
+    // read page param if present
+    const pageParam = urlParams.get('page');
+    if (pageParam) {
+      formData.set('page', pageParam);
+    }
 
-        const pageParam = urlParams.get('page');
-        if (pageParam) {
-          formData.set('page', pageParam);
-        }
+    const params = new URLSearchParams(formData);
+    const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
-        const params = new URLSearchParams(formData);
-        const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
+    fetch(url)
+      .then(response => response.json())
+      .then(data => renderProducts(data.products))
+      .catch(err => console.error(err));
+  }
 
-        fetch(url)
-          .then(response => response.json())
-          .then(data => renderProducts(data.products))
-          .catch(err => console.error(err));
-      }
-
-      function renderProducts(products) {
-        const productsContainer = document.getElementById("productsContainer");
-        productsContainer.innerHTML = "";
-        products.forEach(product => {
-          const card = document.createElement("div");
-          card.classList.add("product-card");
-          card.innerHTML = `
-            ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
-            <img class="product-image" src="${product.image_url}" alt="${product.name}">
-            <div class="product-info">
-              <h4>${product.name}</h4>
-              <p class="product-price">Ksh ${product.price}</p>
-              <a class="details-button" href="/product/${product.id}/">View Details</a>
-            </div>
-          `;
-          productsContainer.appendChild(card);
-        });
-      }
-
-      // Initial load
-      fetchFilteredProducts();
-
-      // Collapsible
-      const headers = document.querySelectorAll('.collapsible-header');
-      headers.forEach(header => {
-        header.addEventListener('click', () => {
-          const body = header.nextElementSibling;
-          body.classList.toggle('collapsed');
-        });
-      });
+  function renderProducts(products) {
+    const productsContainer = document.getElementById("productsContainer");
+    productsContainer.innerHTML = "";
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.classList.add("product-card");
+      card.innerHTML = `
+        ${product.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
+        <img class="product-image" src="${product.image_url}" alt="${product.name}">
+        <div class="product-info">
+          <h4>${product.name}</h4>
+          <p class="product-price">Ksh ${product.price}</p>
+          <a class="details-button" href="/product/${product.id}/">View Details</a>
+        </div>
+      `;
+      productsContainer.appendChild(card);
     });
-    </script>
-</body>
-</html>
+  }
+
+  // Initial load
+  fetchFilteredProducts();
+
+  // Collapsible sections
+  const headers = document.querySelectorAll('.collapsible-header');
+  headers.forEach(header => {
+    header.addEventListener('click', () => {
+      const body = header.nextElementSibling;
+      body.classList.toggle('collapsed');
+    });
+  });
+});
+</script>
+{% endblock %}

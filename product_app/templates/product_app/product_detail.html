@@ -1,149 +1,89 @@
+{% extends 'product_app/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ product.name }}</title>
-    <!-- Link your main CSS -->
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      integrity="sha512-5Sb0V80He+YObxLzGgA2q5t+rUSJ1xRfO9bsL3smCswxH9enS4BXbC8nXbqsqGcCVHWCb6WfVRrhqfTe4yHCkA=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-</head>
-<body>
+{% block title %}{{ product.name }} - Product Detail{% endblock %}
 
-<!-- ========== TOP BAR ========== -->
-<div class="top-bar">
-  <div class="top-bar-left">
-    FAST DELIVERY
-  </div>
-  <div class="top-bar-right">
-    <!-- User & cart icons, same as listing page -->
-    <a href="#"><i class="fa-solid fa-user"></i></a>
-    <a href="#"><i class="fa-solid fa-cart-shopping"></i></a>
-  </div>
-</div>
-
-<!-- ========== MAIN NAVBAR ========== -->
-<nav class="navbar">
-    <!-- Left side: Logo -->
-    <div class="logo">KingOfSpeed</div>
-
-    <!-- Middle: Search box (like listing page) 
-         Submits to your product list route with search_query -->
-    <!-- <form method="GET" class="filter-form nav-search-form" action="{% url 'product_app:product_list' %}">
-      <input
-        type="text"
-        name="search_query"
-        class="nav-search-input"
-        placeholder="What are you looking for?"
-      />
-    </form> -->
-
-    <!-- Right side: "View Catalog" + Category Links -->
-    <ul class="nav-links">
-        <!-- <li>
-          <a class="catalog-button" href="#">
-            View Catalog
-          </a>
-        </li> -->
-        <li><a href="{% url 'product_app:product_list' %}?main_category=20">Men's Fashion</a></li>
-        <li><a href="{% url 'product_app:product_list' %}?main_category=21">Women's Fashion</a></li>
-        <li><a href="{% url 'product_app:product_list' %}?main_category=22">Kid's Fashion</a></li>
-        <li><a href="{% url 'product_app:product_list' %}?main_category=23">Cosmetics</a></li>
-    </ul>
-</nav>
-
-<!-- ========== MAIN CONTENT: PRODUCT DETAIL ========== -->
+{% block content %}
 <div class="detail-page-container">
-    <!-- Top section: Product image (left) + info (right) -->
-    <div class="product-detail-top">
-        <!-- Left Column: Big Product Image -->
-        <div class="product-detail-image">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-        </div>
-
-        <!-- Right Column: Name, Price, short snippet, Add to Cart, etc. -->
-        <div class="product-detail-info">
-            <h1 class="detail-title">{{ product.name }}</h1>
-            <p class="detail-price">Price: Ksh {{ product.price|floatformat:0 }}</p>
-
-            <p class="detail-short-desc">
-                {% if product.description|length > 150 %}
-                    {{ product.description|slice:":150" }}...
-                {% else %}
-                    {{ product.description }}
-                {% endif %}
-            </p>
-
-            <!-- Example "Add to Cart" or "Buy Now" button -->
-            <button class="detail-add-to-cart-btn">Add to Cart</button>
-        </div>
+  <!-- Top section: Product image (left) + info (right) -->
+  <div class="product-detail-top">
+    <!-- Left: Product Image -->
+    <div class="product-detail-image">
+      <img src="{{ product.image.url }}" alt="{{ product.name }}">
     </div>
 
-    <!-- Full Description Section -->
-    <div class="detail-description-section">
-        <h2>Description</h2>
-        <p>{{ product.description }}</p>
-    </div>
+    <!-- Right: Name, Price, etc. -->
+    <div class="product-detail-info">
+      <h1 class="detail-title">{{ product.name }}</h1>
+      <p class="detail-price">Price: Ksh {{ product.price|floatformat:0 }}</p>
 
-    <!-- Customer Reviews -->
-    <div class="detail-reviews-section">
-        <h2>Customer Reviews</h2>
-
-        <!-- Existing Reviews -->
-        {% if reviews %}
-            <div class="detail-review-list">
-                {% for review in reviews %}
-                    <div class="review-item">
-                        <strong>{{ review.user.username }}</strong>
-                        <span class="review-rating">{{ review.rating }}/5</span>
-                        <p class="review-content">{{ review.content }}</p>
-                        <small>Posted on {{ review.created_at }}</small>
-                    </div>
-                {% endfor %}
-            </div>
+      <p class="detail-short-desc">
+        {% if product.description|length > 150 %}
+          {{ product.description|slice:":150" }}...
         {% else %}
-            <p>No reviews yet. Be the first to review this product!</p>
+          {{ product.description }}
         {% endif %}
+      </p>
 
-        <!-- Review Form (if user hasn't reviewed) -->
-        {% if not existing_review %}
-            <h3>Leave a Review</h3>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="review-submit-btn">Submit Review</button>
-            </form>
-        {% else %}
-            <p><strong>You have already reviewed this product.</strong></p>
-        {% endif %}
+      <!-- Example "Add to Cart" button -->
+      <button class="detail-add-to-cart-btn">Add to Cart</button>
     </div>
+  </div>
 
-    <!-- Related Products -->
-    {% if related_products %}
-    <div class="detail-related-section">
-        <h2>Related Products</h2>
-        <div class="related-products-container">
-            {% for rp in related_products %}
-            <div class="related-product-card">
-                <a href="{% url 'product_app:product_detail' rp.id %}">
-                    <img src="{{ rp.image.url }}" alt="{{ rp.name }}">
-                    <h4>{{ rp.name }}</h4>
-                    <p>Ksh {{ rp.price|floatformat:0 }}</p>
-                    <span class="related-view-details">View Details</span>
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+  <!-- Full Description Section -->
+  <div class="detail-description-section">
+    <h2>Description</h2>
+    <p>{{ product.description }}</p>
+  </div>
+
+  <!-- Customer Reviews -->
+  <div class="detail-reviews-section">
+    <h2>Customer Reviews</h2>
+
+    {% if reviews %}
+      <div class="detail-review-list">
+        {% for review in reviews %}
+          <div class="review-item">
+            <strong>{{ review.user.username }}</strong>
+            <span class="review-rating">{{ review.rating }}/5</span>
+            <p class="review-content">{{ review.content }}</p>
+            <small>Posted on {{ review.created_at }}</small>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No reviews yet. Be the first to review this product!</p>
     {% endif %}
-</div>
 
-</body>
-</html>
+    {% if not existing_review %}
+      <h3>Leave a Review</h3>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="review-submit-btn">Submit Review</button>
+      </form>
+    {% else %}
+      <p><strong>You have already reviewed this product.</strong></p>
+    {% endif %}
+  </div>
+
+  <!-- Related Products -->
+  {% if related_products %}
+  <div class="detail-related-section">
+    <h2>Related Products</h2>
+    <div class="related-products-container">
+      {% for rp in related_products %}
+      <div class="related-product-card">
+        <a href="{% url 'product_app:product_detail' rp.id %}">
+          <img src="{{ rp.image.url }}" alt="{{ rp.name }}">
+          <h4>{{ rp.name }}</h4>
+          <p>Ksh {{ rp.price|floatformat:0 }}</p>
+          <span class="related-view-details">View Details</span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

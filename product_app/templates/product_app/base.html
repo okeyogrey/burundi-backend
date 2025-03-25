@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}KingOfSpeed{% endblock %}</title>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+  <!-- Font Awesome (for icons) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-..."
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      FAST DELIVERY
+    </div>
+    <div class="top-bar-right">
+      <!-- user & cart icons -->
+      <!-- <a href="#"><i class="fa-solid fa-user"></i></a>
+      <a href="#"><i class="fa-solid fa-cart-shopping"></i></a> -->
+    </div>
+  </div>
+
+  <!-- MAIN NAV BAR -->
+  <nav class="navbar">
+    <div class="logo">
+      <!-- Example: link back to landing or homepage -->
+      <a href="#">KingOfSpeed</a>
+    </div>
+
+    <!-- Big Search Box + "Search" Button -->
+    <form class="nav-search-form" action="#" method="get">
+      <input
+        type="text"
+        class="nav-search-input"
+        placeholder="Search products, brands and categories"
+        name="search_query"
+      />
+      <button type="submit" class="nav-search-btn">Search</button>
+    </form>
+
+    <!-- Right-side links (Account, Cart, etc.) -->
+    <ul class="nav-links">
+      <li><a href="#"><i class="fa-solid fa-user"></i></a>Account</a></li>
+      <li><a href="#"><i class="fa-solid fa-cart-shopping"></i></a>Cart</a></li>
+    </ul>
+  </nav>
+
+  <!-- PAGE-SPECIFIC CONTENT -->
+  <div class="page-content">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- FOOTER (optional) -->
+  <footer>
+    <!-- your footer code, if any -->
+  </footer>
+
+</body>
+</html>
