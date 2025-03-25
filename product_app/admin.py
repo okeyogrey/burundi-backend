@@ -2,8 +2,9 @@ from django.contrib import admin
 from .models import (
     Category,
     Subcategory,
+    SubSubcategory,
     Brand,
-    Size,       # <-- Make sure we import Size
+    Size,
     Product,
     Review
 )
@@ -15,15 +16,23 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Subcategory)
 class SubcategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'category']
+    list_filter = ['category']
+    search_fields = ['name']
+
+# NEW: A separate admin page for sub-subcategories
+@admin.register(SubSubcategory)
+class SubSubcategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'subcategory']
+    list_filter = ['subcategory__category']  # filter by the main Category indirectly
+    search_fields = ['name']
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ['name', 'category']
 
-# NEW: Register the Size model so you can add/edit sizes in admin
 @admin.register(Size)
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category']  # show these columns in admin list
+    list_display = ['name', 'category']
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -31,10 +40,11 @@ class ProductAdmin(admin.ModelAdmin):
         'name',
         'category',
         'subcategory',
+        'sub_subcategory',  # only if you added this field
         'brand',
         'stock',
         'image',
-        'average_rating'  # ensure "average_rating" is a valid method on Product
+        'average_rating'
     ]
 
 @admin.register(Review)
