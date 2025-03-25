@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-from .models import Product, Review, Category
+from .models import Product, Review, Category, Subcategory, Brand, Size
 from .forms import ProductFilterForm, ReviewForm
 
 def product_list(request):
@@ -172,3 +172,21 @@ def product_detail(request, product_id):
         'related_products': related_products
     }
     return render(request, 'product_app/product_detail.html', context)
+
+
+def landing_page(request):
+    """
+    A new view that shows a landing page (like Jumia’s homepage),
+    with main categories on the left, a banner in the center, etc.
+    """
+    # Example: fetch all main categories
+    categories = Category.objects.all().order_by('name')
+
+    # You could also fetch some featured products or deals if you want:
+    featured_products = Product.objects.filter(is_on_sale=True)[:8]
+
+    context = {
+        'categories': categories,
+        'featured_products': featured_products,
+    }
+    return render(request, 'product_app/landing.html', context)
