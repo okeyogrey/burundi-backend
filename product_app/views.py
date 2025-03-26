@@ -4,11 +4,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-from .models import Product, Review, Category, Subcategory, Brand, Size
+from .models import (
+    Product, Review, Category, Subcategory,
+    SubSubcategory, Brand, Size
+)
 from .forms import ProductFilterForm, ReviewForm
 
 def product_list(request):
+    # 1. Identify main_category, subcategory, sub_subcategory from query string
     main_cat_id = request.GET.get('main_category')
+    subcat_id = request.GET.get('subcategory')
+    sub_subcat_id = request.GET.get('sub_subcategory')
+
     main_category = None
     if main_cat_id:
         try:
@@ -16,12 +23,33 @@ def product_list(request):
         except Category.DoesNotExist:
             main_category = None
 
+    # 2. Base queryset
     products = Product.objects.all().order_by('-created_at')
+
+    # 3. Filter by main_category if valid
     if main_category:
         products = products.filter(category=main_category)
 
-    # Pass main_category to filter form
+    # 4. Filter by subcategory if present
+    if subcat_id:
+        try:
+            subcat_obj = Subcategory.objects.get(pk=subcat_id)
+            products = products.filter(subcategory=subcat_obj)
+        except Subcategory.DoesNotExist:
+            pass
+
+    # 5. Filter by sub_subcategory if present
+    if sub_subcat_id:
+        try:
+            subsub_obj = SubSubcategory.objects.get(pk=sub_subcat_id)
+            products = products.filter(sub_subcategory=subsub_obj)
+        except SubSubcategory.DoesNotExist:
+            pass
+
+    # 6. Pass main_category to filter form (if you want brand/sizes tied to main_category)
     form = ProductFilterForm(request.GET, main_category=main_category)
+
+    # 7. Additional filters from the form
     if form.is_valid():
         search_query = form.cleaned_data.get('search_query')
         if search_query:
@@ -31,12 +59,10 @@ def product_list(request):
         if subcategories:
             products = products.filter(subcategory__in=subcategories)
 
-        # NEW: sizes
         sizes = form.cleaned_data.get('sizes')
         if sizes:
             products = products.filter(sizes__in=sizes).distinct()
 
-        # UPDATED: brand
         brands = form.cleaned_data.get('brands')
         if brands:
             products = products.filter(brand__in=brands)
@@ -57,8 +83,8 @@ def product_list(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # Pagination
-    paginator = Paginator(products, 6)
+    # 8. Pagination
+    paginator = Paginator(products, 6)  # 6 items per page
     page = request.GET.get('page')
     try:
         products = paginator.page(page)
@@ -74,7 +100,9 @@ def product_list(request):
     return render(request, 'product_app/product_list.html', context)
 
 def product_list_json(request):
-    """Return filtered products as JSON (for AJAX)."""
+    """Return filtered products as JSON (for AJAX). 
+       (If you use this for infinite scroll or something similar.)
+    """
     main_cat_id = request.GET.get('main_category')
     main_category = None
     if main_cat_id:
@@ -97,12 +125,10 @@ def product_list_json(request):
         if subcategories:
             products = products.filter(subcategory__in=subcategories)
 
-        # sizes
         sizes = form.cleaned_data.get('sizes')
         if sizes:
             products = products.filter(sizes__in=sizes).distinct()
 
-        # brand
         brands = form.cleaned_data.get('brands')
         if brands:
             products = products.filter(brand__in=brands)
@@ -123,8 +149,7 @@ def product_list_json(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # For the JSON pagination approach, if you want it:
-    # e.g., 9 items per page
+    # JSON pagination example
     paginator = Paginator(products, 9)
     page = request.GET.get('page')
     try:
@@ -175,14 +200,8 @@ def product_detail(request, product_id):
 
 
 def landing_page(request):
-    """
-    A new view that shows a landing page (like Jumia’s homepage),
-    with main categories on the left, a banner in the center, etc.
-    """
-    # Example: fetch all main categories
+    """A simple landing page with main categories on left, featured products, etc."""
     categories = Category.objects.all().order_by('name')
-
-    # You could also fetch some featured products or deals if you want:
     featured_products = Product.objects.filter(is_on_sale=True)[:8]
 
     context = {

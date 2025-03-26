@@ -10,7 +10,7 @@ class Category(models.Model):
 class Subcategory(models.Model):
     """
     Subcategory that belongs to a main Category.
-    Now has related_name='subcategories' so we can do main_cat.subcategories.all().
+    related_name='subcategories' so main_cat.subcategories.all() is possible.
     """
     name = models.CharField(max_length=100)
     category = models.ForeignKey(
@@ -18,7 +18,7 @@ class Subcategory(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='subcategories'  # <--- ADDED
+        related_name='subcategories'
     )
 
     def __str__(self):
@@ -29,7 +29,7 @@ class Subcategory(models.Model):
 class SubSubcategory(models.Model):
     """
     SubSubcategory that belongs to a Subcategory (third level).
-    We add related_name='sub_subcategories' for easy looping: subcat.sub_subcategories.all().
+    related_name='sub_subcategories' so subcat.sub_subcategories.all() is possible.
     """
     name = models.CharField(max_length=100)
     subcategory = models.ForeignKey(
@@ -37,7 +37,7 @@ class SubSubcategory(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='sub_subcategories'  # <--- ADDED
+        related_name='sub_subcategories'
     )
 
     def __str__(self):
