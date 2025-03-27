@@ -11,25 +11,18 @@
     <ul class="mega-menu">
       {% for main_cat in categories %}
       <li class="mega-menu-item has-mega-menu">
-        <!-- Link main_cat to product_list with ?main_category=... -->
         <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}">
           {{ main_cat.name }}
         </a>
-
-        <!-- Mega menu content for subcats -->
         <div class="mega-menu-content">
           <div class="mega-menu-row">
-            <!-- Each subcategory is a column -->
             {% for subcat in main_cat.subcategories.all %}
             <div class="mega-menu-column">
               <h4>
-                <!-- Link to subcat -->
                 <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategory={{ subcat.id }}">
                   {{ subcat.name }}
                 </a>
               </h4>
-
-              <!-- Sub-subcategories if any -->
               <ul>
                 {% if subcat.sub_subcategories.all %}
                   {% for subsub in subcat.sub_subcategories.all %}

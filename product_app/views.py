@@ -16,6 +16,7 @@ def product_list(request):
     subcat_id = request.GET.get('subcategory')
     sub_subcat_id = request.GET.get('sub_subcategory')
 
+    # Attempt to get the main_category if present
     main_category = None
     if main_cat_id:
         try:
@@ -46,7 +47,7 @@ def product_list(request):
         except SubSubcategory.DoesNotExist:
             pass
 
-    # 6. Pass main_category to filter form (if you want brand/sizes tied to main_category)
+    # 6. Pass main_category to filter form (so brand/sizes can be filtered if needed)
     form = ProductFilterForm(request.GET, main_category=main_category)
 
     # 7. Additional filters from the form
@@ -84,7 +85,7 @@ def product_list(request):
             products = products.order_by(sort_by)
 
     # 8. Pagination
-    paginator = Paginator(products, 6)  # 6 items per page
+    paginator = Paginator(products, 6)
     page = request.GET.get('page')
     try:
         products = paginator.page(page)
@@ -99,11 +100,16 @@ def product_list(request):
     }
     return render(request, 'product_app/product_list.html', context)
 
+
 def product_list_json(request):
-    """Return filtered products as JSON (for AJAX). 
-       (If you use this for infinite scroll or something similar.)
+    """
+    Return filtered products as JSON (for AJAX).
+    If you rely on infinite scroll or something.
     """
     main_cat_id = request.GET.get('main_category')
+    subcat_id = request.GET.get('subcategory')
+    sub_subcat_id = request.GET.get('sub_subcategory')
+
     main_category = None
     if main_cat_id:
         try:
@@ -112,11 +118,28 @@ def product_list_json(request):
             main_category = None
 
     products = Product.objects.all().order_by('-created_at')
+
     if main_category:
         products = products.filter(category=main_category)
 
+    # Also handle subcat_id and sub_subcat_id for JSON approach
+    if subcat_id:
+        try:
+            subcat_obj = Subcategory.objects.get(pk=subcat_id)
+            products = products.filter(subcategory=subcat_obj)
+        except Subcategory.DoesNotExist:
+            pass
+
+    if sub_subcat_id:
+        try:
+            subsub_obj = SubSubcategory.objects.get(pk=sub_subcat_id)
+            products = products.filter(sub_subcategory=subsub_obj)
+        except SubSubcategory.DoesNotExist:
+            pass
+
     form = ProductFilterForm(request.GET, main_category=main_category)
     if form.is_valid():
+        # same logic as product_list
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
@@ -149,7 +172,7 @@ def product_list_json(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # JSON pagination example
+    # Paginate for JSON
     paginator = Paginator(products, 9)
     page = request.GET.get('page')
     try:
@@ -169,6 +192,7 @@ def product_list_json(request):
             'is_on_sale': product.is_on_sale
         })
     return JsonResponse({'products': data})
+
 
 @login_required
 def product_detail(request, product_id):
@@ -200,7 +224,10 @@ def product_detail(request, product_id):
 
 
 def landing_page(request):
-    """A simple landing page with main categories on left, featured products, etc."""
+    """
+    A new view that shows a landing page (like Jumia’s homepage),
+    with main categories on the left, a banner in the center, etc.
+    """
     categories = Category.objects.all().order_by('name')
     featured_products = Product.objects.filter(is_on_sale=True)[:8]
 
