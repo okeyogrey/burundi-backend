@@ -21,7 +21,7 @@
             {% for subcat in main_cat.subcategories.all %}
             <div class="mega-menu-column">
               <h4>
-                <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}">
+                <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategory={{ subcat.id }}">
                   {{ subcat.name }}
                 </a>
               </h4>
@@ -29,7 +29,7 @@
                 {% if subcat.sub_subcategories.all %}
                   {% for subsub in subcat.sub_subcategories.all %}
                   <li>
-                    <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}&sub_subcategory={{ subsub.id }}">
+                    <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategory={{ subcat.id }}&sub_subcategory={{ subsub.id }}">
                       {{ subsub.name }}
                     </a>
                   </li>
