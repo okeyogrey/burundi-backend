@@ -92,7 +92,7 @@
 <!-- noUiSlider + AJAX Script -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // noUiSlider setup
+  // ========== 1) noUiSlider setup ==========
   const priceSlider = document.getElementById('priceSlider');
   noUiSlider.create(priceSlider, {
     start: [0, 20000],
@@ -115,17 +115,18 @@ document.addEventListener("DOMContentLoaded", () => {
     maxPriceField.value = maxVal;
   });
 
+  // Re-fetch on slider "change"
   priceSlider.noUiSlider.on('change', function() {
     fetchFilteredProducts();
   });
 
+  // Manual input changes
   minValueDisplay.addEventListener('change', () => {
     let newMin = parseInt(minValueDisplay.value, 10) || 0;
     let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
     priceSlider.noUiSlider.set([newMin, newMax]);
     fetchFilteredProducts();
   });
-
   maxValueDisplay.addEventListener('change', () => {
     let newMin = parseInt(minValueDisplay.value, 10) || 0;
     let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
@@ -133,16 +134,14 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchFilteredProducts();
   });
 
-  // 3 forms: #filterForm, #topBarForm, #sortForm
+  // ========== 2) Form references & prevent normal submit ==========
   const sidebarForm = document.getElementById("filterForm");
   const sortForm = document.getElementById("sortForm");
-  // If you have a topBarForm in the nav, getElementById or querySelector it
 
-  // Prevent normal submission
   sidebarForm.addEventListener("submit", e => e.preventDefault());
   sortForm.addEventListener("submit", e => e.preventDefault());
 
-  // Add event listeners
+  // ========== 3) Listen for changes in filter & sort fields ==========
   const sideFields = sidebarForm.querySelectorAll("select, input[type='text'], input[type='checkbox'], input[type='number']");
   const sortFields = sortForm.querySelectorAll("select");
 
@@ -153,36 +152,56 @@ document.addEventListener("DOMContentLoaded", () => {
     field.addEventListener("change", () => fetchFilteredProducts());
   });
 
+  // ========== 4) The main fetch function ==========
   function fetchFilteredProducts() {
-    // Merge data from #filterForm and #sortForm
+    // Merge data from both forms
     const formData = new FormData(sidebarForm);
     const sortData = new FormData(sortForm);
     for (let [key, val] of sortData.entries()) {
       formData.append(key, val);
     }
 
-    // read ?main_category= from URL
+    // Read URL params
     const urlParams = new URLSearchParams(window.location.search);
+
+    // 4.1) main_category param
     const mainCatParam = urlParams.get('main_category');
     if (mainCatParam) {
       formData.set('main_category', mainCatParam);
     }
 
-    // read page param if present
+    // 4.2) subcategories param(s)
+    // Because you might have multiple subcategories=... in the URL,
+    // we do getAll and append them all to the form data
+    const subcatParams = urlParams.getAll('subcategory');
+    subcatParams.forEach(val => {
+      formData.append('subcategory', val);
+    });
+
+    // 4.3) sub_subcategory param(s)
+    const subsubParams = urlParams.getAll('sub_subcategory');
+    subsubParams.forEach(val => {
+      formData.append('sub_subcategory', val);
+    });
+
+    // 4.4) page param
     const pageParam = urlParams.get('page');
     if (pageParam) {
       formData.set('page', pageParam);
     }
 
+    // ========== Build final URL for product_list_json ==========
     const params = new URLSearchParams(formData);
     const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
 
+    // ========== 5) Fetch JSON and render ==========
     fetch(url)
       .then(response => response.json())
       .then(data => renderProducts(data.products))
       .catch(err => console.error(err));
   }
 
+  // ========== 6) Render JSON products into .products-container ==========
   function renderProducts(products) {
     const productsContainer = document.getElementById("productsContainer");
     productsContainer.innerHTML = "";
@@ -202,10 +221,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initial load
+  // ========== 7) Initial load ==========
   fetchFilteredProducts();
 
-  // Collapsible sections
+  // ========== 8) Collapsible sections (if used) ==========
   const headers = document.querySelectorAll('.collapsible-header');
   headers.forEach(header => {
     header.addEventListener('click', () => {
