@@ -11,9 +11,9 @@ from .models import (
 from .forms import ProductFilterForm, ReviewForm
 
 def product_list(request):
+    # 1. Identify main_category, subcategories, sub_subcategories from query string (using getlist for multiple values)
     main_cat_id = request.GET.get('main_category')
-    # Make sure we read subcategories from “subcategories” (plural):
-    subcat_ids = request.GET.getlist('subcategory')
+    subcat_ids = request.GET.getlist('subcategories')  # note: plural in URL
     sub_subcat_ids = request.GET.getlist('sub_subcategory')
 
     main_category = None
@@ -23,33 +23,30 @@ def product_list(request):
         except Category.DoesNotExist:
             main_category = None
 
+    # 2. Base queryset – order by newest first
     products = Product.objects.all().order_by('-created_at')
 
+    # 3. Filter by main_category if provided
     if main_category:
         products = products.filter(category=main_category)
 
-    # Filter by subcat_ids (list of IDs):
+    # 4. Filter by subcategories (GET parameter)
     if subcat_ids:
         products = products.filter(subcategory__id__in=subcat_ids)
 
-    # Filter by sub_subcat_ids (list of IDs):
+    # 5. Filter by sub_subcategories (GET parameter)
     if sub_subcat_ids:
         products = products.filter(sub_subcategory__id__in=sub_subcat_ids)
 
-    # Now apply the ProductFilterForm
+    # 6. Instantiate the filter form (it is used for additional filters like search, sizes, brand, price, etc.)
     form = ProductFilterForm(request.GET, main_category=main_category)
+
+    # 7. Apply additional filters from the form (but do NOT re-filter subcategories since that’s already done)
     if form.is_valid():
-        # search_query
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
 
-        # subcategories from the form
-        form_subcategories = form.cleaned_data.get('subcategory')
-        if form_subcategories:
-            products = products.filter(subcategory__in=form_subcategories)
-
-        # sizes, brands, etc.
         sizes = form.cleaned_data.get('sizes')
         if sizes:
             products = products.filter(sizes__in=sizes).distinct()
@@ -74,7 +71,7 @@ def product_list(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # Pagination
+    # 8. Paginate – 6 items per page
     paginator = Paginator(products, 6)
     page = request.GET.get('page')
     try:
@@ -94,7 +91,7 @@ def product_list(request):
 def product_list_json(request):
     """Return filtered products as JSON (for AJAX)."""
     main_cat_id = request.GET.get('main_category')
-    subcat_ids = request.GET.getlist('subcategory')
+    subcat_ids = request.GET.getlist('subcategories')
     sub_subcat_ids = request.GET.getlist('sub_subcategory')
 
     main_category = None
@@ -117,10 +114,6 @@ def product_list_json(request):
         search_query = form.cleaned_data.get('search_query')
         if search_query:
             products = products.filter(name__icontains=search_query)
-
-        form_subcategories = form.cleaned_data.get('subcategory')
-        if form_subcategories:
-            products = products.filter(subcategory__in=form_subcategories)
 
         sizes = form.cleaned_data.get('sizes')
         if sizes:
@@ -165,6 +158,7 @@ def product_list_json(request):
             'is_on_sale': product.is_on_sale
         })
     return JsonResponse({'products': data})
+
 
 @login_required
 def product_detail(request, product_id):

@@ -11,17 +11,16 @@
     <ul class="mega-menu">
       {% for main_cat in categories %}
       <li class="mega-menu-item has-mega-menu">
-        <!-- main_category param can stay the same: -->
+        <!-- Link main_cat to product_list -->
         <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}">
           {{ main_cat.name }}
         </a>
-
+        <!-- Mega menu content for subcategories -->
         <div class="mega-menu-content">
           <div class="mega-menu-row">
             {% for subcat in main_cat.subcategories.all %}
             <div class="mega-menu-column">
               <h4>
-                <!-- IMPORTANT: use subcategories= (plural) -->
                 <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}">
                   {{ subcat.name }}
                 </a>
@@ -30,21 +29,20 @@
                 {% if subcat.sub_subcategories.all %}
                   {% for subsub in subcat.sub_subcategories.all %}
                   <li>
-                    <!-- Also subcategories= for subcat, sub_subcategory= for subsub -->
                     <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}&sub_subcategory={{ subsub.id }}">
                       {{ subsub.name }}
                     </a>
                   </li>
                   {% endfor %}
                 {% else %}
-                  <li>No sub-subcategories yet</li>
+                  <li>No sub‑subcategories yet</li>
                 {% endif %}
               </ul>
             </div>
             {% empty %}
-              <div class="mega-menu-column">
-                <h4>No subcategories yet.</h4>
-              </div>
+            <div class="mega-menu-column">
+              <h4>No subcategories yet.</h4>
+            </div>
             {% endfor %}
           </div>
         </div>
