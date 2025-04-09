@@ -7,7 +7,7 @@ from .models import (
     Product, Review, Category, Subcategory, SubSubcategory,
     Brand, Size
 )
-from .forms import ProductFilterForm, ReviewForm
+from .forms import ProductFilterForm, ReviewForm, CartAddForm
 
 def product_list(request):
     # 1. Identify main_category, subcategories, sub_subcategories from query string (using getlist for multiple values)
@@ -180,6 +180,9 @@ def product_detail(request, product_id):
     else:
         form = ReviewForm()
 
+    # cart form
+    cart_form = CartAddForm(product=product)
+
     context = {
         'product': product,
         'reviews': reviews,
@@ -188,6 +191,9 @@ def product_detail(request, product_id):
         'related_products': related_products
     }
     return render(request, 'product_app/product_detail.html', context)
+
+
+
 
 
 def landing_page(request):

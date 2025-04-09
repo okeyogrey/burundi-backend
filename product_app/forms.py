@@ -109,3 +109,23 @@ class ReviewForm(forms.ModelForm):
             'rating': 'Rating',
             'content': 'Your Review'
         }
+
+
+class CartAddForm(forms.Form):
+    size = forms.ModelChoiceField(
+        queryset=Size.objects.none(),
+        empty_label=None,
+        widget=forms.RadioSelect,
+        label=''
+    )
+    quantity = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        widget=forms.NumberInput(attrs={'class':'quantity-input','style':'width:60px;'}),
+        label=''
+    )
+
+    def __init__(self, *args, product=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if product:
+            self.fields['size'].queryset = product.sizes.all()

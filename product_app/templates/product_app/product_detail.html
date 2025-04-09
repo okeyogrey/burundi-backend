@@ -1,58 +1,129 @@
 {% extends 'product_app/base.html' %}
 {% load static %}
 
-{% block title %}{{ product.name }} - Product Detail{% endblock %}
+{% block title %}{{ product.name }} – Product Detail{% endblock %}
 
 {% block content %}
 <div class="detail-page-container">
-  <!-- Top section: Product image (left) + info (right) -->
+
   <div class="product-detail-top">
-    <!-- Left: Product Image -->
-    <div class="product-detail-image">
+    <!-- LEFT: IMAGE + STOCK BADGE -->
+    <div class="product-detail-image" style="position:relative;">
       <img src="{{ product.image.url }}" alt="{{ product.name }}">
+      {% if product.stock <= 5 %}
+        <span class="badge-sale"
+              style="position:absolute;top:10px;left:10px;
+                     background:#666;color:#fff;padding:4px 8px;
+                     border-radius:4px;font-size:0.9em;">
+          Last stock!
+        </span>
+      {% endif %}
     </div>
 
-    <!-- Right: Name, Price, etc. -->
+    <!-- RIGHT: INFO -->
     <div class="product-detail-info">
       <h1 class="detail-title">{{ product.name }}</h1>
-      <p class="detail-price">Price: Ksh {{ product.price|floatformat:0 }}</p>
+
+      {% if product.is_on_sale %}
+        <span class="badge-sale">Sale</span>
+      {% endif %}
+
+      <p class="detail-price">Ksh {{ product.price|floatformat:0 }}</p>
+
+      {% if product.stock <= 5 %}
+        <div style="height:4px;background:red;width:60px;margin:8px 0;"></div>
+        <p style="font-weight:bold;color:#c00;">
+          Don't Miss Out! Only {{ product.stock }} left in stock!
+        </p>
+      {% endif %}
 
       <p class="detail-short-desc">
         {% if product.description|length > 150 %}
-          {{ product.description|slice:":150" }}...
+          {{ product.description|slice:":150" }}…
         {% else %}
           {{ product.description }}
         {% endif %}
       </p>
 
-      <!-- Example "Add to Cart" button -->
-      <button class="detail-add-to-cart-btn">Add to Cart</button>
+      <p>
+        <i class="fa fa-map-marker-alt"></i>
+        Free pickup in <a href="#">our shop(s)</a>
+      </p>
+
+      <!-- SIZE SWATCHES + QUANTITY + CART BUTTONS -->
+      <form method="post"
+            action="{% url 'product_app:product_detail' product.id %}"
+            style="margin:20px 0;">
+        {% csrf_token %}
+
+        <div class="size-swatches" style="margin-bottom:15px;">
+          <label><strong>Size</strong></label><br>
+          {% for radio in cart_form.size %}
+            <label class="size-swatch" style="
+                display:inline-block;
+                border:1px solid #ccc;
+                padding:8px 12px;
+                margin:4px;
+                cursor:pointer;
+            ">
+              {{ radio.tag }}
+              {{ radio.choice_label }}
+            </label>
+          {% endfor %}
+        </div>
+
+        <div class="quantity-selector" style="margin-bottom:15px;">
+          <label><strong>Quantity</strong></label><br>
+          {{ cart_form.quantity }}
+        </div>
+
+        <button type="submit" name="add_to_cart" class="detail-add-to-cart-btn">
+          Add to cart
+        </button>
+        <button type="submit" name="buy_now" class="detail-buy-now-btn">
+          Buy it now
+        </button>
+      </form>
+
+      <!-- DISCOUNT ACCORDION -->
+      <div class="discount-section" style="margin-bottom:20px;">
+        <div class="collapsible-header" style="cursor:pointer;">
+          <i class="fa fa-tag"></i> DISCOUNT
+          <i class="fa fa-chevron-down" style="float:right;"></i>
+        </div>
+        <div class="collapsible-body collapsed" style="overflow:hidden;max-height:0;transition:max-height .3s;">
+          <p>Enter your discount code at checkout.</p>
+        </div>
+      </div>
+
+      <!-- SECURE CHECKOUT NOTICE -->
+      <div class="secure-checkout" style="padding:10px;border:1px solid #eee;border-radius:6px;">
+        <i class="fa fa-lock"></i>
+        <span>Guaranteed <strong>secure &amp; safe</strong> checkout.</span>
+      </div>
     </div>
   </div>
 
-  <!-- Full Description Section -->
+  <!-- FULL DESCRIPTION -->
   <div class="detail-description-section">
     <h2>Description</h2>
     <p>{{ product.description }}</p>
   </div>
 
-  <!-- Customer Reviews -->
+  <!-- CUSTOMER REVIEWS -->
   <div class="detail-reviews-section">
     <h2>Customer Reviews</h2>
-
     {% if reviews %}
-      <div class="detail-review-list">
-        {% for review in reviews %}
-          <div class="review-item">
-            <strong>{{ review.user.username }}</strong>
-            <span class="review-rating">{{ review.rating }}/5</span>
-            <p class="review-content">{{ review.content }}</p>
-            <small>Posted on {{ review.created_at }}</small>
-          </div>
-        {% endfor %}
-      </div>
+      {% for review in reviews %}
+        <div class="review-item">
+          <strong>{{ review.user.username }}</strong>
+          <span class="review-rating">{{ review.rating }}/5</span>
+          <p>{{ review.content }}</p>
+          <small>Posted on {{ review.created_at|date:"M j, Y" }}</small>
+        </div>
+      {% endfor %}
     {% else %}
-      <p>No reviews yet. Be the first to review this product!</p>
+      <p>No reviews yet. Be the first to review!</p>
     {% endif %}
 
     {% if not existing_review %}
@@ -60,30 +131,48 @@
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="review-submit-btn">Submit Review</button>
+        <button type="submit" name="submit_review" class="review-submit-btn">
+          Submit Review
+        </button>
       </form>
     {% else %}
       <p><strong>You have already reviewed this product.</strong></p>
     {% endif %}
   </div>
 
-  <!-- Related Products -->
+  <!-- RELATED PRODUCTS -->
   {% if related_products %}
-  <div class="detail-related-section">
-    <h2>Related Products</h2>
-    <div class="related-products-container">
-      {% for rp in related_products %}
-      <div class="related-product-card">
-        <a href="{% url 'product_app:product_detail' rp.id %}">
-          <img src="{{ rp.image.url }}" alt="{{ rp.name }}">
-          <h4>{{ rp.name }}</h4>
-          <p>Ksh {{ rp.price|floatformat:0 }}</p>
-          <span class="related-view-details">View Details</span>
-        </a>
+    <div class="detail-related-section">
+      <h2>You may be interested in these products</h2>
+      <div class="related-products-container">
+        {% for rp in related_products %}
+          <div class="related-product-card">
+            <a href="{% url 'product_app:product_detail' rp.id %}">
+              <img src="{{ rp.image.url }}" alt="{{ rp.name }}">
+              <h4>{{ rp.name }}</h4>
+              <p>Ksh {{ rp.price|floatformat:0 }}</p>
+            </a>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
   {% endif %}
+
 </div>
+
+<script>
+  // Discount accordion toggle
+  document.querySelectorAll('.collapsible-header').forEach(h => {
+    h.addEventListener('click', () => {
+      const body = h.nextElementSibling;
+      if (body.classList.contains('collapsed')) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        body.classList.remove('collapsed');
+      } else {
+        body.style.maxHeight = '0';
+        body.classList.add('collapsed');
+      }
+    });
+  });
+</script>
 {% endblock %}
