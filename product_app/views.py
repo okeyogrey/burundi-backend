@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from .models import (
@@ -160,12 +159,14 @@ def product_list_json(request):
     return JsonResponse({'products': data})
 
 
-@login_required
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = Review.objects.filter(product=product)
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
-    existing_review = reviews.filter(user=request.user).exists()
+    if request.user.is_authenticated:
+        existing_review = reviews.filter(user=request.user).exists()
+    else:
+        existing_review = False
 
     if request.method == 'POST':
         form = ReviewForm(request.POST)
