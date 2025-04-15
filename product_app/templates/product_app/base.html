@@ -52,7 +52,11 @@
     <!-- Right-side links (Account, Cart, etc.) -->
     <ul class="nav-links">
       <li><a href="#"><i class="fa-solid fa-user"></i></a>Account</a></li>
-      <li><a href="#"><i class="fa-solid fa-cart-shopping"></i></a>Cart</a></li>
+      <li>
+        <a href="{% url 'orders:cart_detail' %}">
+          <i class="fa-solid fa-cart-shopping"></i> Cart
+        </a>
+      </li>
     </ul>
   </nav>
 

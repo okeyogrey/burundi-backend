@@ -51,9 +51,11 @@
       </p>
 
       <!-- SIZE SWATCHES + QUANTITY + CART BUTTONS -->
+      <!-- Added id="cartForm" for JavaScript targeting -->
       <form method="post"
             action="{% url 'product_app:product_detail' product.id %}"
-            style="margin:20px 0;">
+            style="margin:20px 0;"
+            id="cartForm">
         {% csrf_token %}
 
         <div class="size-swatches" style="margin-bottom:15px;">
@@ -160,8 +162,37 @@
 
 </div>
 
+<!-- JavaScript to intercept Add to Cart submission via AJAX -->
 <script>
-  // Discount accordion toggle
+document.addEventListener("DOMContentLoaded", function() {
+  const cartForm = document.getElementById("cartForm");
+  cartForm.addEventListener("submit", function(e) {
+    // Check if the submit was triggered by the "add_to_cart" button
+    if (e.submitter && e.submitter.name === "add_to_cart") {
+      e.preventDefault(); // prevent normal form submission
+      const formData = new FormData(cartForm);
+      fetch(window.location.href, {
+         method: "POST",
+         headers: {
+             'X-Requested-With': 'XMLHttpRequest',
+         },
+         body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+         // Show a confirmation message (you can replace alert with a nicer UI update)
+         alert(data.message);
+         // Update cart summary if an element with id "cart-summary" exists in your header or elsewhere.
+         const cartSummary = document.getElementById("cart-summary");
+         if (cartSummary) {
+            cartSummary.textContent = `Cart (${data.cart_count} items)`;
+         }
+      })
+      .catch(error => console.error("Error:", error));
+    }
+  });
+  
+  // Discount accordion toggle (existing functionality)
   document.querySelectorAll('.collapsible-header').forEach(h => {
     h.addEventListener('click', () => {
       const body = h.nextElementSibling;
@@ -174,5 +205,6 @@
       }
     });
   });
+});
 </script>
 {% endblock %}

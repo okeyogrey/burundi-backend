@@ -63,7 +63,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             # Add this if you keep templates in "product_app/templates"
-            BASE_DIR / 'product_app' / 'templates'
+            BASE_DIR / 'product_app' / 'templates',
+            BASE_DIR / 'orders/templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {

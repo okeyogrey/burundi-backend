@@ -10,9 +10,9 @@ from .models import (
 from .forms import ProductFilterForm, ReviewForm, CartAddForm
 
 def product_list(request):
-    # 1. Identify main_category, subcategories, sub_subcategories from query string (using getlist for multiple values)
+    # (Existing product list logic unchanged)
     main_cat_id = request.GET.get('main_category')
-    subcat_ids = request.GET.getlist('subcategories')  # note: plural in URL
+    subcat_ids = request.GET.getlist('subcategories')  
     sub_subcat_ids = request.GET.getlist('sub_subcategory')
 
     main_category = None
@@ -22,25 +22,15 @@ def product_list(request):
         except Category.DoesNotExist:
             main_category = None
 
-    # 2. Base queryset – order by newest first
     products = Product.objects.all().order_by('-created_at')
-
-    # 3. Filter by main_category if provided
     if main_category:
         products = products.filter(category=main_category)
-
-    # 4. Filter by subcategories (GET parameter)
     if subcat_ids:
         products = products.filter(subcategory__id__in=subcat_ids)
-
-    # 5. Filter by sub_subcategories (GET parameter)
     if sub_subcat_ids:
         products = products.filter(sub_subcategory__id__in=sub_subcat_ids)
 
-    # 6. Instantiate the filter form (it is used for additional filters like search, sizes, brand, price, etc.)
     form = ProductFilterForm(request.GET, main_category=main_category)
-
-    # 7. Apply additional filters from the form (but do NOT re-filter subcategories since that’s already done)
     if form.is_valid():
         search_query = form.cleaned_data.get('search_query')
         if search_query:
@@ -70,7 +60,6 @@ def product_list(request):
         if sort_by:
             products = products.order_by(sort_by)
 
-    # 8. Paginate – 6 items per page
     paginator = Paginator(products, 6)
     page = request.GET.get('page')
     try:
@@ -88,7 +77,7 @@ def product_list(request):
 
 
 def product_list_json(request):
-    """Return filtered products as JSON (for AJAX)."""
+    # (Existing JSON view code unchanged)
     main_cat_id = request.GET.get('main_category')
     subcat_ids = request.GET.getlist('subcategories')
     sub_subcat_ids = request.GET.getlist('sub_subcategory')
@@ -168,32 +157,83 @@ def product_detail(request, product_id):
     else:
         existing_review = False
 
-    if request.method == 'POST':
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.product = product
-            review.user = request.user
-            review.save()
-            messages.success(request, 'Your review has been submitted successfully!')
-            return redirect('product_app:product_detail', product_id=product.id)
-    else:
-        form = ReviewForm()
-
-    # cart form
+    # Initialize forms
+    review_form = ReviewForm()
     cart_form = CartAddForm(product=product)
+
+    if request.method == 'POST':
+        # Check which form is being submitted via the button name.
+        if 'add_to_cart' in request.POST:
+            cart_form = CartAddForm(request.POST, product=product)
+            if cart_form.is_valid():
+                cd = cart_form.cleaned_data
+                size = cd.get('size')
+                quantity = cd.get('quantity')
+                # Convert size to a JSON-serializable representation (for example, its primary key)
+                size_value = size.pk if hasattr(size, 'pk') else str(size)
+                cart = request.session.get('cart', {})
+                # Key now uses the serializable representation.
+                key = f"{product.id}_{size_value}"
+                if key in cart:
+                    cart[key]['quantity'] += quantity
+                else:
+                    cart[key] = {
+                        'product_id': product.id,
+                        'name': product.name,
+                        'price': float(product.price),
+                        'size': size_value,
+                        'quantity': quantity,
+                        'image_url': product.image.url if product.image else ''
+                    }
+                request.session['cart'] = cart
+                messages.success(request, f"Added {quantity} item(s) of {product.name} to your cart.")
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    total_items = sum(item['quantity'] for item in cart.values())
+                    return JsonResponse({'message': 'Item added to cart', 'cart_count': total_items})
+                return redirect('product_app:product_detail', product_id=product.id)
+        elif 'buy_now' in request.POST:
+            cart_form = CartAddForm(request.POST, product=product)
+            if cart_form.is_valid():
+                cd = cart_form.cleaned_data
+                size = cd.get('size')
+                quantity = cd.get('quantity')
+                size_value = size.pk if hasattr(size, 'pk') else str(size)
+                cart = request.session.get('cart', {})
+                key = f"{product.id}_{size_value}"
+                if key in cart:
+                    cart[key]['quantity'] += quantity
+                else:
+                    cart[key] = {
+                        'product_id': product.id,
+                        'name': product.name,
+                        'price': float(product.price),
+                        'size': size_value,
+                        'quantity': quantity,
+                        'image_url': product.image.url if product.image else ''
+                    }
+                request.session['cart'] = cart
+                messages.success(request, f"Added {quantity} item(s) of {product.name} to your cart.")
+                return redirect('product_app:product_detail', product_id=product.id)
+        elif 'submit_review' in request.POST:
+            review_form = ReviewForm(request.POST)
+            if review_form.is_valid():
+                review = review_form.save(commit=False)
+                review.product = product
+                review.user = request.user
+                review.save()
+                messages.success(request, 'Your review has been submitted successfully!')
+                return redirect('product_app:product_detail', product_id=product.id)
 
     context = {
         'product': product,
         'reviews': reviews,
-        'form': form,
+        'form': review_form,
         'existing_review': existing_review,
-        'related_products': related_products
+        'related_products': related_products,
+        'cart_form': cart_form,
     }
     return render(request, 'product_app/product_detail.html', context)
-
-
-
 
 
 def landing_page(request):
