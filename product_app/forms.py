@@ -1,5 +1,5 @@
 from django import forms
-from .models import Category, Subcategory, Size, Brand, Review
+from .models import Category, Subcategory, SubSubcategory, Size, Brand, Review
 
 SORT_CHOICES = [
     ('-created_at', 'Newest'),
@@ -18,21 +18,21 @@ class ProductFilterForm(forms.Form):
         })
     )
 
-    # Subcategories
-    subcategories = forms.ModelMultipleChoiceField(
-        queryset=Subcategory.objects.all(),
+    # Field now shows sub‑subcategories; we'll override the display label below
+    sub_subcategories = forms.ModelMultipleChoiceField(
+        queryset=SubSubcategory.objects.none(),
         required=False,
-        widget=forms.CheckboxSelectMultiple
+        widget=forms.CheckboxSelectMultiple,
+        label="Sub‑Subcategories"
     )
 
-    # NEW: sizes
+    # Filter sizes and brands by sub‑subcategory association
     sizes = forms.ModelMultipleChoiceField(
         queryset=Size.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple
     )
 
-    # UPDATED: brand references brand objects
     brands = forms.ModelMultipleChoiceField(
         queryset=Brand.objects.all(),
         required=False,
@@ -69,20 +69,17 @@ class ProductFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         main_category = kwargs.pop('main_category', None)
         super().__init__(*args, **kwargs)
+        
+        # Override the label for each sub_subcategory instance to display only its name.
+        self.fields['sub_subcategories'].label_from_instance = lambda obj: obj.name
 
-        # If we have a main_category, filter subcategories, sizes, brands by that category
         if main_category:
-            # Subcategories that belong to that main_category
-            self.fields['subcategories'].queryset = Subcategory.objects.filter(category=main_category)
-
-            # Sizes that belong to that main_category
-            self.fields['sizes'].queryset = Size.objects.filter(category=main_category)
-
-            # Brands that belong to that main_category
-            self.fields['brands'].queryset = Brand.objects.filter(category=main_category)
+            # Get sub‑subcategories where the parent subcategory belongs to the selected main category.
+            self.fields['sub_subcategories'].queryset = SubSubcategory.objects.filter(subcategory__category=main_category)
+            self.fields['sizes'].queryset = Size.objects.filter(sub_subcategory__subcategory__category=main_category)
+            self.fields['brands'].queryset = Brand.objects.filter(sub_subcategory__subcategory__category=main_category)
         else:
-            # If no main_category is chosen, you could show none or all
-            self.fields['subcategories'].queryset = Subcategory.objects.none()
+            self.fields['sub_subcategories'].queryset = SubSubcategory.objects.none()
             self.fields['sizes'].queryset = Size.objects.none()
             self.fields['brands'].queryset = Brand.objects.none()
 
@@ -109,7 +106,6 @@ class ReviewForm(forms.ModelForm):
             'rating': 'Rating',
             'content': 'Your Review'
         }
-
 
 class CartAddForm(forms.Form):
     size = forms.ModelChoiceField(

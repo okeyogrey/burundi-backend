@@ -4,34 +4,114 @@
 {% block title %}Your Cart{% endblock %}
 
 {% block content %}
-<h1>Your Cart</h1>
+<div class="cart-page-container">
+  <h1>Your Cart</h1>
 
-{% if cart_items %}
-  <table>
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Size</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Subtotal</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in cart_items %}
-      <tr>
-        <td>{{ item.name }}</td>
-        <td>{{ item.size }}</td>
-        <td>Ksh {{ item.price }}</td>
-        <td>{{ item.quantity }}</td>
-        <td>Ksh {{ item.subtotal }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <h3>Total: Ksh {{ total_price }}</h3>
-  <!-- You can add a checkout button here -->
-{% else %}
-  <p>Your cart is empty.</p>
-{% endif %}
+  {% if cart_items %}
+    <div class="cart-table-wrapper">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th class="col-product">Product</th>
+            <th class="col-size">Size</th>
+            <th class="col-price">Price</th>
+            <th class="col-qty">Qty</th>
+            <th class="col-subtotal">Subtotal</th>
+            <th class="col-action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr id="cart-item-{{ item.key }}">
+            <td class="product-cell">
+              <div class="product-info-cell">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-thumb">
+                <span class="cart-item-name">{{ item.name }}</span>
+              </div>
+            </td>
+            <td>{{ item.size }}</td>
+            <td>Ksh {{ item.price|floatformat:2 }}</td>
+            <td>
+              <input type="number"
+                     min="1"
+                     value="{{ item.quantity }}"
+                     class="quantity-input"
+                     data-item-key="{{ item.key }}" />
+            </td>
+            <td class="subtotal-cell">Ksh {{ item.subtotal|floatformat:2 }}</td>
+            <td>
+              <button class="remove-item-btn" data-item-key="{{ item.key }}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cart-summary">
+      <span class="summary-label">Total:</span>
+      <span class="summary-value">Ksh {{ total_price|floatformat:2 }}</span>
+    </div>
+
+    <div class="cart-actions">
+      <a href="{% url 'orders:checkout' %}" class="checkout-btn">Proceed to Checkout</a>
+      <a href="{% url 'product_app:product_list' %}" class="continue-shopping-btn">Continue Shopping</a>
+    </div>
+
+  {% else %}
+    <p class="empty-cart-msg">Your cart is empty.</p>
+    <a href="{% url 'product_app:product_list' %}" class="continue-shopping-btn">Shop Now</a>
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // Remove item
+  document.querySelectorAll(".remove-item-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.itemKey;
+      fetch("{% url 'orders:remove_from_cart' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: "item_key=" + encodeURIComponent(key)
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById(`cart-item-${key}`).remove();
+        document.querySelector("#cart-summary").textContent = `(${data.cart_count})`;
+        location.reload();
+      });
+    });
+  });
+
+  // Update quantity
+  document.querySelectorAll(".quantity-input").forEach(input => {
+    input.addEventListener("change", () => {
+      const key = input.dataset.itemKey;
+      const qty = input.value;
+      fetch("{% url 'orders:update_cart_quantity' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: `item_key=${encodeURIComponent(key)}&quantity=${encodeURIComponent(qty)}`
+      })
+      .then(res => res.json())
+      .then(data => {
+        location.reload();
+      });
+    });
+  });
+});
+</script>
 {% endblock %}

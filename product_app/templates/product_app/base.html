@@ -4,20 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}KingOfSpeed{% endblock %}</title>
-
-  <!-- Main CSS -->
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
-  <!-- Font Awesome (for icons) -->
-  <link
-    rel="stylesheet"
+  <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     integrity="sha512-..."
     crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
+    referrerpolicy="no-referrer" />
 </head>
 <body>
+  <form style="display:none;">
+    {% csrf_token %}
+  </form>
 
   <!-- TOP BAR -->
   <div class="top-bar">
@@ -25,36 +22,32 @@
       FAST DELIVERY
     </div>
     <div class="top-bar-right">
-      <!-- user & cart icons -->
-      <!-- <a href="#"><i class="fa-solid fa-user"></i></a>
-      <a href="#"><i class="fa-solid fa-cart-shopping"></i></a> -->
+      <!-- user & cart icons (optional) -->
     </div>
   </div>
 
   <!-- MAIN NAV BAR -->
   <nav class="navbar">
     <div class="logo">
-      <!-- Example: link back to landing or homepage -->
       <a href="#">KingOfSpeed</a>
     </div>
 
-    <!-- Big Search Box + "Search" Button -->
-    <form class="nav-search-form" action="#" method="get">
+    <form class="nav-search-form" action="#" method="get" id="navSearchForm">
       <input
         type="text"
         class="nav-search-input"
         placeholder="Search products, brands and categories"
         name="search_query"
+        id="navSearchInput"
       />
       <button type="submit" class="nav-search-btn">Search</button>
     </form>
 
-    <!-- Right-side links (Account, Cart, etc.) -->
     <ul class="nav-links">
-      <li><a href="#"><i class="fa-solid fa-user"></i></a>Account</a></li>
+      <li><a href="#"><i class="fa-solid fa-user"></i> Account</a></li>
       <li>
-        <a href="{% url 'orders:cart_detail' %}">
-          <i class="fa-solid fa-cart-shopping"></i> Cart
+        <a href="#" id="cart-icon-link">
+          <i class="fa-solid fa-cart-shopping"></i> Cart <span id="cart-summary">({{ cart_count }})</span>
         </a>
       </li>
     </ul>
@@ -62,14 +55,152 @@
 
   <!-- PAGE-SPECIFIC CONTENT -->
   <div class="page-content">
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
   </div>
 
-  <!-- FOOTER (optional) -->
-  <footer>
-    <!-- your footer code, if any -->
+  <!-- FOOTER SECTION -->
+  <footer class="site-footer">
+    <!-- SUB-FOOTER: Multiple Columns with Links -->
+    <div class="sub-footer">
+      <div class="footer-columns">
+        <div class="footer-column">
+          <h4>Customer Service</h4>
+          <ul>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">Order Tracking</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Information</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms &amp; Conditions</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Extras</h4>
+          <ul>
+            <li><a href="#">Brands</a></li>
+            <li><a href="#">Gift Certificates</a></li>
+            <li><a href="#">Affiliate</a></li>
+            <li><a href="#">Specials</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>My Account</h4>
+          <ul>
+            <li><a href="#">My Account</a></li>
+            <li><a href="#">Order History</a></li>
+            <li><a href="#">Wish List</a></li>
+            <li><a href="#">Newsletter</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN FOOTER: Copyright & Social Icons -->
+    <div class="main-footer">
+      <p>&copy; {% now "Y" %} KingOfSpeed. All rights reserved.</p>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+      </div>
+    </div>
   </footer>
 
+  <!-- CART DRAWER (SLIDE-OUT) -->
+  <aside id="cartDrawer" class="cart-drawer hidden">
+    <div class="cart-drawer-header">
+      <h2>Your Cart</h2>
+      <button type="button" class="cart-drawer-close-btn" id="closeCartDrawerBtn">&times;</button>
+    </div>
+
+    {% if request.session.cart %}
+      <ul class="cart-items-list">
+        {% for key, item in request.session.cart.items %}
+          <li class="drawer-cart-item" id="drawer-cart-item-{{ key }}">
+            <img src="{{ item.image_url }}" alt="{{ item.name }}" class="drawer-cart-item-img">
+            <div class="drawer-cart-item-info">
+              <p>{{ item.name }}</p>
+              <p>Qty: {{ item.quantity }} x Ksh {{ item.price }}</p>
+              <button class="drawer-remove-btn" data-item-key="{{ key }}">Remove</button>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Your cart is empty.</p>
+    {% endif %}
+
+    <div class="cart-drawer-footer">
+      <a href="{% url 'orders:cart_detail' %}" class="view-cart-btn">View Cart</a>
+    </div>
+  </aside>
+
+  <div id="cartDrawerOverlay" class="drawer-overlay hidden"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const cartIconLink = document.getElementById("cart-icon-link");
+      const cartDrawer    = document.getElementById("cartDrawer");
+      const closeBtn      = document.getElementById("closeCartDrawerBtn");
+      const overlay       = document.getElementById("cartDrawerOverlay");
+
+      function openCartDrawer() {
+        cartDrawer.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+      }
+
+      function closeCartDrawer() {
+        cartDrawer.classList.add("hidden");
+        overlay.classList.add("hidden");
+      }
+
+      cartIconLink.addEventListener("click", function(e) {
+        e.preventDefault();
+        openCartDrawer();
+      });
+
+      closeBtn.addEventListener("click", closeCartDrawer);
+      overlay.addEventListener("click", closeCartDrawer);
+
+      const drawerRemoveButtons = document.querySelectorAll(".drawer-remove-btn");
+      drawerRemoveButtons.forEach(button => {
+        button.addEventListener("click", function(e) {
+          const itemKey = this.getAttribute("data-item-key");
+          if (!itemKey) return;
+          const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+          fetch("{% url 'orders:remove_from_cart' %}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-CSRFToken": csrfToken,
+              "X-Requested-With": "XMLHttpRequest"
+            },
+            body: "item_key=" + encodeURIComponent(itemKey)
+          })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message);
+            const itemEl = document.getElementById("drawer-cart-item-" + itemKey);
+            if (itemEl) {
+              itemEl.parentNode.removeChild(itemEl);
+            }
+            const cartSummary = document.getElementById("cart-summary");
+            if (cartSummary) {
+              cartSummary.textContent = `Cart (${data.cart_count} items)`;
+            }
+          })
+          .catch(error => console.error("Error:", error));
+        });
+      });
+    });
+  </script>
 </body>
 </html>

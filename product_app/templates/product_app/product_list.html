@@ -5,7 +5,6 @@
 
 {% block content %}
 
-  {# ─── 1) noUiSlider CSS ──────────────────────────────────────────── #}
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/dist/nouislider.min.css"
@@ -17,7 +16,6 @@
       <h2>Filter</h2>
       <form method="GET" class="filter-form" id="filterForm">
         {% csrf_token %}
-        <!-- On Sale -->
         <div class="filter-group collapsible">
           <h3 class="collapsible-header">On Sale</h3>
           <div class="collapsible-body">
@@ -25,7 +23,6 @@
           </div>
         </div>
 
-        <!-- Price Range -->
         <div class="filter-group collapsible">
           <h3 class="collapsible-header">Price Range</h3>
           <div class="collapsible-body price-range">
@@ -33,7 +30,6 @@
             <input type="hidden" name="min_price" id="minPriceField">
             <input type="hidden" name="max_price" id="maxPriceField">
           </div><br>
-
           <div class="price-display">
             <input type="number" id="minValueDisplay" value="0" class="price-input"> 
             -
@@ -41,10 +37,10 @@
           </div>
         </div>
 
-        <!-- Category (Subcategories) -->
+        <!-- Sub-Subcategory Filter -->
         <div class="filter-group">
-          <h3>Category</h3>
-          {{ form.subcategories }}
+          <h3>Sub-Subcategory</h3>
+          {{ form.sub_subcategories }}
         </div>
 
         <!-- Brand -->
@@ -63,7 +59,6 @@
 
     <!-- Main Content -->
     <main class="product-listing">
-      <!-- Sort form on the right side -->
       <form method="GET" class="filter-form" id="sortForm">
         {% csrf_token %}
         <div class="sort-bar">
@@ -72,10 +67,36 @@
         </div>
       </form>
 
-      <!-- Product Grid (AJAX results) -->
-      <div class="products-container" id="productsContainer"></div>
+      <div class="products-container" id="productsContainer">
+        {% for product in products %}
+          <div class="product-card">
+            <a href="{% url 'product_app:product_detail' product.id %}">
+              <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+            </a>
+            <div class="product-info">
+              <h4>{{ product.name }}</h4>
+              {# Display pricing: if on sale, show old price with line-through and new sale price below #}
+              {% if product.is_on_sale and product.old_price %}
+                <p class="product-price">
+                  <span class="old-price" style="text-decoration: line-through; color: #888;">
+                    KSHS {{ product.old_price|floatformat:0 }}
+                  </span>
+                  <br>
+                  <span class="sale-price" style="color: red; font-weight: bold;">
+                    KSHS {{ product.price|floatformat:0 }}
+                  </span>
+                </p>
+              {% else %}
+                <p class="product-price" style="color: #e3342f; font-weight: bold;">
+                  KSHS {{ product.price|floatformat:0 }}
+                </p>
+              {% endif %}
+              <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">View Details</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
 
-      <!-- OPTIONAL: Traditional loop + pagination if you want server-render fallback -->
       {% if products.has_other_pages %}
       <div class="pagination">
         <span class="step-links">
@@ -96,15 +117,12 @@
     </main>
   </div>
 
-  {# ─── 2) noUiSlider JS ───────────────────────────────────────────── #}
   <script
     src="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/dist/nouislider.min.js"
   ></script>
 
-  <!-- AJAX + noUiSlider Script -->
   <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // ========== 1) noUiSlider setup ==========
     const priceSlider = document.getElementById('priceSlider');
     noUiSlider.create(priceSlider, {
       start: [0, 20000],
@@ -144,35 +162,35 @@
       fetchFilteredProducts();
     });
 
-    // ========== 2) Prevent normal submit ==========
     const sidebarForm = document.getElementById("filterForm");
     const sortForm    = document.getElementById("sortForm");
     sidebarForm.addEventListener("submit", e => e.preventDefault());
     sortForm.addEventListener("submit",    e => e.preventDefault());
 
-    // ========== 3) Listen for changes ==========
     const sideFields = sidebarForm.querySelectorAll("select, input[type='checkbox'], input[type='number']");
     const sortFields = sortForm.querySelectorAll("select");
     sideFields.forEach(f => f.addEventListener("change", fetchFilteredProducts));
     sortFields.forEach(f => f.addEventListener("change", fetchFilteredProducts));
 
-    // ========== 4) Fetch & render ==========
     function fetchFilteredProducts() {
       const formData = new FormData(sidebarForm);
       const sortData = new FormData(sortForm);
-      for (let [k,v] of sortData.entries()) formData.append(k,v);
+      for (let [k, v] of sortData.entries()) formData.append(k, v);
 
-      // Preserve main_category from URL if present
       const urlParams = new URLSearchParams(window.location.search);
       const mainCat = urlParams.get('main_category');
       if (mainCat) formData.set('main_category', mainCat);
 
-      // **FIXED**: use the correct GET key “subcategories”
-      const subcats = urlParams.getAll('subcategories');
-      subcats.forEach(v => formData.append('subcategories', v));
+      const subSubcats = urlParams.getAll('sub_subcategories');
+      subSubcats.forEach(v => formData.append('sub_subcategories', v));
 
       const page = urlParams.get('page');
       if (page) formData.set('page', page);
+
+      const navSearchInput = document.getElementById("navSearchInput");
+      if (navSearchInput) {
+          formData.set("search_query", navSearchInput.value);
+      }
 
       const params = new URLSearchParams(formData);
       const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
@@ -194,7 +212,13 @@
           <img class="product-image" src="${p.image_url}" alt="${p.name}">
           <div class="product-info">
             <h4>${p.name}</h4>
-            <p class="product-price">Ksh ${p.price}</p>
+            ${p.is_on_sale 
+              ? `<p class="product-price">
+                   <span class="old-price" style="text-decoration: line-through; color: #888;">KSHS ${p.old_price}</span>
+                   <br>
+                   <span class="sale-price" style="color: red; font-weight: bold;">KSHS ${p.price}</span>
+                 </p>` 
+              : `<p class="product-price" style="color: #e3342f; font-weight: bold;">KSHS ${p.price}</p>`}
             <a class="details-button" href="/product/${p.id}/">View Details</a>
           </div>
         `;
@@ -202,10 +226,8 @@
       });
     }
 
-    // ========== 5) Initial load ==========
     fetchFilteredProducts();
 
-    // Collapsible headers
     document.querySelectorAll('.collapsible-header')
       .forEach(h => h.addEventListener('click', () =>
         h.nextElementSibling.classList.toggle('collapsed')

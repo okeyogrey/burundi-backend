@@ -19,20 +19,21 @@ class SubcategoryAdmin(admin.ModelAdmin):
     list_filter = ['category']
     search_fields = ['name']
 
-# NEW: A separate admin page for sub-subcategories
 @admin.register(SubSubcategory)
 class SubSubcategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'subcategory']
-    list_filter = ['subcategory__category']  # filter by the main Category indirectly
+    list_filter = ['subcategory__category']
     search_fields = ['name']
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category']
+    list_display = ['name', 'sub_subcategory']
+    list_filter = ['sub_subcategory']
 
 @admin.register(Size)
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category']
+    list_display = ['name', 'sub_subcategory']
+    list_filter = ['sub_subcategory']
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -40,7 +41,7 @@ class ProductAdmin(admin.ModelAdmin):
         'name',
         'category',
         'subcategory',
-        'sub_subcategory',  # only if you added this field
+        'sub_subcategory',
         'brand',
         'stock',
         'image',

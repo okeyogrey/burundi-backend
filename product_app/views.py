@@ -10,10 +10,9 @@ from .models import (
 from .forms import ProductFilterForm, ReviewForm, CartAddForm
 
 def product_list(request):
-    # (Existing product list logic unchanged)
     main_cat_id = request.GET.get('main_category')
-    subcat_ids = request.GET.getlist('subcategories')  
-    sub_subcat_ids = request.GET.getlist('sub_subcategory')
+    # Updated parameter name for sub‑subcategories
+    sub_subcat_ids = request.GET.getlist('sub_subcategories')
 
     main_category = None
     if main_cat_id:
@@ -25,8 +24,6 @@ def product_list(request):
     products = Product.objects.all().order_by('-created_at')
     if main_category:
         products = products.filter(category=main_category)
-    if subcat_ids:
-        products = products.filter(subcategory__id__in=subcat_ids)
     if sub_subcat_ids:
         products = products.filter(sub_subcategory__id__in=sub_subcat_ids)
 
@@ -77,10 +74,8 @@ def product_list(request):
 
 
 def product_list_json(request):
-    # (Existing JSON view code unchanged)
     main_cat_id = request.GET.get('main_category')
-    subcat_ids = request.GET.getlist('subcategories')
-    sub_subcat_ids = request.GET.getlist('sub_subcategory')
+    sub_subcat_ids = request.GET.getlist('sub_subcategories')
 
     main_category = None
     if main_cat_id:
@@ -92,8 +87,6 @@ def product_list_json(request):
     products = Product.objects.all().order_by('-created_at')
     if main_category:
         products = products.filter(category=main_category)
-    if subcat_ids:
-        products = products.filter(subcategory__id__in=subcat_ids)
     if sub_subcat_ids:
         products = products.filter(sub_subcategory__id__in=sub_subcat_ids)
 
@@ -142,6 +135,8 @@ def product_list_json(request):
             'id': product.id,
             'name': product.name,
             'price': float(product.price),
+            # NEW: include old_price in JSON response if set (otherwise null)
+            'old_price': float(product.old_price) if product.old_price is not None else None,
             'image_url': product.image.url if product.image else '',
             'is_on_sale': product.is_on_sale
         })
@@ -157,22 +152,18 @@ def product_detail(request, product_id):
     else:
         existing_review = False
 
-    # Initialize forms
     review_form = ReviewForm()
     cart_form = CartAddForm(product=product)
 
     if request.method == 'POST':
-        # Check which form is being submitted via the button name.
         if 'add_to_cart' in request.POST:
             cart_form = CartAddForm(request.POST, product=product)
             if cart_form.is_valid():
                 cd = cart_form.cleaned_data
                 size = cd.get('size')
                 quantity = cd.get('quantity')
-                # Convert size to a JSON-serializable representation (for example, its primary key)
                 size_value = size.pk if hasattr(size, 'pk') else str(size)
                 cart = request.session.get('cart', {})
-                # Key now uses the serializable representation.
                 key = f"{product.id}_{size_value}"
                 if key in cart:
                     cart[key]['quantity'] += quantity
@@ -188,7 +179,8 @@ def product_detail(request, product_id):
                 request.session['cart'] = cart
                 messages.success(request, f"Added {quantity} item(s) of {product.name} to your cart.")
 
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                ajax_header = request.META.get('HTTP_X_REQUESTED_WITH', '')
+                if 'xmlhttprequest' in ajax_header.lower():
                     total_items = sum(item['quantity'] for item in cart.values())
                     return JsonResponse({'message': 'Item added to cart', 'cart_count': total_items})
                 return redirect('product_app:product_detail', product_id=product.id)
@@ -237,9 +229,6 @@ def product_detail(request, product_id):
 
 
 def landing_page(request):
-    """
-    A view that shows a landing page (like Jumia’s homepage) with a mega menu.
-    """
     categories = Category.objects.all().order_by('name')
     featured_products = Product.objects.filter(is_on_sale=True)[:8]
 
@@ -248,3 +237,17 @@ def landing_page(request):
         'featured_products': featured_products,
     }
     return render(request, 'product_app/landing.html', context)
+
+
+def search_products(request):
+    query = request.GET.get('q', '').strip()
+    results = []
+    if query:
+        matching_products = Product.objects.filter(name__icontains=query)[:5]
+        for product in matching_products:
+            results.append({
+                'id': product.id,
+                'name': product.name,
+                'detail_url': f'/product/{product.id}/'
+            })
+    return JsonResponse({'products': results})

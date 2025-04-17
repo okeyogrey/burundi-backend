@@ -47,11 +47,13 @@ class SubSubcategory(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=100)
-    category = models.ForeignKey(
-        Category,
+    # Now tied to a sub‑subcategory
+    sub_subcategory = models.ForeignKey(
+        SubSubcategory,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name='brands'
     )
 
     def __str__(self):
@@ -59,11 +61,13 @@ class Brand(models.Model):
 
 class Size(models.Model):
     name = models.CharField(max_length=50)
-    category = models.ForeignKey(
-        Category,
+    # Now tied to a sub‑subcategory
+    sub_subcategory = models.ForeignKey(
+        SubSubcategory,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name='sizes'
     )
 
     def __str__(self):
@@ -73,6 +77,8 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(default="No description available")
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    # NEW: This field holds the original price when a product is on sale.
+    old_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, null=True, blank=True)
@@ -109,3 +115,5 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name} ({self.rating}/5)"
+    
+

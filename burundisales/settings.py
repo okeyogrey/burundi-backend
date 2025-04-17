@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--a!$(!7w*y)@@4qto%whpsm&6kedo_52_gx4f29umbbz_wo5#7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.2', '127.0.0.1']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'paypal.standard.ipn',
 
     # Custom apps
     'accounts',
@@ -73,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'orders.context_processors.cart_counter',
             ],
         },
     },
@@ -146,3 +148,7 @@ import os
 # Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Your other settings
+PAYSTACK_PUBLIC_KEY = 'your-paystack-public-key-here'

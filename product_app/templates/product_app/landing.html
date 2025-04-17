@@ -11,10 +11,10 @@
     <ul class="mega-menu">
       {% for main_cat in categories %}
       <li class="mega-menu-item has-mega-menu">
-        <!-- Link main_cat to product_list -->
-        <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}">
+        <!-- Main category label is now a non‑clickable span -->
+        <span class="mega-menu-label">
           {{ main_cat.name }}
-        </a>
+        </span>
         <!-- Mega menu content for subcategories -->
         <div class="mega-menu-content">
           <div class="mega-menu-row">
@@ -29,7 +29,8 @@
                 {% if subcat.sub_subcategories.all %}
                   {% for subsub in subcat.sub_subcategories.all %}
                   <li>
-                    <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}&sub_subcategory={{ subsub.id }}">
+                    <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}&sub_subcategories={{ subsub.id }}">
+
                       {{ subsub.name }}
                     </a>
                   </li>
@@ -54,11 +55,11 @@
   <!-- RIGHT SECTION: BANNER / HERO / FEATURED PRODUCTS -->
   <div class="landing-main-content">
     <div class="landing-hero">
-      <img src="{% static 'images/hero-banner.jpg' %}" alt="Hero Banner" class="landing-hero-image" />
+      <img src="{% static 'images/hero-banner.webp' %}" alt="Hero Banner" class="landing-hero-image" />
     </div>
     <div class="landing-promo">
-      <h2>KingOfSpeed Tech Week</h2>
-      <p>Find the best deals on your favorite products!</p>
+      <!-- <h2>KingOfSpeed Tech Week</h2>
+      <p>Find the best deals on your favorite products!</p> -->
     </div>
     <div class="landing-featured">
       <h3>Featured Deals</h3>
