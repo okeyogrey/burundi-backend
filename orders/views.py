@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.conf import settings
+from .models import Order
 
 def cart_detail(request):
     """
@@ -100,3 +103,19 @@ def payment_verify(request):
     reference = request.GET.get('reference')
     # Normally, you would verify the reference with Paystack's API here
     return HttpResponse(f"Payment verified with reference: {reference}")
+
+class OrderHistoryView(LoginRequiredMixin, ListView):
+    model = Order
+    template_name = 'orders/order_history.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).order_by('-created')
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'orders/order_detail.html'
+    context_object_name = 'order'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)

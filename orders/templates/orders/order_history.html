@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Order History{% endblock %}
+{% block content %}
+<div class="page-content">
+  <h2>Your Order History</h2>
+  <ul>
+    {% for order in orders %}
+      <li>
+        <a href="{% url 'orders:order_detail' order.id %}">
+          Order #{{ order.id }} — {{ order.created|date:"Y-m-d H:i" }} — {{ order.get_status_display }}
+        </a>
+      </li>
+    {% empty %}
+      <li>You haven’t placed any orders yet.</li>
+    {% endfor %}
+  </ul>
+  </div>
+{% endblock %}

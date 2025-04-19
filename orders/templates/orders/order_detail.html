@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block content %}
+<div class="page-content">
+  <h2>Order #{{ order.id }}</h2>
+  <p><strong>Placed:</strong> {{ order.created|date:"Y-m-d H:i" }}</p>
+  <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+  {% if order.tracking_code %}
+    <p><strong>Tracking Code:</strong> {{ order.tracking_code }}</p>
+  {% endif %}
+  <hr>
+
+  <h3>Items:</h3>
+  <table class="order-items">
+    <thead>
+      <tr><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>Quantity: {{ item.quantity }}</td>
+            <td>Price: Ksh {{ item.price }}</td>
+            <td>Subtotal: Ksh {{ item.get_cost }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+  <p><strong>Total:</strong> Ksh {{ order.get_total_cost }}</p>
+  <a href="{% url 'orders:order_history' %}" class="back-link">← Back to Order History</a>
+  </div>
+{% endblock %}

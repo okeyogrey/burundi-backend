@@ -13,18 +13,33 @@
   <div class="product-page-container">
     <!-- Sidebar (Filters) -->
     <aside class="filter-sidebar">
-      <h2>Filter</h2>
+      <!-- <h2>FILTER</h2> -->
       <form method="GET" class="filter-form" id="filterForm">
         {% csrf_token %}
-        <div class="filter-group collapsible">
-          <h3 class="collapsible-header">On Sale</h3>
-          <div class="collapsible-body">
-            {{ form.sale_items }}
-          </div>
+        
+
+        
+
+        <!-- Sub-Subcategory Filter -->
+        <div class="filter-group">
+          <h3>CATEGORY</h3>
+          {{ form.sub_subcategories }}
         </div>
 
+        <!-- Brand -->
+        <div class="filter-group">
+          <h3>BRAND</h3>
+          {{ form.brands }}
+        </div>
+
+        <!-- Sizes -->
+        <!-- <div class="filter-group">
+          <h3>Sizes</h3>
+          {{ form.sizes }}
+        </div> -->
+
         <div class="filter-group collapsible">
-          <h3 class="collapsible-header">Price Range</h3>
+          <h3 class="collapsible-header">PRICE RANGE</h3>
           <div class="collapsible-body price-range">
             <div id="priceSlider"></div>
             <input type="hidden" name="min_price" id="minPriceField">
@@ -37,23 +52,14 @@
           </div>
         </div>
 
-        <!-- Sub-Subcategory Filter -->
-        <div class="filter-group">
-          <h3>Sub-Subcategory</h3>
-          {{ form.sub_subcategories }}
+        <div class="filter-group collapsible">
+          <h3 class="collapsible-header">ON SALE</h3>
+          <div class="collapsible-body">
+            {{ form.sale_items }}
+          </div>
         </div>
 
-        <!-- Brand -->
-        <div class="filter-group">
-          <h3>Brand</h3>
-          {{ form.brands }}
-        </div>
 
-        <!-- Sizes -->
-        <div class="filter-group">
-          <h3>Sizes</h3>
-          {{ form.sizes }}
-        </div>
       </form>
     </aside>
 
