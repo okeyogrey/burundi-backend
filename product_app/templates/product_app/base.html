@@ -17,19 +17,19 @@
   </form>
 
   <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="top-bar-left">
-      FAST DELIVERY
-    </div>
-    <div class="top-bar-right">
-      <!-- user & cart icons (optional) -->
-    </div>
-  </div>
+
 
   <!-- MAIN NAV BAR -->
   <nav class="navbar">
+    <button id="menu-toggle" class="hamburger">
+      <i class="fa-solid fa-bars"></i>
+    </button>
     <div class="logo">
-      <a href="{% url 'product_app:landing_page' %}">KingOfSpeed</a>
+      <a href="{% url 'product_app:landing_page' %}">
+        <img src="{% static 'images/logo.png' %}"
+             alt="KingOfSpeed"
+             class="logo-img">
+      </a>
     </div>
 
     <form class="nav-search-form" action="#" method="get" id="navSearchForm">
@@ -208,5 +208,33 @@
       });
     });
   </script>
+  <script>
+    const toggleBtn       = document.getElementById('menu-toggle');
+    const mobileSidebar   = document.getElementById('mobile-sidebar');
+    const sidebarOverlay  = document.getElementById('sidebar-overlay');
+  
+    function openSidebar() {
+      mobileSidebar.classList.add('open');
+      sidebarOverlay.classList.add('open');
+      document.body.classList.add('sidebar-open');
+    }
+    function closeSidebar() {
+      mobileSidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+      document.body.classList.remove('sidebar-open');
+    }
+  
+    toggleBtn.addEventListener('click', () => {
+      if (mobileSidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  
+    // clicking outside (on the overlay) closes it:
+    sidebarOverlay.addEventListener('click', closeSidebar);
+  </script> 
+  
 </body>
 </html>

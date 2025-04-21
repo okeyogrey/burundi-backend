@@ -6,16 +6,12 @@
 {% block content %}
 <div class="landing-container">
   <!-- LEFT SIDEBAR with mega menu -->
-  <aside class="landing-sidebar">
-    <!-- <h3>Categories</h3> -->
+  <aside id="mobile-sidebar" class="landing-sidebar">
+    
     <ul class="mega-menu">
       {% for main_cat in categories %}
       <li class="mega-menu-item has-mega-menu">
-        <!-- Main category label is now a non‑clickable span -->
-        <span class="mega-menu-label">
-          {{ main_cat.name }}
-        </span>
-        <!-- Mega menu content for subcategories -->
+        <span class="mega-menu-label" style="cursor: pointer;">{{ main_cat.name }}</span>
         <div class="mega-menu-content">
           <div class="mega-menu-row">
             {% for subcat in main_cat.subcategories.all %}
@@ -25,12 +21,11 @@
                   {{ subcat.name }}
                 </a>
               </h4>
-              <ul>
+              <!-- <ul>
                 {% if subcat.sub_subcategories.all %}
                   {% for subsub in subcat.sub_subcategories.all %}
                   <li>
                     <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}&sub_subcategories={{ subsub.id }}">
-
                       {{ subsub.name }}
                     </a>
                   </li>
@@ -38,11 +33,11 @@
                 {% else %}
                   <li>No sub‑subcategories yet</li>
                 {% endif %}
-              </ul>
+              </ul> -->
             </div>
             {% empty %}
             <div class="mega-menu-column">
-              <h4>No subcategories yet.</h4>
+              <!-- <h4>No subcategories yet.</h4> -->
             </div>
             {% endfor %}
           </div>
@@ -51,31 +46,66 @@
       {% endfor %}
     </ul>
   </aside>
+  <div id="sidebar-overlay" class="mobile-hidden"></div>
 
-  <!-- RIGHT SECTION: BANNER / HERO / FEATURED PRODUCTS -->
-  <div class="landing-main-content">
+  <!-- HERO SECTION -->
+  <div class="landing-hero-section">
     <div class="landing-hero">
       <img src="{% static 'images/hero-banner.webp' %}" alt="Hero Banner" class="landing-hero-image" />
     </div>
     <div class="landing-promo">
-      <!-- <h2>KingOfSpeed Tech Week</h2>
-      <p>Find the best deals on your favorite products!</p> -->
-    </div>
-    <div class="landing-featured">
-      <h3>Featured Deals</h3>
-      <div class="featured-grid">
-        {% for prod in featured_products %}
-          <div class="featured-card">
-            <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
-            <h4>{{ prod.name }}</h4>
-            <p>Ksh {{ prod.price|floatformat:0 }}</p>
-            <a href="{% url 'product_app:product_detail' prod.id %}" class="details-button">
-              View Details
-            </a>
-          </div>
-        {% endfor %}
-      </div>
+      <!-- Optional promo content -->
     </div>
   </div>
 </div>
+
+<!-- FEATURED DEALS SECTION (separate wrapper) -->
+<section class="landing-featured-section">
+  <div class="landing-featured">
+    <h3>Featured Deals</h3>
+    <div class="featured-grid">
+      {% for prod in featured_products %}
+        <div class="featured-card">
+          <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
+          <h4>{{ prod.name }}</h4>
+          <p>Ksh {{ prod.price|floatformat:0 }}</p>
+          <a href="{% url 'product_app:product_detail' prod.id %}" class="details-button">
+            View Details
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.mega-menu-label').forEach(label => {
+    label.addEventListener('click', e => {
+      const item = e.currentTarget.parentNode;             // the <li>
+      const isOpen = item.classList.contains('open');
+
+      // close any already‑open sibling
+      document.querySelectorAll('.has-mega-menu.open')
+        .forEach(openItem => {
+          if (openItem !== item) openItem.classList.remove('open');
+        });
+
+      // toggle this one
+      if (isOpen) {
+        item.classList.remove('open');
+      } else {
+        item.classList.add('open');
+      }
+    });
+  });
+
+  // optional: clicking outside closes all menus
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.mega-menu-item')) {
+      document.querySelectorAll('.has-mega-menu.open')
+        .forEach(i => i.classList.remove('open'));
+    }
+  });
+</script>
+
 {% endblock %}

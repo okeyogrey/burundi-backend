@@ -48,11 +48,6 @@ h1 {
   z-index: 10;
 }
 
-.logo {
-  font-weight: bold;
-  font-size: 20px;
-  margin-right: 20px;
-}
 
 /* NAV-SEARCH FORM */
 .nav-search-form {
@@ -89,6 +84,86 @@ h1 {
 .nav-links li a:hover {
   background-color: #f0f0f0;
 }
+
+
+.logo {
+  margin-right: 20px;   /* keep spacing from nav links */
+  text-align: left;
+}
+
+.logo-img {
+  display: inline-block;
+  max-height: 70px;     /* adjust to fit your nav height */
+  width: auto;
+  vertical-align: middle;
+}
+@media (max-width: 992px) {
+  .navbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .logo {
+    order: 2;
+    flex: 1;
+    text-align: center;
+  }
+  .logo-img {
+    display: inline-block;
+    max-height: 100px;     /* adjust to fit your nav height */
+    width: auto;
+    vertical-align: middle;
+  }
+  .nav-links {
+    order: 3;
+    display: flex;
+    gap: 1rem;
+  }
+  .nav-search-form{
+    order: 4;
+    flex: 0 0 100%;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  .nav-search-form .nav-search-input {
+    width: 100%;
+  }
+  .logo a {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+  }
+  .nav-links li a {
+    text-indent: -9999px;     /* hide the label text */
+    position: relative;
+    width: 3.5em;             /* fit around the icon */
+    height: 1.5em;
+  }
+  .nav-links li a i {
+    text-indent: 0;
+    position: absolute;
+    left: 0; top: 0;          /* re‑show the icon */
+    font-size: 3.2rem;
+    width: 100%; height:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hamburger,
+  .nav-links li a {
+    padding: 0.5rem;
+  }
+  .nav-search-form input {
+    width: 100%;
+    font-size: 20px;
+  }
+}
+
+
+
+
 
 /* "VIEW CATALOG" BUTTON */
 .catalog-button {
@@ -128,6 +203,14 @@ h1 {
   flex-direction: column;
   gap: 15px;
 }
+@media (max-width: 992px) {
+  .filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-size: 30px;
+  }
+}
 .filter-group {
   display: flex;
   flex-direction: column;
@@ -137,6 +220,13 @@ h1 {
   font-size: 16px;
   margin-bottom: 10px;
   color: #444;
+}
+@media (max-width: 992px) {
+  .filter-group h3 {
+    font-size: 26px;
+    margin-bottom: 10px;
+    color: #444;
+  }
 }
 .price-range .price-inputs {
   display: flex;
@@ -538,13 +628,19 @@ BASIC LANDING PAGE / SIDEBAR STYLING
 ***************************************/
 .landing-container {
   display: flex;
-  gap: 20px;
+  gap: 0px;
 }
 .landing-sidebar {
   width: 250px;
   background: #fff;
   border: 1px solid #ddd;
   padding: 20px;
+}
+@media (max-width: 992px) {
+  .landing-sidebar {
+    height: 100%;
+    width: 500px;
+  }
 }
 .landing-main-content {
   flex: 1;
@@ -553,13 +649,103 @@ BASIC LANDING PAGE / SIDEBAR STYLING
 }
 .landing-hero {
   margin-bottom: 20px;
+  height: 75vh;
 }
+
+
+@media (max-width: 992px) {
+  .landing-hero {
+    height: 30vh;
+  }
+}
+.hamburger{
+  display: none;
+}
+
+
+
+@media (max-width: 992px) {
+  .landing-sidebar {
+    display: none;   /* hide your original desktop sidebar */
+  }
+  .hamburger {
+    order: 1;
+    display: block;
+    background: none;
+    border: none;
+    font-size: 4.5rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    z-index: 1100;
+  }
+  #mobile-sidebar {
+    display: block;
+    position: fixed;
+    top: 50;
+    left: -100%;
+    width: 50%;
+    height: 40vh;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1050;
+    overflow-y: auto;
+    font-size: 50px;
+  }
+  #mobile-sidebar.open {
+    left: 0;
+  }
+
+  /* push page content under when sidebar open (optional) */
+  body.sidebar-open {
+    overflow: hidden;
+  }
+}
+
+
+/* ——— Sidebar overlay ——— */
+#sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  z-index: 1040;       /* just under your sidebar */
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none; /* ignore clicks when hidden */
+}
+
+/* when “open” we show it */
+#sidebar-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+
+
+
+
+
+/* mobile: 2 columns */
+
 .landing-hero-image {
   width: 100%;
-  max-height: 300px;
+  /* max-height: 300px; */
   object-fit: cover;
   display: block;
   border-radius: 8px;
+  height: 100%;
+}
+@media (max-width: 992px) {
+  .landing-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+  }
 }
 .landing-promo {
   margin-bottom: 20px;
@@ -567,10 +753,35 @@ BASIC LANDING PAGE / SIDEBAR STYLING
 .landing-featured {
   margin-bottom: 20px;
 }
+.landing-featured h3 {
+  text-align: center;
+  background-color: #c00;
+  font-size: 40px;
+}
+
+/* @media (max-width: 992px) {
+  .landing-featured h3 {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+  }
+} */
 .featured-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
+}
+
+@media (max-width: 992px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* Tablets: 5 columns */
+@media (min-width: 993px) {
+  .featured-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 .featured-card {
   background-color: #fff;
@@ -579,19 +790,48 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   text-align: center;
   padding: 10px;
 }
+@media (max-width: 992px) {
+  .featured-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    padding: 10px;
+    height: 600px;
+  }
+}
 .featured-card img {
   width: 100%;
   height: 150px;
   object-fit: cover;
+}
+@media (max-width: 992px) {
+  .featured-card img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+  }
 }
 .featured-card h4 {
   margin: 10px 0 5px;
   font-size: 16px;
   color: #333;
 }
+@media (max-width: 992px) {
+  .featured-card h4 {
+    margin: 10px 0 5px;
+    font-size: 26px;
+    color: #333;
+  }
+}
 .featured-card p {
   color: #007bff;
   margin-bottom: 8px;
+}
+@media (max-width: 992px) {
+  .featured-card p {
+    font-size: 22px;
+  }
 }
 
 /***************************************
@@ -617,21 +857,24 @@ MEGA MENU (Jumia-like) for Subcategories
 .mega-menu-item > a:hover {
   background-color: #eee;
 }
+/* make submenus static, hidden by default */
 .mega-menu-content {
   display: none;
-  position: absolute;
-  top: 0;
-  left: 250px;
-  width: 700px;
-  background-color: #fff;
+  position: static;      /* flow in document */
+  width: 100%;           /* full width of parent LI */
+  margin-top: 5px;       /* space below label */
+  padding: 10px 20px;
   border: 1px solid #ddd;
-  padding: 20px;
+  background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 999;
 }
-.has-mega-menu:hover > .mega-menu-content {
+
+
+/* when the parent has .open, show its submenu */
+.has-mega-menu.open > .mega-menu-content {
   display: block;
 }
+
 .mega-menu-row {
   display: flex;
   flex-wrap: wrap;
@@ -646,6 +889,12 @@ MEGA MENU (Jumia-like) for Subcategories
   font-size: 16px;
   color: #333;
   margin-bottom: 8px;
+}
+@media (max-width: 992px) {
+  .mega-menu-column h4 {
+    font-size: 36px;
+    text-decoration: none;
+  }
 }
 .mega-menu-column ul {
   list-style: none;
@@ -686,6 +935,12 @@ MEGA MENU (Jumia-like) for Subcategories
 .mega-menu-item.open > .mega-menu-content {
   display: block;
 }
+
+
+
+
+
+
 
 /***************************************
 CART DRAWER STYLING
@@ -1068,183 +1323,3 @@ KICKS KENYA CHECKOUT PAGE STYLING
 }
 
 
-/* ——— Overall Page & Layout ——— */
-.checkout-page {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
-.checkout-title {
-  text-align: center;
-  font-size: 2.25rem;
-  margin-bottom: 2rem;
-  color: #222;
-}
-.checkout-content {
-  display: grid;
-  grid-template-columns: 35% 1fr;
-  gap: 2rem;
-}
-
-/* ——— Order Summary Styles ——— */
-.order-summary-section {
-}
-.order-summary-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-.order-summary-card h2 {
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-}
-.summary-items { list-style: none; padding: 0; margin: 0; }
-.summary-item {
-  display: flex;
-  align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid #e0e0e0;
-}
-.summary-item:last-child { border-bottom: none; }
-.item-img-wrapper {
-  position: relative;
-  width: 60px; height: 60px;
-  margin-right: 1rem;
-}
-.summary-item-img {
-  width: 100%; height: 100%; object-fit: cover;
-  border-radius: 4px;
-}
-.summary-item-count {
-  position: absolute;
-  top: -6px; left: -6px;
-  background: #777; color: #fff;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem;
-}
-.summary-item-details { flex: 1; }
-.summary-item-name {
-  display: block;
-  font-weight: 600;
-  color: #222;
-  margin-bottom: 0.25rem;
-}
-.summary-item-size {
-  font-size: 0.875rem;
-  color: #666;
-}
-.summary-item-price {
-  font-weight: 600;
-  color: #222;
-}
-
-/* Totals */
-.summary-totals { margin-top: 1.5rem; }
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  color: #555;
-}
-.summary-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 1rem;
-}
-.summary-total .total-label {
-  font-size: 1.125rem;
-  font-weight: 700;
-}
-.total-amount {
-  text-align: right;
-}
-.total-amount .currency {
-  font-size: 0.875rem;
-  color: #666;
-  display: block;
-}
-.total-amount .value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #222;
-}
-
-/* ——— Payment Section ——— */
-.payment-section {
-}
-.payment-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  margin-bottom: 2rem;
-}
-.payment-card h2 {
-  font-size: 1.25rem;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  color: #222;
-}
-
-/* M‑PESA Specific */
-.mpesa-section {
-  text-align: center;
-}
-.mpesa-icon {
-  width: 100px;
-  margin: 0 auto 1rem;
-  display: block;
-}
-.mpesa-steps {
-  text-align: left;
-  list-style: disc inside;
-  color: #444;
-  margin-bottom: 1.5rem;
-}
-.form-group-inline {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-.form-group-inline label {
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  color: #333;
-}
-.form-group-inline input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-.btn-submit {
-  background-color: #007bff;
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color .2s;
-}
-.btn-submit:hover {
-  background-color: #0056b3;
-}
-
-/* ——— Responsive ——— */
-@media (max-width: 992px) {
-  .checkout-content {
-    grid-template-columns: 1fr;
-  }
-  .order-summary-section,
-  .payment-section {
-    width: 100%;
-  }
-}
