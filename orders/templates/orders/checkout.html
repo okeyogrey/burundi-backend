@@ -1,108 +1,95 @@
 {% extends 'product_app/base.html' %}
-{% load multiplication_filters %}
+{% load multiplication_filters static %}
 {% block title %}Checkout{% endblock %}
 
 {% block content %}
-<div class="kicks-checkout">
-  <div class="checkout-header">
-    <h1>Checkout</h1>
-  </div>
+<main class="checkout-page">
+
+  <h1 class="checkout-title">Checkout</h1>
+
   <div class="checkout-content">
-    <!-- Order Summary Section -->
-    <div class="order-summary-section">
+
+    <!-- LEFT COLUMN: Order Summary -->
+    <aside class="order-summary-section">
       <div class="order-summary-card">
         <h2>Order Summary</h2>
-        <ul>
+
+        <ul class="summary-items">
           {% for item in cart_items %}
-          <li class="order-item">
-            <div class="item-info">
-              <span class="item-name">{{ item.name }}</span>
-              <span class="item-qty">× {{ item.quantity }}</span>
+          <li class="summary-item">
+            <div class="item-img-wrapper">
+              <img src="{{ item.image_url }}" alt="{{ item.name }}" class="summary-item-img"/>
+              <span class="summary-item-count">{{ item.quantity }}</span>
             </div>
-            <div class="item-price">
-              <span>@ Ksh {{ item.price }} each</span><br>
-              <span>Subtotal: Ksh {{ item.quantity|multiply:item.price }}</span>
+            <div class="summary-item-details">
+              <span class="summary-item-name">{{ item.name }}</span>
+              {% if item.size %}
+                <small class="summary-item-size">Size {{ item.size }}</small>
+              {% endif %}
             </div>
+            <div class="summary-item-price">Ksh {{ item.price|floatformat:2 }}</div>
           </li>
           {% endfor %}
         </ul>
-        <div class="order-total">
-          <strong>Total: Ksh {{ total_price }}</strong>
+
+        <div class="summary-totals">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>Ksh {{ total_price|floatformat:2 }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Pickup in store <i class="fa fa-question-circle"></i></span>
+            <span>FREE</span>
+          </div>
+          <div class="summary-total">
+            <span>Total</span>
+            <div class="total-amount">
+              <span class="currency">KES</span>
+              <span class="value">Ksh {{ total_price|floatformat:2 }}</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </aside>
 
-    <!-- Customer Details, Delivery Options and Payment Options Section -->
-    <div class="customer-delivery-payment-section">
-      <!-- Customer Details Card -->
-      <div class="customer-details-card">
-        <h2>Customer Details</h2>
-        <form id="customer-details-form" method="post" action="{% url 'orders:checkout' %}">
+    <!-- RIGHT COLUMN: Payment & Delivery -->
+    <section class="payment-section">
+
+      <!-- M‑PESA PAYMENT CARD -->
+      <div class="payment-card mpesa-section">
+        <h2>Pay with MPESA</h2>
+        <img src="{% static 'images/mpesa-logo.png' %}"
+             alt="Safaricom M‑PESA" class="mpesa-icon"/>
+
+        <ol class="mpesa-steps">
+          <li>Go to the <strong>MPESA</strong> menu and select <strong>SEND MONEY</strong>.</li>
+          <li><strong>Phone Number:</strong> 0757 228 583</li>
+          <li><strong>Receiver’s Name:</strong> Igor Inteyiteka</li>
+          <li><strong>Amount:</strong> Ksh {{ total_price|floatformat:2 }}</li>
+          <li>Enter your MPESA PIN.</li>
+          <li>Wait for the confirmation SMS.</li>
+        </ol>
+
+        <form method="post" action="">
           {% csrf_token %}
-          <div class="form-group">
-            <input type="text" name="full_name" placeholder="Full Name" required>
+          <div class="form-group-inline">
+            <label for="phone_number">Number Used to Pay</label>
+            <input type="text" name="phone_number" id="phone_number"
+                   placeholder="07XXXXXXXX" required/>
           </div>
-          <div class="form-group">
-            <input type="email" name="email" placeholder="Email" required>
+          <div class="form-group-inline">
+            <label for="mpesa_transaction_id">MPESA Transaction ID</label>
+            <input type="text" name="mpesa_transaction_id"
+                   id="mpesa_transaction_id" placeholder="NER07L88MX" required/>
           </div>
-          <div class="form-group">
-            <input type="text" name="address" placeholder="Shipping Address" required>
-          </div>
-          <!-- Additional fields as needed -->
+          <button type="submit" class="btn-submit">Submit</button>
         </form>
       </div>
 
-      <!-- Delivery Options Card -->
-      <div class="delivery-options-card">
-        <h2>Delivery Options</h2>
-        <form id="delivery-options-form" method="post" action="{% url 'orders:checkout' %}">
-          {% csrf_token %}
-          <div class="delivery-option">
-            <input type="radio" id="standard" name="delivery_option" value="standard" checked>
-            <label for="standard">Standard Delivery - Free</label>
-          </div>
-          <div class="delivery-option">
-            <input type="radio" id="express" name="delivery_option" value="express">
-            <label for="express">Express Delivery - Ksh 200</label>
-          </div>
-          <!-- Add more options here if required -->
-        </form>
-      </div>
+      <!-- (Add other payment cards here: PayPal, Paystack…) -->
 
-      <!-- Payment Options Card -->
-      <div class="payment-options-card">
-        <h2>Payment Options</h2>
-        <div class="payment-methods">
-          <form action="{% url 'orders:process_payment' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="amount" value="{{ total_price }}">
-            <button type="submit" class="payment-btn paypal-btn">Pay with PayPal</button>
-          </form>
-          <button type="button" class="payment-btn paystack-btn" onclick="payWithPaystack()">Pay with Paystack</button>
-        </div>
-      </div>
-    </div>
+    </section>
+
   </div>
-</div>
-
-<!-- Include Paystack Inline Script -->
-<script src="https://js.paystack.co/v1/inline.js"></script>
-<script>
-  function payWithPaystack() {
-    var handler = PaystackPop.setup({
-      key: '{{ PAYSTACK_PUBLIC_KEY }}', // Pass key from context or settings
-      email: '{{ request.user.email|default:"customer@example.com" }}',
-      amount: {{ total_price }} * 100, // Adjust as necessary for your currency
-      currency: 'KES',
-      ref: '' + Math.floor((Math.random() * 1000000000) + 1),
-      callback: function(response) {
-        window.location.href = "{% url 'orders:payment_verify' %}?reference=" + response.reference;
-      },
-      onClose: function() {
-        alert('Payment was not completed, please try again.');
-      }
-    });
-    handler.openIframe();
-  }
-</script>
+</main>
 {% endblock %}

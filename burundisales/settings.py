@@ -115,4 +115,4 @@ PAYSTACK_PUBLIC_KEY = 'your-paystack-public-key-here'
 
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accounts:profile'
-LOGOUT_REDIRECT_URL = 'product_app:landing'
+LOGOUT_REDIRECT_URL = '/product/landing/'

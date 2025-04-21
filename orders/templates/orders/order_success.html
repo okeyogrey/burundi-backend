@@ -1,0 +1,19 @@
+{% extends 'product_app/base.html' %}
+{% block title %}Order Confirmation{% endblock %}
+
+{% block content %}
+  <div class="order-success">
+    <h1>Thank you! 🎉</h1>
+    <p>Your order <strong>#{{ order.id }}</strong> has been received.</p>
+
+    <h2>Payment Details</h2>
+    <ul>
+      <li><strong>Phone:</strong> {{ order.phone_number }}</li>
+      <li><strong>MPESA Txn ID:</strong> {{ order.mpesa_transaction_id }}</li>
+    </ul>
+
+    <h2>What Happens Next?</h2>
+    <p>We’ll pack your items and get them on the way shortly. You can view your full order details here:</p>
+    <a href="{% url 'orders:order_detail' order.id %}" class="btn">View Order Details</a>
+  </div>
+{% endblock %}

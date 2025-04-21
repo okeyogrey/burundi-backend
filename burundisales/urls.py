@@ -9,9 +9,8 @@ urlpatterns = [
     # REMOVED the old path('', landing_page, name='landing_page'),
     # Instead, we rely on product_app/urls.py for /product/landing/.
 
-    path('product/', include('product_app.urls')),  # The correct mapping
+    path('product/', include(('product_app.urls', 'product_app'), namespace='product_app')),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
-    path('accounts/', include('django.contrib.auth.urls')),
     path('orders/', include('orders.urls')),
     path('paypal/', include(('paypal.standard.ipn.urls', 'paypal'), namespace='paypal')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

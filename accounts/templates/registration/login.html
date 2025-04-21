@@ -6,11 +6,14 @@
   {% if form.errors %}
     <p style="color:red;">Invalid username or password.</p>
   {% endif %}
-  <form method="post">
+
+  <!-- ✅ Add next={{ request.GET.next }} to preserve redirect -->
+  <form method="post" action="{% url 'accounts:login' %}?next={{ request.GET.next }}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Login</button>
   </form>
+
   <p>Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
 </div>
 {% endblock %}

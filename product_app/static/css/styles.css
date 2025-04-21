@@ -1055,3 +1055,196 @@ KICKS KENYA CHECKOUT PAGE STYLING
 
 
 
+/* ========== SAFARICOM MPESA ICON & SECTION ========== */
+.mpesa-section {
+  text-align: center;
+  padding: 20px;
+}
+.mpesa-icon {
+  display: block;
+  margin: 0 auto 15px;
+  width: 80px;
+  height: auto;
+}
+
+
+/* ——— Overall Page & Layout ——— */
+.checkout-page {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+.checkout-title {
+  text-align: center;
+  font-size: 2.25rem;
+  margin-bottom: 2rem;
+  color: #222;
+}
+.checkout-content {
+  display: grid;
+  grid-template-columns: 35% 1fr;
+  gap: 2rem;
+}
+
+/* ——— Order Summary Styles ——— */
+.order-summary-section {
+}
+.order-summary-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.order-summary-card h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+.summary-items { list-style: none; padding: 0; margin: 0; }
+.summary-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+.summary-item:last-child { border-bottom: none; }
+.item-img-wrapper {
+  position: relative;
+  width: 60px; height: 60px;
+  margin-right: 1rem;
+}
+.summary-item-img {
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: 4px;
+}
+.summary-item-count {
+  position: absolute;
+  top: -6px; left: -6px;
+  background: #777; color: #fff;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem;
+}
+.summary-item-details { flex: 1; }
+.summary-item-name {
+  display: block;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.25rem;
+}
+.summary-item-size {
+  font-size: 0.875rem;
+  color: #666;
+}
+.summary-item-price {
+  font-weight: 600;
+  color: #222;
+}
+
+/* Totals */
+.summary-totals { margin-top: 1.5rem; }
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  color: #555;
+}
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 1rem;
+}
+.summary-total .total-label {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.total-amount {
+  text-align: right;
+}
+.total-amount .currency {
+  font-size: 0.875rem;
+  color: #666;
+  display: block;
+}
+.total-amount .value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #222;
+}
+
+/* ——— Payment Section ——— */
+.payment-section {
+}
+.payment-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+.payment-card h2 {
+  font-size: 1.25rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+/* M‑PESA Specific */
+.mpesa-section {
+  text-align: center;
+}
+.mpesa-icon {
+  width: 100px;
+  margin: 0 auto 1rem;
+  display: block;
+}
+.mpesa-steps {
+  text-align: left;
+  list-style: disc inside;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+.form-group-inline {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.form-group-inline label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+.form-group-inline input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.btn-submit {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color .2s;
+}
+.btn-submit:hover {
+  background-color: #0056b3;
+}
+
+/* ——— Responsive ——— */
+@media (max-width: 992px) {
+  .checkout-content {
+    grid-template-columns: 1fr;
+  }
+  .order-summary-section,
+  .payment-section {
+    width: 100%;
+  }
+}

@@ -3,7 +3,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .forms import CustomUserCreationForm
 from orders.models import Order
-from django.contrib.auth.views import LogoutView
+# from django.contrib.auth.views import LogoutView
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 
 class SignupView(CreateView):
@@ -19,6 +21,12 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         ctx['orders'] = Order.objects.filter(user=self.request.user).order_by('-created')
         return ctx
     
-class MyLogoutView(LogoutView):
-    # these are the default, but you can redefine if yours are different
-    http_method_names = ['get', 'post', 'head', 'options', 'trace']
+# class MyLogoutView(LogoutView):
+#     # these are the default, but you can redefine if yours are different
+#     http_method_names = ['get', 'post', 'head', 'options', 'trace']
+#     next_page = '/product/landing/'
+
+
+def custom_logout(request):
+    logout(request)
+    return redirect('product_app:landing_page')
