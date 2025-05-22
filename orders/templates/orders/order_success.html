@@ -2,18 +2,80 @@
 {% block title %}Order Confirmation{% endblock %}
 
 {% block content %}
-  <div class="order-success">
-    <h1>Thank you! 🎉</h1>
-    <p>Your order <strong>#{{ order.id }}</strong> has been received.</p>
+  <div style="
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fdfdfd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
+      color: #333;
+    ">
+    <h1 style="
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 20px;
+      ">
+      Thank you! 🎉
+    </h1>
 
-    <h2>Payment Details</h2>
-    <ul>
-      <li><strong>Phone:</strong> {{ order.phone_number }}</li>
-      <li><strong>MPESA Txn ID:</strong> {{ order.mpesa_transaction_id }}</li>
+    <p style="font-size: 16px; line-height: 1.5;">
+      Your order <strong style="color: #27ae60;">#{{ order.id }}</strong> has been received.
+    </p>
+
+    <h2 style="
+        margin-top: 30px;
+        margin-bottom: 10px;
+        color: #2c3e50;
+        font-size: 20px;
+      ">
+      Payment Details
+    </h2>
+    <ul style="
+        list-style: none;
+        padding: 0;
+        font-size: 16px;
+        line-height: 1.5;
+      ">
+      <li style="margin-bottom: 8px;">
+        <strong style="display: inline-block; width: 140px;">Phone:</strong>
+        {{ order.phone_number }}
+      </li>
+      <li style="margin-bottom: 8px;">
+        <strong style="display: inline-block; width: 140px;">Transaction ID:</strong>
+        {{ order.mpesa_transaction_id }}
+      </li>
+      <li>
+        <strong style="display: inline-block; width: 140px;">Pickup Location:</strong>
+        {{ order.pickup_location }}
+      </li>
     </ul>
 
-    <h2>What Happens Next?</h2>
-    <p>We’ll pack your items and get them on the way shortly. You can view your full order details here:</p>
-    <a href="{% url 'orders:order_detail' order.id %}" class="btn">View Order Details</a>
+    <h2 style="
+        margin-top: 30px;
+        margin-bottom: 10px;
+        color: #2c3e50;
+        font-size: 20px;
+      ">
+      What Happens Next?
+    </h2>
+    <p style="font-size: 16px; line-height: 1.5;">
+      We’ll pack your items and get them on the way shortly. You can view your full order details here:
+    </p>
+    <a
+      href="{% url 'orders:order_detail' order.id %}"
+      style="
+        display: inline-block;
+        margin-top: 15px;
+        padding: 12px 24px;
+        background: #27ae60;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+      ">
+      View Order Details
+    </a>
   </div>
 {% endblock %}

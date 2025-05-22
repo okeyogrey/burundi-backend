@@ -1,5 +1,6 @@
 {% extends 'product_app/base.html' %}
 {% load static %}
+{% load currency_filters %}
 
 {% block title %}Your Cart{% endblock %}
 
@@ -30,7 +31,10 @@
               </div>
             </td>
             <td>{{ item.size }}</td>
-            <td>Ksh {{ item.price|floatformat:2 }}</td>
+            <td>
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ item.price|convert_currency:current_currency|floatformat:0 }}
+              </td>
             <td>
               <input type="number"
                      min="1"
@@ -38,7 +42,10 @@
                      class="quantity-input"
                      data-item-key="{{ item.key }}" />
             </td>
-            <td class="subtotal-cell">Ksh {{ item.subtotal|floatformat:2 }}</td>
+            <td class="subtotal-cell">
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ item.subtotal|convert_currency:current_currency|floatformat:2 }}  
+              </td>
             <td>
               <button class="remove-item-btn" data-item-key="{{ item.key }}">
                 <i class="fa-solid fa-trash"></i>
@@ -52,7 +59,10 @@
 
     <div class="cart-summary">
       <span class="summary-label">Total:</span>
-      <span class="summary-value">Ksh {{ total_price|floatformat:2 }}</span>
+      <span class="summary-value">
+        {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ total_price|convert_currency:current_currency|floatformat:2 }}
+        </span>
     </div>
 
     <div class="cart-actions">

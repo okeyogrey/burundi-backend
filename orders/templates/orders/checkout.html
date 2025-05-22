@@ -1,95 +1,195 @@
 {% extends 'product_app/base.html' %}
 {% load multiplication_filters static %}
 {% block title %}Checkout{% endblock %}
+{% load currency_filters %}
 
 {% block content %}
-<main class="checkout-page">
+<main style="max-width: 1200px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+  <form method="post" action="" style="display:flex;flex-direction:column;gap:20px;">
+    {% csrf_token %}
+  <h1 style="font-size: 2.5em; font-weight: bold; text-align: center; color: #333; margin-bottom: 30px;">Checkout</h1>
 
-  <h1 class="checkout-title">Checkout</h1>
-
-  <div class="checkout-content">
-
+  <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: space-between;">
     <!-- LEFT COLUMN: Order Summary -->
-    <aside class="order-summary-section">
-      <div class="order-summary-card">
-        <h2>Order Summary</h2>
+    <aside style="flex: 1; min-width: 300px; background: #f9f9f9; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <div>
+        
+        <h2 style="font-size: 1.8em; color: #333; margin-bottom: 20px;">Order Summary</h2>
 
-        <ul class="summary-items">
+        <ul style="list-style: none; padding: 0; margin: 0;">
           {% for item in cart_items %}
-          <li class="summary-item">
-            <div class="item-img-wrapper">
-              <img src="{{ item.image_url }}" alt="{{ item.name }}" class="summary-item-img"/>
-              <span class="summary-item-count">{{ item.quantity }}</span>
+          <li style="display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+            <div style="position: relative; width: 80px; height: 80px; margin-right: 15px;">
+              <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;"/>
+              <span style="position: absolute; top: -10px; right: -10px; background: #007bff; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.9em;">{{ item.quantity }}</span>
             </div>
-            <div class="summary-item-details">
-              <span class="summary-item-name">{{ item.name }}</span>
+            <div style="flex: 1;">
+              <span style="font-size: 1.1em; color: #333; display: block;">{{ item.name }}</span>
               {% if item.size %}
-                <small class="summary-item-size">Size {{ item.size }}</small>
+                <small style="color: #666; font-size: 0.9em;">Size {{ item.size }}</small>
               {% endif %}
             </div>
-            <div class="summary-item-price">Ksh {{ item.price|floatformat:2 }}</div>
+            <div style="font-size: 1.1em; color: #333;">
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ item.price|convert_currency:current_currency|floatformat:2 }}
+              </div>
           </li>
           {% endfor %}
         </ul>
 
-        <div class="summary-totals">
-          <div class="summary-row">
+        <div style="margin-top: 20px;">
+          <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 1em; color: #333;">
             <span>Subtotal</span>
-            <span>Ksh {{ total_price|floatformat:2 }}</span>
+            <span>
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ total_price|convert_currency:current_currency|floatformat:2 }}
+              </span>
           </div>
-          <div class="summary-row">
-            <span>Pickup in store <i class="fa fa-question-circle"></i></span>
+          <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 1em; color: #333;">
+            <span>Pickup in store <i style="color: #007bff; cursor: pointer;" class="fa fa-question-circle"></i></span>
             <span>FREE</span>
           </div>
-          <div class="summary-total">
+          <div style="display: flex; justify-content: space-between; padding: 15px 0; font-size: 1.2em; font-weight: bold; color: #333; border-top: 1px solid #ddd;">
             <span>Total</span>
-            <div class="total-amount">
-              <span class="currency">KES</span>
-              <span class="value">Ksh {{ total_price|floatformat:2 }}</span>
+            <div>
+              <span style="color: #666; margin-right: 10px;"></span>
+              <span>
+                {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+                {{ total_price|convert_currency:current_currency|floatformat:2 }}
+                </span>
             </div>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- RIGHT COLUMN: Payment & Delivery -->
-    <section class="payment-section">
+    <!-- RIGHT: Single form wrapping Payment Method + Details -->
+    <section style="flex:1;min-width:300px;padding:20px;">
+      
 
-      <!-- M‑PESA PAYMENT CARD -->
-      <div class="payment-card mpesa-section">
-        <h2>Pay with MPESA</h2>
-        <img src="{% static 'images/mpesa-logo.png' %}"
-             alt="Safaricom M‑PESA" class="mpesa-icon"/>
+        <!-- 1) PICKUP LOCATION -->
+        <div style="background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+          <h2 style="font-size:1.8em;color:#333;margin-bottom:15px;">Pickup Location</h2>
+            <label><input type="radio" name="pickup_location" value="ville" required> Ville, Bujumbura</label><br><br>
+            <label><input type="radio" name="pickup_location" value="gitega" required> Gitega</label><br><br>
+            <label><input type="radio" name="pickup_location" value="imenti" required> Imenti House Z39</label>
+        </div>
 
-        <ol class="mpesa-steps">
-          <li>Go to the <strong>MPESA</strong> menu and select <strong>SEND MONEY</strong>.</li>
-          <li><strong>Phone Number:</strong> 0757 228 583</li>
-          <li><strong>Receiver’s Name:</strong> Igor Inteyiteka</li>
-          <li><strong>Amount:</strong> Ksh {{ total_price|floatformat:2 }}</li>
-          <li>Enter your MPESA PIN.</li>
-          <li>Wait for the confirmation SMS.</li>
-        </ol>
+        <!-- 2) PAYMENT METHOD SELECTION -->
+        <div style="background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+          <h2 style="font-size:1.8em;color:#333;margin-bottom:15px;">Payment Method</h2>
+          <label style="display:block;cursor:pointer;margin-bottom:8px;">
+            <input type="radio" name="payment_method" value="mpesa" checked
+                   style="margin-right:8px;" onchange="togglePayment('mpesa')">
+            MPESA
+          </label>
+          <label style="display:block;cursor:pointer;">
+            <input type="radio" name="payment_method" value="benoti"
+                   style="margin-right:8px;" onchange="togglePayment('benoti')">
+            B eNOTI
+          </label>
+        </div>
 
-        <form method="post" action="">
-          {% csrf_token %}
-          <div class="form-group-inline">
-            <label for="phone_number">Number Used to Pay</label>
-            <input type="text" name="phone_number" id="phone_number"
-                   placeholder="07XXXXXXXX" required/>
+        <!-- 3a) MPESA CARD -->
+        <div id="card-mpesa" style="background:#fff;padding:20px;border-radius:8px;
+                                    box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+          <h2 style="font-size:1.8em;color:#333;margin-bottom:15px;">Pay with MPESA</h2>
+          <img src="{% static 'images/mpesa-logo.png' %}" alt="M-PESA" style="width:100px;margin-bottom:15px;">
+          <ol style="padding-left: 20px; margin-bottom: 20px; color: #333; font-size: 1em;">
+            <li style="margin-bottom: 10px;">Go to the <strong>MPESA</strong> menu and select <strong>SEND MONEY</strong>.</li>
+            <li style="margin-bottom: 10px;"><strong>Phone Number:</strong> 0757 228 583</li>
+            <li style="margin-bottom: 10px;"><strong>Receiver’s Name:</strong> Igor Inteyiteka</li>
+            <li style="margin-bottom: 10px;"><strong>Amount:</strong> Ksh {{ total_price|floatformat:2 }}</li>
+            <li style="margin-bottom: 10px;">Enter your MPESA PIN.</li>
+            <li style="margin-bottom: 10px;">Wait for the confirmation SMS.</li>
+          </ol>
+          <div style="display:flex;flex-direction:column;gap:15px;">
+            <label for="phone_mpesa" style="font-size:1em;color:#333;">Number Used to Pay</label>
+            <input id="phone_mpesa" name="phone_number" type="text" placeholder="07XXXXXXXX" required
+                   style="padding:10px;border:1px solid #ddd;border-radius:4px;">
+
+            <label for="txn_mpesa" style="font-size:1em;color:#333;">Transaction ID</label>
+            <input id="txn_mpesa" name="mpesa_transaction_id" type="text" placeholder="NER07L88MX" required
+                   style="padding:10px;border:1px solid #ddd;border-radius:4px;">
           </div>
-          <div class="form-group-inline">
-            <label for="mpesa_transaction_id">MPESA Transaction ID</label>
-            <input type="text" name="mpesa_transaction_id"
-                   id="mpesa_transaction_id" placeholder="NER07L88MX" required/>
+        </div>
+
+        <!-- 3b) B eNOTI CARD -->
+        <div id="card-benoti" style="display:none;background:#fff;padding:20px;border-radius:8px;
+                                     box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+          <h2 style="font-size:1.8em;color:#333;margin-bottom:15px;">Pay with B eNOTI</h2>
+          <img src="{% static 'images/bnoti.jpg' %}" alt="B eNOTI" style="width:100px;margin-bottom:15px;">
+          <ol style="padding-left: 20px; margin-bottom: 20px; color: #333; font-size: 1em;">
+            <li style="margin-bottom: 10px;">Go to the <strong>B eNOTI</strong>app and select <strong>TRANSFER MONEY</strong>.</li>
+            <li style="margin-bottom: 10px;"><strong>Agent Code:</strong> 60091</li>
+            <li style="margin-bottom: 10px;"><strong>Agent Name:</strong> Kingofspeed business company</li>
+            <li style="margin-bottom: 10px;"><strong>Amount:</strong> 
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ total_price|convert_currency:current_currency|floatformat:0 }}
+            </li>
+            <li style="margin-bottom: 10px;">Enter your B eNOTI PIN.</li>
+            <li style="margin-bottom: 10px;">Wait for the confirmation SMS.</li>
+          </ol>
+          <div style="display:flex;flex-direction:column;gap:15px;">
+            <label for="phone_benoti" style="font-size:1em;color:#333;">Number Used to Pay</label>
+            <input id="phone_benoti" name="benoti_phone_number" type="text" placeholder="07XXXXXXXX" required
+                   style="padding:10px;border:1px solid #ddd;border-radius:4px;">
+
+            <label for="txn_benoti" style="font-size:1em;color:#333;">Transaction ID</label>
+            <input id="txn_benoti" name="benoti_transaction_id" type="text" placeholder="XXX123ABC" required
+                   style="padding:10px;border:1px solid #ddd;border-radius:4px;">
           </div>
-          <button type="submit" class="btn-submit">Submit</button>
-        </form>
-      </div>
+        </div>
 
-      <!-- (Add other payment cards here: PayPal, Paystack…) -->
-
+        <!-- 4) SUBMIT -->
+        <button type="submit" style="padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; transition: background 0.3s; width: 100%; max-width: 200px; align-self: center;">Submit</button>
+      
     </section>
-
   </div>
+</form>
 </main>
+
+
+
+
+<script>
+  function togglePayment(method) {
+    const mpesaCard = document.getElementById('card-mpesa');
+    const benotiCard = document.getElementById('card-benoti');
+
+    // Show/hide cards
+    mpesaCard.style.display  = method==='mpesa'  ? 'block' : 'none';
+    benotiCard.style.display = method==='benoti' ? 'block' : 'none';
+
+    // Enable only the active card’s inputs and disable the other’s
+    mpesaCard.querySelectorAll('input').forEach(i => i.disabled = (method!=='mpesa'));
+    benotiCard.querySelectorAll('input').forEach(i => i.disabled = (method!=='benoti'));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Pick whichever method is actually checked by default
+    const selected = document.querySelector('input[name="payment_method"]:checked').value;
+    togglePayment(selected);
+
+    // Wire up future clicks
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+      radio.addEventListener('change', e => togglePayment(e.target.value));
+    });
+  });
+</script>
+
+
+
+
+<script>
+  function togglePayment(method) {
+    document.getElementById('card-mpesa').style.display = method === 'mpesa' ? 'block' : 'none';
+    document.getElementById('card-benoti').style.display = method === 'benoti' ? 'block' : 'none';
+    // adjust required attributes
+    document.getElementById('phone_mpesa').required = (method === 'mpesa');
+    document.getElementById('txn_mpesa').required   = (method === 'mpesa');
+    document.getElementById('phone_benoti').required = (method === 'benoti');
+    document.getElementById('txn_benoti').required   = (method === 'benoti');
+  }
+</script>
 {% endblock %}

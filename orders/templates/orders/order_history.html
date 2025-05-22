@@ -1,18 +1,63 @@
 {% extends "base.html" %}
 {% block title %}Order History{% endblock %}
+
 {% block content %}
-<div class="page-content">
-  <h2>Your Order History</h2>
-  <ul>
-    {% for order in orders %}
-      <li>
-        <a href="{% url 'orders:order_detail' order.id %}">
-          Order #{{ order.id }} — {{ order.created|date:"Y-m-d H:i" }} — {{ order.get_status_display }}
-        </a>
-      </li>
-    {% empty %}
-      <li>You haven’t placed any orders yet.</li>
-    {% endfor %}
-  </ul>
+  <div style="
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 25px;
+      background: #fafafa;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #333;
+    ">
+    <h2 style="
+        font-size: 24px;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 20px;
+      ">
+      Your Order History
+    </h2>
+
+    <ul style="
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      ">
+      {% for order in orders %}
+        <li style="margin-bottom: 12px;">
+          <a
+            href="{% url 'orders:order_detail' order.id %}"
+            style="
+              display: block;
+              padding: 12px 16px;
+              background: #fff;
+              border: 1px solid #e0e0e0;
+              border-radius: 4px;
+              text-decoration: none;
+              color: #2c3e50;
+              transition: background 0.2s, box-shadow 0.2s;
+            "
+            onmouseover="this.style.background='#f0f8ff'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.background='#fff'; this.style.boxShadow='none';"
+          >
+            <strong>Order #{{ order.id }}</strong><br>
+            <small style="color: #555;">
+              {{ order.created|date:"Y-m-d H:i" }} — {{ order.get_status_display }}
+            </small>
+          </a>
+        </li>
+      {% empty %}
+        <li style="
+            padding: 15px;
+            text-align: center;
+            color: #777;
+          ">
+          You haven’t placed any orders yet.
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 {% endblock %}

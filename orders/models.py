@@ -5,11 +5,9 @@ from product_app.models import Product
 
 class Order(models.Model):
     PICKUP_LOCATIONS = [
-        ('CBD', 'Nairobi CBD'),
-        ('WESTLANDS', 'Westlands'),
-        ('KAREN', 'Karen'),
-        ('THIKA', 'Thika Road'),
-        ('KITENGELA', 'Kitengela'),
+        ('ville', 'Ville, Bujumbura'),
+        ('gitega', 'Gitega'),
+        ('imenti', 'Imenti House Z39'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
@@ -18,6 +16,8 @@ class Order(models.Model):
     paid = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=20, blank=True)
     mpesa_transaction_id = models.CharField(max_length=50, blank=True)
+    benoti_phone_number = models.CharField(max_length=20, blank=True)
+    benoti_transaction_id = models.CharField(max_length=50, blank=True)
     status = models.CharField(
         max_length=20,
         choices=[

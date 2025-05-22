@@ -9,4 +9,5 @@ urlpatterns = [
     path('<int:product_id>/', views.product_detail, name='product_detail'),
     path('landing/', views.landing_page, name='landing_page'),
     path('search/', views.search_products, name='search_products'),
+    path('set-currency/<str:currency>/', views.set_currency, name='set_currency'),
 ]

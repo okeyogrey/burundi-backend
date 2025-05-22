@@ -5,8 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.conf import settings
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import F
 
-from .models import Order, OrderItem  # ← added OrderItem import
+from .models import Order, OrderItem
+from product_app.models import Product
 
 
 def cart_detail(request):
@@ -31,6 +35,60 @@ def cart_detail(request):
     return render(request, 'orders/cart_detail.html', context)
 
 
+@login_required
+@transaction.atomic
+def checkout(request):
+    cart = request.session.get('cart', {})
+    if not cart:
+        messages.error(request, "Your cart is empty.")
+        return redirect('orders:cart_detail')
+
+    if request.method == 'POST':
+        # Validate stock availability
+        products_to_update = []
+        for key, item in cart.items():
+            product = get_object_or_404(Product, pk=item['product_id'])
+            if item['quantity'] > product.stock:
+                messages.error(request, f"Not enough stock for {product.name}. Available: {product.stock}.")
+                return redirect('orders:cart_detail')
+            products_to_update.append((product, item['quantity'], key))
+
+        # Create order and deduct stock atomically
+        order = Order.objects.create(
+            user=request.user,
+            paid=True,
+            phone_number=request.POST.get('phone_number', '').strip(),
+            mpesa_transaction_id=request.POST.get('mpesa_transaction_id', '').strip(),
+            benoti_phone_number=request.POST.get('benoti_phone_number', '').strip(),
+            benoti_transaction_id=request.POST.get('benoti_transaction_id', '').strip(),
+            pickup_location=request.POST.get('pickup_location', '').strip(),
+        )
+
+        for product, qty, key in products_to_update:
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                price=product.price,
+                quantity=qty,
+                size=cart[key].get('size', '')
+            )
+            # Decrement stock
+            Product.objects.filter(pk=product.pk).update(stock=F('stock') - qty)
+
+        # Clear cart
+        del request.session['cart']
+        messages.success(request, "Order placed successfully!")
+        return redirect('orders:order_success', pk=order.pk)
+
+    total_price = sum(i['price'] * i['quantity'] for i in cart.values())
+    context = {
+        'cart_items': cart.values(),
+        'total_price': total_price,
+        'PAYSTACK_PUBLIC_KEY': settings.PAYSTACK_PUBLIC_KEY,
+    }
+    return render(request, 'orders/checkout.html', context)
+
+
 def remove_from_cart(request):
     """
     Remove an item from the session-based cart.
@@ -46,46 +104,6 @@ def remove_from_cart(request):
                     total_items = sum(item['quantity'] for item in cart.values())
                     return JsonResponse({'message': 'Item removed', 'cart_count': total_items})
     return redirect('orders:cart_detail')
-
-
-@login_required
-def checkout(request):
-    cart = request.session.get('cart', {})
-    if not cart:
-        return redirect('orders:cart_detail')
-
-    if request.method == 'POST':
-        phone = request.POST.get('phone_number', '').strip()
-        txn = request.POST.get('mpesa_transaction_id', '').strip()
-        pickup_location = request.POST.get('pickup_location', '').strip()
-
-        order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            paid=True,
-            phone_number=phone,
-            mpesa_transaction_id=txn,
-            pickup_location=pickup_location,
-        )
-
-        for key, item in cart.items():
-            OrderItem.objects.create(
-                order=order,
-                product_id=item['product_id'],
-                price=item['price'],
-                quantity=item['quantity'],
-                size=item.get('size', '')
-            )
-
-        del request.session['cart']
-        return redirect('orders:order_success', pk=order.pk)
-
-    total_price = sum(i['price'] * i['quantity'] for i in cart.values())
-    context = {
-        'cart_items': cart.values(),
-        'total_price': total_price,
-        'PAYSTACK_PUBLIC_KEY': settings.PAYSTACK_PUBLIC_KEY,
-    }
-    return render(request, 'orders/checkout.html', context)
 
 
 def update_cart_quantity(request):

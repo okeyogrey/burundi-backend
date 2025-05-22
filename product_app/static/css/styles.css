@@ -636,12 +636,7 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   border: 1px solid #ddd;
   padding: 20px;
 }
-@media (max-width: 992px) {
-  .landing-sidebar {
-    height: 100%;
-    width: 500px;
-  }
-}
+
 .landing-main-content {
   flex: 1;
   background-color: #f9f9f9;
@@ -667,6 +662,8 @@ BASIC LANDING PAGE / SIDEBAR STYLING
 @media (max-width: 992px) {
   .landing-sidebar {
     display: none;   /* hide your original desktop sidebar */
+    height: 100%;
+    width: 500px;
   }
   .hamburger {
     order: 1;
@@ -684,7 +681,7 @@ BASIC LANDING PAGE / SIDEBAR STYLING
     top: 50;
     left: -100%;
     width: 50%;
-    height: 40vh;
+    height: 28vh;
     background: #fff;
     padding: 20px;
     box-shadow: 2px 0 8px rgba(0,0,0,0.1);
@@ -692,6 +689,7 @@ BASIC LANDING PAGE / SIDEBAR STYLING
     z-index: 1050;
     overflow-y: auto;
     font-size: 50px;
+
   }
   #mobile-sidebar.open {
     left: 0;
@@ -841,6 +839,7 @@ MEGA MENU (Jumia-like) for Subcategories
   list-style: none;
   margin: 0;
   padding: 0;
+  
 }
 .mega-menu-item {
   position: relative;
@@ -910,6 +909,7 @@ MEGA MENU (Jumia-like) for Subcategories
   padding: 4px 0;
   display: inline-block;
 }
+
 .mega-menu-column li a:hover {
   color: #000;
 }
@@ -929,6 +929,17 @@ MEGA MENU (Jumia-like) for Subcategories
   cursor: default;
   text-decoration: none;
   font-weight: normal;
+}
+@media (max-width: 992px) {
+  .mega-menu-column ul li a {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: #333;
+  }
 }
 
 /* ALLOW CLICK-TOGGLE ON TOUCH DEVICES */

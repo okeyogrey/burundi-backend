@@ -1,13 +1,14 @@
 {% extends 'product_app/base.html' %}
 {% load static %}
+{% load currency_filters %}  {# Load your custom filters #}
 
 {% block title %}Landing Page{% endblock %}
 
 {% block content %}
 <div class="landing-container">
+
   <!-- LEFT SIDEBAR with mega menu -->
   <aside id="mobile-sidebar" class="landing-sidebar">
-    
     <ul class="mega-menu">
       {% for main_cat in categories %}
       <li class="mega-menu-item has-mega-menu">
@@ -21,24 +22,9 @@
                   {{ subcat.name }}
                 </a>
               </h4>
-              <!-- <ul>
-                {% if subcat.sub_subcategories.all %}
-                  {% for subsub in subcat.sub_subcategories.all %}
-                  <li>
-                    <a href="{% url 'product_app:product_list' %}?main_category={{ main_cat.id }}&subcategories={{ subcat.id }}&sub_subcategories={{ subsub.id }}">
-                      {{ subsub.name }}
-                    </a>
-                  </li>
-                  {% endfor %}
-                {% else %}
-                  <li>No sub‑subcategories yet</li>
-                {% endif %}
-              </ul> -->
             </div>
             {% empty %}
-            <div class="mega-menu-column">
-              <!-- <h4>No subcategories yet.</h4> -->
-            </div>
+            <div class="mega-menu-column"></div>
             {% endfor %}
           </div>
         </div>
@@ -48,58 +34,130 @@
   </aside>
   <div id="sidebar-overlay" class="mobile-hidden"></div>
 
-  <!-- HERO SECTION -->
-  <div class="landing-hero-section">
-    <div class="landing-hero">
-      <img src="{% static 'images/hero-banner.webp' %}" alt="Hero Banner" class="landing-hero-image" />
-    </div>
-    <div class="landing-promo">
-      <!-- Optional promo content -->
-    </div>
-  </div>
-</div>
+  <!-- MAIN CONTENT WRAPPER -->
+  <div class="landing-main-content">
 
-<!-- FEATURED DEALS SECTION (separate wrapper) -->
-<section class="landing-featured-section">
-  <div class="landing-featured">
-    <h3>Featured Deals</h3>
-    <div class="featured-grid">
-      {% for prod in featured_products %}
-        <div class="featured-card">
-          <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
-          <h4>{{ prod.name }}</h4>
-          <p>Ksh {{ prod.price|floatformat:0 }}</p>
-          <a href="{% url 'product_app:product_detail' prod.id %}" class="details-button">
-            View Details
-          </a>
+    <!-- HERO SECTION with Carousel -->
+    <div class="landing-hero-section">
+      <style>
+        /* Carousel container */
+        .carousel {
+          position: relative;
+          overflow: hidden;
+          height: 75vh;
+          border-radius: 8px;
+        }
+        @media (max-width: 992px) {
+          .carousel {
+            height: 30vh;
+          }
+        }
+        /* Each slide */
+        .carousel-slide {
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          opacity: 0;
+          transition: opacity 1s ease;
+        }
+        /* Visible slide */
+        .carousel-slide.active {
+          opacity: 1;
+        }
+        /* Ensure images cover */
+        .carousel-slide img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      </style>
+
+      <div class="carousel">
+        <div class="carousel-slide active">
+          <img src="{% static 'images/hero-banner.png' %}" alt="Banner 1">
         </div>
-      {% endfor %}
+        <div class="carousel-slide">
+          <img src="{% static 'images/hero-banner2.png' %}" alt="Banner 2">
+        </div>
+        <div class="carousel-slide">
+          <img src="{% static 'images/hero-banner3.png' %}" alt="Banner 3">
+        </div>
+      </div>
+
+      <div class="landing-promo">
+        <!-- Optional promo content -->
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const slides = document.querySelectorAll('.carousel-slide');
+          let current = 0;
+          let loops = 0;
+          const maxLoops = 30;
+          const intervalTime = 3000; // 3 seconds per slide
+
+          const nextSlide = () => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+
+            // Count a full cycle when we wrap back to slide 0
+            if (current === 0) {
+              loops++;
+              if (loops >= maxLoops) {
+                clearInterval(carouselInterval);
+              }
+            }
+          };
+
+          const carouselInterval = setInterval(nextSlide, intervalTime);
+        });
+      </script>
     </div>
-  </div>
-</section>
+
+    <!-- FEATURED DEALS SECTION (separate wrapper) -->
+    <section class="landing-featured-section">
+      <div class="landing-featured">
+        <h3>Featured Deals</h3>
+        <div class="featured-grid">
+          {% for prod in featured_products %}
+          <div class="featured-card">
+            <img src="{{ prod.image.url }}" alt="{{ prod.name }}" />
+            <h4>{{ prod.name }}</h4>
+            {% with converted_price=convert_price|add:prod.price %}
+            <p>
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ prod.price|convert_currency:current_currency|floatformat:0 }}
+            </p>
+            {% endwith %}
+            <a href="{% url 'product_app:product_detail' prod.id %}" class="details-button">
+              View Details
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+  </div> <!-- end .landing-main-content -->
+</div> <!-- end .landing-container -->
 
 <script>
+  // Mega-menu toggle logic
   document.querySelectorAll('.mega-menu-label').forEach(label => {
     label.addEventListener('click', e => {
-      const item = e.currentTarget.parentNode;             // the <li>
+      const item = e.currentTarget.parentNode;
       const isOpen = item.classList.contains('open');
 
-      // close any already‑open sibling
       document.querySelectorAll('.has-mega-menu.open')
         .forEach(openItem => {
           if (openItem !== item) openItem.classList.remove('open');
         });
 
-      // toggle this one
-      if (isOpen) {
-        item.classList.remove('open');
-      } else {
-        item.classList.add('open');
-      }
+      item.classList.toggle('open', !isOpen);
     });
   });
 
-  // optional: clicking outside closes all menus
   document.addEventListener('click', e => {
     if (!e.target.closest('.mega-menu-item')) {
       document.querySelectorAll('.has-mega-menu.open')
@@ -107,5 +165,4 @@
     }
   });
 </script>
-
 {% endblock %}

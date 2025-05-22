@@ -9,6 +9,19 @@ from .models import (
 )
 from .forms import ProductFilterForm, ReviewForm, CartAddForm
 
+
+
+def set_currency(request, currency):
+    """
+    Simple view to switch between 'KES' and 'BIF'.
+    Stores choice in session and redirects back.
+    """
+    if currency in ('KES', 'BIF'):
+        request.session['currency'] = currency
+    return redirect(request.META.get('HTTP_REFERER', 'product_app:landing_page'))
+
+
+
 def product_list(request):
     main_cat_id = request.GET.get('main_category')
     # Updated parameter name for sub‑subcategories
@@ -73,6 +86,16 @@ def product_list(request):
     return render(request, 'product_app/product_list.html', context)
 
 
+
+
+
+
+def convert_price(price, currency):
+    # Example conversion rates: adjust as needed
+    if currency == 'BIF':
+        return price * 30  # example rate from KES to BIF
+    return price  # default is KES, no conversion
+
 def product_list_json(request):
     main_cat_id = request.GET.get('main_category')
     sub_subcat_ids = request.GET.getlist('sub_subcategories')
@@ -83,6 +106,8 @@ def product_list_json(request):
             main_category = Category.objects.get(pk=main_cat_id)
         except Category.DoesNotExist:
             main_category = None
+
+    currency = request.session.get("currency", "KES")
 
     products = Product.objects.all().order_by('-created_at')
     if main_category:
@@ -131,16 +156,24 @@ def product_list_json(request):
 
     data = []
     for product in products_page:
+        price_converted = convert_price(product.price, currency)
+        old_price_converted = convert_price(product.old_price, currency) if product.old_price else None
+
         data.append({
             'id': product.id,
             'name': product.name,
-            'price': float(product.price),
-            # NEW: include old_price in JSON response if set (otherwise null)
-            'old_price': float(product.old_price) if product.old_price is not None else None,
+            'price': round(price_converted, 0),
+            'old_price': round(old_price_converted, 0) if old_price_converted else None,
             'image_url': product.image.url if product.image else '',
             'is_on_sale': product.is_on_sale
         })
     return JsonResponse({'products': data})
+
+
+
+
+
+
 
 
 def product_detail(request, product_id):
@@ -240,7 +273,7 @@ def landing_page(request):
 
 
 def search_products(request):
-    query = request.GET.get('q', '').strip()
+    query = request.GET.get('search_query','').strip()
     results = []
     if query:
         matching_products = Product.objects.filter(name__icontains=query)[:5]

@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--a!$(!7w*y)@@4qto%whpsm&6kedo_52_gx4f29umbbz_wo5#7'
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.1.2', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.1.2', '127.0.0.1', '0.0.0.0']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'product_app.middleware.SkipNgrokWarningMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -45,6 +46,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'burundisales.urls'
+
+# must include the scheme (https://) for Django 4+
+CSRF_TRUSTED_ORIGINS = [
+    "https://olive-houses-mate.loca.lt",
+]
 
 TEMPLATES = [
     {
@@ -63,6 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'orders.context_processors.cart_counter',
+                'orders.context_processors.currency',
             ],
         },
     },

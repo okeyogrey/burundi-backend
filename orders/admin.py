@@ -10,9 +10,16 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'user', 'created', 'paid',
-        'phone_number', 'mpesa_transaction_id', 'pickup_location', 'status'
+        'phone_number', 'benoti_phone_number', 'mpesa_transaction_id', 'benoti_transaction_id', 'pickup_location', 'status'
     )
     list_editable = ('status',)
-    list_filter = ('paid','status','created')
+    list_filter = ('paid', 'status', 'pickup_location', 'created')
+    search_fields = ('id', 'user__username', 'phone_number', 'benoti_phone_number', 'mpesa_transaction_id', 'benoti_transaction_id', 'pickup_location')
     inlines = [OrderItemInline]
-    readonly_fields = ('created','updated')
+    readonly_fields = ('created', 'updated')
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'product', 'quantity', 'price', 'get_cost')
+    list_filter = ('order',)
+    readonly_fields = ('get_cost',)

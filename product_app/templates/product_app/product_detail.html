@@ -1,5 +1,6 @@
 {% extends 'product_app/base.html' %}
 {% load static %}
+{% load currency_filters %}  {# Load your custom filters #}
 
 {% block title %}{{ product.name }} – Product Detail{% endblock %}
 
@@ -10,7 +11,7 @@
     <!-- LEFT: IMAGE + STOCK BADGE -->
     <div class="product-detail-image" style="position:relative;">
       <img src="{{ product.image.url }}" alt="{{ product.name }}">
-      {% if product.stock <= 5 %}
+      {% if product.stock <= 5 and product.stock > 0 %}
         <span class="badge-sale"
               style="position:absolute;top:10px;left:10px;
                      background:#666;color:#fff;padding:4px 8px;
@@ -27,10 +28,13 @@
       {% if product.is_on_sale %}
         <span class="badge-sale">Sale</span>
       {% endif %}
+      
+      <p class="detail-price">
+        {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+        {{ product.price|convert_currency:current_currency|floatformat:0 }}
+      </p>
 
-      <p class="detail-price">Ksh {{ product.price|floatformat:0 }}</p>
-
-      {% if product.stock <= 5 %}
+      {% if product.stock <= 5 and product.stock > 0 %}
         <div style="height:4px;background:red;width:60px;margin:8px 0;"></div>
         <p style="font-weight:bold;color:#c00;">
           Don't Miss Out! Only {{ product.stock }} left in stock!
@@ -45,13 +49,7 @@
         {% endif %}
       </p>
 
-      <p>
-        <i class="fa fa-map-marker-alt"></i>
-        Free pickup in <a href="#">our shop(s)</a>
-      </p>
-
       <!-- SIZE SWATCHES + QUANTITY + CART BUTTONS -->
-      <!-- Added id="cartForm" for JavaScript targeting -->
       <form method="post"
             action="{% url 'product_app:product_detail' product.id %}"
             style="margin:20px 0;"
@@ -76,16 +74,42 @@
 
         <div class="quantity-selector" style="margin-bottom:15px;">
           <label><strong>Quantity</strong></label><br>
-          {{ cart_form.quantity }}
+          {# Manual input so we can set max and disable when out of stock #}
+          <input
+            type="number"
+            name="quantity"
+            min="1"
+            max="{{ product.stock }}"
+            value="{{ cart_form.quantity.value|default:1 }}"
+            class="quantity-input"
+            style="width:60px;"
+            {% if product.stock == 0 %} disabled {% endif %}
+          >
         </div>
 
-        <!-- <button type="submit" name="add_to_cart" class="detail-add-to-cart-btn">
-          Add to cart
-        </button> -->
-        <button type="submit" name="buy_now" class="detail-buy-now-btn">
-          Add to cart
+        <button
+          type="submit"
+          name="buy_now"
+          class="detail-buy-now-btn"
+          {% if product.stock == 0 %}
+            disabled
+            style="opacity:0.5;cursor:not-allowed;"
+          {% endif %}
+        >
+          {% if product.stock == 0 %}Out of Stock{% else %}Add to cart{% endif %}
         </button>
       </form>
+
+      {# Show form errors if quantity exceeds stock #}
+      {% if cart_form.errors %}
+        <ul class="error-list" style="color:#c00; margin-top:10px;">
+          {% for field in cart_form %}
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      {% endif %}
 
       <!-- DISCOUNT ACCORDION -->
       <div class="discount-section" style="margin-bottom:20px;">
@@ -113,32 +137,78 @@
   </div>
 
   <!-- CUSTOMER REVIEWS -->
-  <div class="detail-reviews-section">
-    <h2>Customer Reviews</h2>
+  <div style="margin-top: 40px;">
+    <h2 style="font-size: 24px; margin-bottom: 20px; color: #333;">
+      Customer Reviews
+    </h2>
+
     {% if reviews %}
       {% for review in reviews %}
-        <div class="review-item">
-          <strong>{{ review.user.username }}</strong>
-          <span class="review-rating">{{ review.rating }}/5</span>
-          <p>{{ review.content }}</p>
-          <small>Posted on {{ review.created_at|date:"M j, Y" }}</small>
+        <div style="
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          ">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 16px; color: #222;">
+              {{ review.user.username }}
+            </strong>
+            <span style="
+              background: #ffd700;
+              color: #444;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 14px;
+              font-weight: bold;
+              letter-spacing: 1px;
+            ">
+              {% star_rating review.rating %}
+            </span>
+          </div>
+          <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 12px;">
+            {{ review.content }}
+          </p>
+          <small style="font-size: 13px; color: #888;">
+            Posted on {{ review.created_at|date:"M j, Y" }}
+          </small>
         </div>
       {% endfor %}
     {% else %}
-      <p>No reviews yet. Be the first to review!</p>
+      <p style="font-size: 15px; color: #666; margin-bottom: 20px;">
+        No reviews yet. Be the first to review!
+      </p>
     {% endif %}
 
     {% if not existing_review %}
-      <h3>Leave a Review</h3>
-      <form method="post">
+      <h3 style="font-size: 20px; margin-top: 30px; color: #333;">
+        Leave a Review
+      </h3>
+      <form method="post" style="margin-top: 12px; padding: 16px; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px;">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" name="submit_review" class="review-submit-btn">
+        <button type="submit" name="submit_review"
+                style="
+                  background-color: #007bff;
+                  color: white;
+                  border: none;
+                  padding: 10px 16px;
+                  font-size: 15px;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  transition: background-color 0.3s;
+                "
+                onmouseover="this.style.backgroundColor='#0056b3'"
+                onmouseout="this.style.backgroundColor='#007bff'">
           Submit Review
         </button>
       </form>
     {% else %}
-      <p><strong>You have already reviewed this product.</strong></p>
+      <p style="font-size: 15px; color: #c00; margin-top: 20px;">
+        <strong>You have already reviewed this product.</strong>
+      </p>
     {% endif %}
   </div>
 
@@ -167,22 +237,17 @@
 document.addEventListener("DOMContentLoaded", function() {
   const cartForm = document.getElementById("cartForm");
   cartForm.addEventListener("submit", function(e) {
-    // Check if the submit was triggered by the "add_to_cart" button
     if (e.submitter && e.submitter.name === "add_to_cart") {
-      e.preventDefault(); // prevent normal form submission
+      e.preventDefault();
       const formData = new FormData(cartForm);
       fetch(window.location.href, {
          method: "POST",
-         headers: {
-             'X-Requested-With': 'XMLHttpRequest',
-         },
+         headers: { 'X-Requested-With': 'XMLHttpRequest' },
          body: formData
       })
       .then(response => response.json())
       .then(data => {
-         // Show a confirmation message (you can replace alert with a nicer UI update)
          alert(data.message);
-         // Update cart summary if an element with id "cart-summary" exists in your header or elsewhere.
          const cartSummary = document.getElementById("cart-summary");
          if (cartSummary) {
             cartSummary.textContent = `Cart (${data.cart_count} items)`;
@@ -191,8 +256,8 @@ document.addEventListener("DOMContentLoaded", function() {
       .catch(error => console.error("Error:", error));
     }
   });
-  
-  // Discount accordion toggle (existing functionality)
+
+  // Discount accordion toggle
   document.querySelectorAll('.collapsible-header').forEach(h => {
     h.addEventListener('click', () => {
       const body = h.nextElementSibling;

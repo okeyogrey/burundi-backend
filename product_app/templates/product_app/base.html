@@ -32,18 +32,29 @@
       </a>
     </div>
 
-    <form class="nav-search-form" action="#" method="get" id="navSearchForm">
-      <input
-        type="text"
-        class="nav-search-input"
-        placeholder="Search products, brands and categories"
-        name="search_query"
-        id="navSearchInput"
-      />
+    <form class="nav-search-form" action="{% url 'product_app:search_products' %}" method="get" id="navSearchForm">
+       <input
+         type="text"
+         class="nav-search-input"
+         placeholder="Search products, brands and categories"
+         name="q"
+         id="navSearchInput"
+       />
       <button type="submit" class="nav-search-btn">Search</button>
     </form>
 
     <ul class="nav-links">
+      <!-- Currency switcher -->
+      <li class="currency-switch">
+        {% if current_currency == 'KES' %}
+          <strong>KES</strong> |
+          <a href="{% url 'product_app:set_currency' 'BIF' %}">BIF</a>
+        {% else %}
+          <a href="{% url 'product_app:set_currency' 'KES' %}">KES</a> |
+          <strong>BIF</strong>
+        {% endif %}
+      </li>
+      
       <li>
         {% if user.is_authenticated %}
           <a href="{% url 'accounts:profile' %}"><i class="fa-solid fa-user"></i> My Account</a>
@@ -209,32 +220,35 @@
     });
   </script>
   <script>
-    const toggleBtn       = document.getElementById('menu-toggle');
-    const mobileSidebar   = document.getElementById('mobile-sidebar');
-    const sidebarOverlay  = document.getElementById('sidebar-overlay');
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggleBtn      = document.getElementById('menu-toggle');
+      const mobileSidebar  = document.getElementById('mobile-sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
   
-    function openSidebar() {
-      mobileSidebar.classList.add('open');
-      sidebarOverlay.classList.add('open');
-      document.body.classList.add('sidebar-open');
-    }
-    function closeSidebar() {
-      mobileSidebar.classList.remove('open');
-      sidebarOverlay.classList.remove('open');
-      document.body.classList.remove('sidebar-open');
-    }
-  
-    toggleBtn.addEventListener('click', () => {
-      if (mobileSidebar.classList.contains('open')) {
-        closeSidebar();
-      } else {
-        openSidebar();
+      // only run if we’re on a page that actually has the mobile sidebar
+      if (!toggleBtn || !mobileSidebar || !sidebarOverlay) {
+        return;
       }
-    });
   
-    // clicking outside (on the overlay) closes it:
-    sidebarOverlay.addEventListener('click', closeSidebar);
-  </script> 
+      function openSidebar() {
+        mobileSidebar.classList.add('open');
+        sidebarOverlay.classList.add('open');
+        document.body.classList.add('sidebar-open');
+      }
+      function closeSidebar() {
+        mobileSidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+        document.body.classList.remove('sidebar-open');
+      }
+  
+      toggleBtn.addEventListener('click', () => {
+        mobileSidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('open');
+        document.body.classList.toggle('sidebar-open');
+      });
+      sidebarOverlay.addEventListener('click', closeSidebar);
+    });
+  </script>
   
 </body>
 </html>

@@ -117,11 +117,18 @@ class CartAddForm(forms.Form):
     quantity = forms.IntegerField(
         min_value=1,
         initial=1,
-        widget=forms.NumberInput(attrs={'class':'quantity-input','style':'width:60px;'}),
+        widget=forms.NumberInput(attrs={'class': 'quantity-input', 'style': 'width:60px;'}),
         label=''
     )
 
     def __init__(self, *args, product=None, **kwargs):
+        self.product = product  # Store the product instance for later validation
         super().__init__(*args, **kwargs)
         if product:
             self.fields['size'].queryset = product.sizes.all()
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data['quantity']
+        if self.product and quantity > self.product.stock:
+            raise forms.ValidationError(f"Only {self.product.stock} item(s) in stock.")
+        return quantity

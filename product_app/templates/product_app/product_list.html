@@ -1,109 +1,100 @@
 {% extends 'product_app/base.html' %}
 {% load static %}
+{% load currency_filters %}
 
 {% block title %}Product List{% endblock %}
 
 {% block content %}
 
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/dist/nouislider.min.css"
-  />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/dist/nouislider.min.css" />
 
-  <div class="product-page-container">
-    <!-- Sidebar (Filters) -->
-    <aside class="filter-sidebar">
-      <!-- <h2>FILTER</h2> -->
-      <form method="GET" class="filter-form" id="filterForm">
-        {% csrf_token %}
-        
+<div class="product-page-container">
+  <!-- Sidebar (Filters) -->
+  <aside class="filter-sidebar">
+    <form method="GET" class="filter-form" id="filterForm">
+      {% csrf_token %}
 
-        
-
-        <!-- Sub-Subcategory Filter -->
-        <div class="filter-group">
-          <h3>CATEGORY</h3>
-          {{ form.sub_subcategories }}
-        </div>
-
-        <!-- Brand -->
-        <div class="filter-group">
-          <h3>BRAND</h3>
-          {{ form.brands }}
-        </div>
-
-        <!-- Sizes -->
-        <!-- <div class="filter-group">
-          <h3>Sizes</h3>
-          {{ form.sizes }}
-        </div> -->
-
-        <div class="filter-group collapsible">
-          <h3 class="collapsible-header">PRICE RANGE</h3>
-          <div class="collapsible-body price-range">
-            <div id="priceSlider"></div>
-            <input type="hidden" name="min_price" id="minPriceField">
-            <input type="hidden" name="max_price" id="maxPriceField">
-          </div><br>
-          <div class="price-display">
-            <input type="number" id="minValueDisplay" value="0" class="price-input"> 
-            -
-            <input type="number" id="maxValueDisplay" value="20000" class="price-input">
-          </div>
-        </div>
-
-        <div class="filter-group collapsible">
-          <h3 class="collapsible-header">ON SALE</h3>
-          <div class="collapsible-body">
-            {{ form.sale_items }}
-          </div>
-        </div>
-
-
-      </form>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="product-listing">
-      <form method="GET" class="filter-form" id="sortForm">
-        {% csrf_token %}
-        <div class="sort-bar">
-          <label for="id_sort_by" class="sort-label">Sort By:</label>
-          {{ form.sort_by }}
-        </div>
-      </form>
-
-      <div class="products-container" id="productsContainer">
-        {% for product in products %}
-          <div class="product-card">
-            <a href="{% url 'product_app:product_detail' product.id %}">
-              <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
-            </a>
-            <div class="product-info">
-              <h4>{{ product.name }}</h4>
-              {# Display pricing: if on sale, show old price with line-through and new sale price below #}
-              {% if product.is_on_sale and product.old_price %}
-                <p class="product-price">
-                  <span class="old-price" style="text-decoration: line-through; color: #888;">
-                    KSHS {{ product.old_price|floatformat:0 }}
-                  </span>
-                  <br>
-                  <span class="sale-price" style="color: red; font-weight: bold;">
-                    KSHS {{ product.price|floatformat:0 }}
-                  </span>
-                </p>
-              {% else %}
-                <p class="product-price" style="color: #e3342f; font-weight: bold;">
-                  KSHS {{ product.price|floatformat:0 }}
-                </p>
-              {% endif %}
-              <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">View Details</a>
-            </div>
-          </div>
-        {% endfor %}
+      <!-- Sub-Subcategory Filter -->
+      <div class="filter-group">
+        <h3>CATEGORY</h3>
+        {{ form.sub_subcategories }}
       </div>
 
-      {% if products.has_other_pages %}
+      <!-- Brand -->
+      <div class="filter-group">
+        <h3>BRAND</h3>
+        {{ form.brands }}
+      </div>
+
+      <!-- Price Range -->
+      <div class="filter-group collapsible">
+        <h3 class="collapsible-header">PRICE RANGE</h3>
+        <div class="collapsible-body price-range">
+          <div id="priceSlider"></div>
+          <input type="hidden" name="min_price" id="minPriceField">
+          <input type="hidden" name="max_price" id="maxPriceField">
+        </div><br>
+        <div class="price-display">
+          <input type="number" id="minValueDisplay" value="0" class="price-input">
+          -
+          <input type="number" id="maxValueDisplay" value="20000" class="price-input">
+        </div>
+      </div>
+
+      <!-- On Sale -->
+      <div class="filter-group collapsible">
+        <h3 class="collapsible-header">ON SALE</h3>
+        <div class="collapsible-body">
+          {{ form.sale_items }}
+        </div>
+      </div>
+    </form>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="product-listing">
+    <form method="GET" class="filter-form" id="sortForm">
+      {% csrf_token %}
+      <div class="sort-bar">
+        <label for="id_sort_by" class="sort-label">Sort By:</label>
+        {{ form.sort_by }}
+      </div>
+    </form>
+
+    <div class="products-container" id="productsContainer">
+      {% for product in products %}
+        <div class="product-card">
+          <a href="{% url 'product_app:product_detail' product.id %}">
+            <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+          </a>
+          <div class="product-info">
+            <h4>{{ product.name }}</h4>
+            {% if product.is_on_sale and product.old_price %}
+              <p class="product-price">
+                <span class="old-price" style="text-decoration: line-through; color: #888;">
+                  KSHS {{ product.old_price|floatformat:0 }}
+                </span><br>
+                <span class="sale-price" style="color: red; font-weight: bold;">
+                  KSHS {{ product.price|floatformat:0 }}
+                </span>
+              </p>
+            {% else %}
+              <p class="product-price" style="color: #e3342f; font-weight: bold;">
+                KSHS {{ product.price|floatformat:0 }}
+              </p>
+            {% endif %}
+
+            {% comment %} dynamic currency display with conversion {% endcomment %}
+            {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ prod.price|convert_currency:current_currency|floatformat:0 }}
+
+            <a class="details-button" href="{% url 'product_app:product_detail' product.id %}">View Details</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if products.has_other_pages %}
       <div class="pagination">
         <span class="step-links">
           {% if products.has_previous %}
@@ -119,125 +110,148 @@
           {% endif %}
         </span>
       </div>
-      {% endif %}
-    </main>
-  </div>
+    {% endif %}
+  </main>
+</div>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/dist/nouislider.min.js"
-  ></script>
+<script src="https://cdn.jsdelivr.net/npm/nouislider@15.6.1/dist/nouislider.min.js"></script>
 
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const priceSlider = document.getElementById('priceSlider');
-    noUiSlider.create(priceSlider, {
-      start: [0, 20000],
-      connect: true,
-      range: { 'min': 0, 'max': 20000 },
-      step: 100
-    });
-
-    const minPriceField = document.getElementById('minPriceField');
-    const maxPriceField = document.getElementById('maxPriceField');
-    const minValueDisplay = document.getElementById('minValueDisplay');
-    const maxValueDisplay = document.getElementById('maxValueDisplay');
-
-    priceSlider.noUiSlider.on('update', function(values, handle) {
-      const minVal = Math.round(values[0]);
-      const maxVal = Math.round(values[1]);
-      minValueDisplay.value = minVal;
-      maxValueDisplay.value = maxVal;
-      minPriceField.value = minVal;
-      maxPriceField.value = maxVal;
-    });
-
-    priceSlider.noUiSlider.on('change', function() {
-      fetchFilteredProducts();
-    });
-
-    minValueDisplay.addEventListener('change', () => {
-      let newMin = parseInt(minValueDisplay.value, 10) || 0;
-      let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
-      priceSlider.noUiSlider.set([newMin, newMax]);
-      fetchFilteredProducts();
-    });
-    maxValueDisplay.addEventListener('change', () => {
-      let newMin = parseInt(minValueDisplay.value, 10) || 0;
-      let newMax = parseInt(maxValueDisplay.value, 10) || 20000;
-      priceSlider.noUiSlider.set([newMin, newMax]);
-      fetchFilteredProducts();
-    });
-
-    const sidebarForm = document.getElementById("filterForm");
-    const sortForm    = document.getElementById("sortForm");
-    sidebarForm.addEventListener("submit", e => e.preventDefault());
-    sortForm.addEventListener("submit",    e => e.preventDefault());
-
-    const sideFields = sidebarForm.querySelectorAll("select, input[type='checkbox'], input[type='number']");
-    const sortFields = sortForm.querySelectorAll("select");
-    sideFields.forEach(f => f.addEventListener("change", fetchFilteredProducts));
-    sortFields.forEach(f => f.addEventListener("change", fetchFilteredProducts));
-
-    function fetchFilteredProducts() {
-      const formData = new FormData(sidebarForm);
-      const sortData = new FormData(sortForm);
-      for (let [k, v] of sortData.entries()) formData.append(k, v);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const mainCat = urlParams.get('main_category');
-      if (mainCat) formData.set('main_category', mainCat);
-
-      const subSubcats = urlParams.getAll('sub_subcategories');
-      subSubcats.forEach(v => formData.append('sub_subcategories', v));
-
-      const page = urlParams.get('page');
-      if (page) formData.set('page', page);
-
-      const navSearchInput = document.getElementById("navSearchInput");
-      if (navSearchInput) {
-          formData.set("search_query", navSearchInput.value);
-      }
-
-      const params = new URLSearchParams(formData);
-      const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
-
-      fetch(url)
-        .then(r => r.json())
-        .then(d => renderProducts(d.products))
-        .catch(err => console.error(err));
-    }
-
-    function renderProducts(products) {
-      const cont = document.getElementById("productsContainer");
-      cont.innerHTML = "";
-      products.forEach(p => {
-        const card = document.createElement("div");
-        card.classList.add("product-card");
-        card.innerHTML = `
-          ${p.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
-          <img class="product-image" src="${p.image_url}" alt="${p.name}">
-          <div class="product-info">
-            <h4>${p.name}</h4>
-            ${p.is_on_sale 
-              ? `<p class="product-price">
-                   <span class="old-price" style="text-decoration: line-through; color: #888;">KSHS ${p.old_price}</span>
-                   <br>
-                   <span class="sale-price" style="color: red; font-weight: bold;">KSHS ${p.price}</span>
-                 </p>` 
-              : `<p class="product-price" style="color: #e3342f; font-weight: bold;">KSHS ${p.price}</p>`}
-            <a class="details-button" href="/product/${p.id}/">View Details</a>
-          </div>
-        `;
-        cont.appendChild(card);
-      });
-    }
-
-    fetchFilteredProducts();
-
-    document.querySelectorAll('.collapsible-header')
-      .forEach(h => h.addEventListener('click', () =>
-        h.nextElementSibling.classList.toggle('collapsed')
-      ));
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const priceSlider = document.getElementById('priceSlider');
+  noUiSlider.create(priceSlider, {
+    start: [0, 20000],
+    connect: true,
+    range: { 'min': 0, 'max': 20000 },
+    step: 100
   });
-  </script>
+
+  const minPriceField = document.getElementById('minPriceField');
+  const maxPriceField = document.getElementById('maxPriceField');
+  const minValueDisplay = document.getElementById('minValueDisplay');
+  const maxValueDisplay = document.getElementById('maxValueDisplay');
+
+  priceSlider.noUiSlider.on('update', function(values) {
+    const minVal = Math.round(values[0]);
+    const maxVal = Math.round(values[1]);
+    minValueDisplay.value = minVal;
+    maxValueDisplay.value = maxVal;
+    minPriceField.value = minVal;
+    maxPriceField.value = maxVal;
+  });
+
+  priceSlider.noUiSlider.on('change', fetchFilteredProducts);
+  minValueDisplay.addEventListener('change', () => {
+    priceSlider.noUiSlider.set([
+      parseInt(minValueDisplay.value, 10) || 0,
+      parseInt(maxValueDisplay.value, 10) || 20000
+    ]);
+    fetchFilteredProducts();
+  });
+  maxValueDisplay.addEventListener('change', () => {
+    priceSlider.noUiSlider.set([
+      parseInt(minValueDisplay.value, 10) || 0,
+      parseInt(maxValueDisplay.value, 10) || 20000
+    ]);
+    fetchFilteredProducts();
+  });
+
+  const sidebarForm = document.getElementById("filterForm");
+  const sortForm = document.getElementById("sortForm");
+
+  sidebarForm.addEventListener("submit", e => e.preventDefault());
+  sortForm.addEventListener("submit", e => e.preventDefault());
+
+  const sideFields = sidebarForm.querySelectorAll("select, input[type='checkbox'], input[type='number']");
+  const sortFields = sortForm.querySelectorAll("select");
+
+  sideFields.forEach(f => f.addEventListener("change", fetchFilteredProducts));
+  sortFields.forEach(f => f.addEventListener("change", fetchFilteredProducts));
+
+  function fetchFilteredProducts() {
+    const formData = new FormData(sidebarForm);
+    const sortData = new FormData(sortForm);
+
+    for (let [k, v] of sortData.entries()) formData.append(k, v);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const mainCat = urlParams.get('main_category');
+    if (mainCat) formData.set('main_category', mainCat);
+
+    const subSubcats = urlParams.getAll('sub_subcategories');
+    subSubcats.forEach(v => formData.append('sub_subcategories', v));
+
+    const page = urlParams.get('page');
+    if (page) formData.set('page', page);
+
+    const navSearchInput = document.getElementById("navSearchInput");
+    if (navSearchInput) {
+      formData.set("search_query", navSearchInput.value);
+    }
+    function debounce(fn, delay=300){
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    // whenever the user types, refresh the product grid
+    if (navSearchInput) {
+      navSearchInput.addEventListener(
+       "input",
+        debounce(fetchFilteredProducts, 250)
+        );
+    }
+
+    const params = new URLSearchParams(formData);
+    const url = "{% url 'product_app:product_list_json' %}?" + params.toString();
+
+    fetch(url)
+      .then(r => r.json())
+      .then(d => renderProducts(d.products))
+      .catch(err => console.error(err));
+  }
+
+  function renderProducts(products) {
+    const cont = document.getElementById("productsContainer");
+    cont.innerHTML = "";
+    products.forEach(p => {
+      const card = document.createElement("div");
+      card.classList.add("product-card");
+      card.innerHTML = `
+        ${p.is_on_sale ? '<span class="badge-sale">Sale</span>' : ''}
+        <img class="product-image" src="${p.image_url}" alt="${p.name}">
+        <div class="product-info">
+          <h4>${p.name}</h4>
+          ${p.is_on_sale 
+            ? `<p class="product-price">
+                 <span class="old-price" style="text-decoration: line-through; color: #888;">
+                  {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ prod.price|convert_currency:current_currency|floatformat:0 }} 
+               ${p.old_price}
+               </span><br>
+                 <span class="sale-price" style="color: red; font-weight: bold;"> {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ prod.price|convert_currency:current_currency|floatformat:0 }} ${p.price}</span>
+               </p>` 
+            : `<p class="product-price" style="color: #e3342f; font-weight: bold;">
+              {% if current_currency == 'KES' %}KSHS{% else %}BIF{% endif %}
+              {{ prod.price|convert_currency:current_currency|floatformat:0 }}
+              ${p.price}</p>`}
+          <a class="details-button" href="/product/${p.id}/">View Details</a>
+        </div>
+      `;
+      cont.appendChild(card);
+    });
+  }
+
+  fetchFilteredProducts();
+
+  document.querySelectorAll('.collapsible-header')
+    .forEach(h => h.addEventListener('click', () =>
+      h.nextElementSibling.classList.toggle('collapsed')
+    ));
+});
+</script>
+
 {% endblock %}

@@ -1,25 +1,96 @@
 {% extends "base.html" %}
 {% block title %}My Profile{% endblock %}
+
 {% block content %}
-<div class="page-content">
-  <h2>Welcome, {{ user.username }}</h2>
-  <p>Email: {{ user.email }}</p>
-  <p>Phone: {{ user.phone_number }}</p>
-  <p>Address: {{ user.address }}</p>
+  <div style="
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fafafa;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #333;
+    ">
+    <h2 style="
+        font-size: 26px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        text-align: center;
+      ">
+      Welcome, {{ user.username }}
+    </h2>
 
-  <h3>Order History</h3>
-  <ul>
-    {% for order in orders %}
-      <li>
-        <a href="{% url 'orders:order_detail' order.id %}">
-          Order #{{ order.id }} — {{ order.created|date:"Y-m-d H:i" }} — {% if order.paid %}Paid{% else %}Unpaid{% endif %}
-        </a>
-      </li>
-    {% empty %}
-      <li>No orders yet.</li>
-    {% endfor %}
-  </ul>
+    <p style="font-size: 16px; line-height: 1.5; margin-bottom: 8px;">
+      <strong>Email:</strong> {{ user.email }}
+    </p>
+    <p style="font-size: 16px; line-height: 1.5; margin-bottom: 8px;">
+      <strong>Phone:</strong> {{ user.phone_number }}
+    </p>
+    <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">
+      <strong>Address:</strong> {{ user.address }}
+    </p>
 
-  <a href="{% url 'accounts:logout' %}">Log out</a>
-</div>
+    <h3 style="
+        font-size: 22px;
+        color: #2c3e50;
+        margin-bottom: 12px;
+      ">
+      Order History
+    </h3>
+    <ul style="
+        list-style: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+      ">
+      {% for order in orders %}
+        <li style="margin-bottom: 10px;">
+          <a
+            href="{% url 'orders:order_detail' order.id %}"
+            style="
+              display: block;
+              padding: 10px 15px;
+              background: #fff;
+              border: 1px solid #e0e0e0;
+              border-radius: 4px;
+              text-decoration: none;
+              color: #2c3e50;
+              transition: background 0.2s, box-shadow 0.2s;
+            "
+            onmouseover="this.style.background='#f0f8ff'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.background='#fff'; this.style.boxShadow='none';"
+          >
+            <strong>Order #{{ order.id }}</strong> — 
+            {{ order.created|date:"Y-m-d H:i" }} — 
+            {% if order.paid %}<span style="color: #27ae60;">Paid</span>{% else %}<span style="color: #c0392b;">Unpaid</span>{% endif %}
+          </a>
+        </li>
+      {% empty %}
+        <li style="
+            padding: 15px;
+            text-align: center;
+            color: #777;
+          ">
+          No orders yet.
+        </li>
+      {% endfor %}
+    </ul>
+
+    <a
+      href="{% url 'accounts:logout' %}"
+      style="
+        display: inline-block;
+        padding: 10px 20px;
+        background: #2c3e50;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background 0.2s;
+      "
+      onmouseover="this.style.background='#1a2533';"
+      onmouseout="this.style.background='#2c3e50';"
+    >
+      Log out
+    </a>
+  </div>
 {% endblock %}
