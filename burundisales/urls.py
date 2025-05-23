@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
+from product_app.views import landing_page
+
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -8,6 +10,8 @@ urlpatterns = [
 
     # REMOVED the old path('', landing_page, name='landing_page'),
     # Instead, we rely on product_app/urls.py for /product/landing/.
+
+    path('', landing_page, name='home'),
 
     path('product/', include(('product_app.urls', 'product_app'), namespace='product_app')),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
