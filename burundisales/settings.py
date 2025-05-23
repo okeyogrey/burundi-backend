@@ -15,6 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG      = os.getenv("DJANGO_DEBUG", "False") == "True"
+
 ALLOWED_HOSTS = ['192.168.1.2', '127.0.0.1', '0.0.0.0', 'burundisales.onrender.com', 'kingofspeedonlineshopping.com', 'www.kingofspeedonlineshopping.com']
 
 INSTALLED_APPS = [
