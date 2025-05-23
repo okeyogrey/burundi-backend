@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--a!$(!7w*y)@@4qto%whpsm&6kedo_52_gx4f29umbbz_wo5#7'
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.1.2', '127.0.0.1', '0.0.0.0', 'kingofspeedonlineshopping.com', 'www.kingofspeedonlineshopping.com', 'burundisales.onrender.com']
+ALLOWED_HOSTS = ['192.168.1.2', '127.0.0.1', '0.0.0.0', 'burundisales.onrender.com', 'kingofspeedonlineshopping.com', 'www.kingofspeedonlineshopping.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
