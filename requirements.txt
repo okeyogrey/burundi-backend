@@ -4,6 +4,7 @@ charset-normalizer==3.4.1
 dj-database-url==2.3.0
 Django==5.2
 django-paypal==2.1
+gunicorn==20.1.0
 idna==3.10
 pillow==11.1.0
 psycopg==3.2.9
