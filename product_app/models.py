@@ -88,7 +88,7 @@ class Product(models.Model):
     sizes = models.ManyToManyField(Size, blank=True)
 
     stock = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to='products/', default='default_image.jpg')
+    image = models.ImageField(upload_to='products/', default='https://res.cloudinary.com/<your-cloud-name>/image/upload/v…/default_image.jpg')
     created_at = models.DateTimeField(auto_now_add=True)
     is_on_sale = models.BooleanField(default=False)
 
