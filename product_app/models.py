@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 from django.conf import settings
 
 class Category(models.Model):
@@ -88,7 +89,11 @@ class Product(models.Model):
     sizes = models.ManyToManyField(Size, blank=True)
 
     stock = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to='products/', default='https://res.cloudinary.com/<your-cloud-name>/image/upload/v…/default_image.jpg')
+    image = CloudinaryField(
+        'image',
+        folder='products',           # Cloudinary folder
+        default='products/default'   # public ID for a fallback default
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     is_on_sale = models.BooleanField(default=False)
 
