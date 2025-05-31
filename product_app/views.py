@@ -93,7 +93,7 @@ def product_list(request):
 def convert_price(price, currency):
     # Example conversion rates: adjust as needed
     if currency == 'BIF':
-        return price * 30  # example rate from KES to BIF
+        return price * 60  # example rate from KES to BIF
     return price  # default is KES, no conversion
 
 def product_list_json(request):
