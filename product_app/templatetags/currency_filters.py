@@ -9,7 +9,7 @@ register = template.Library()
 def convert_currency(price, currency='KES'):
     # Dummy logic, update based on real rates or session
     if currency == 'BIF':
-        return price * 30  # Example conversion rate
+        return price * 60  # Example conversion rate
     return price
 
 
