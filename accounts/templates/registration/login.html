@@ -1,50 +1,184 @@
 {% extends "base.html" %}
 {% block title %}Log In{% endblock %}
 {% block content %}
+<style>
+  /* Global container styling */
+  .login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f2f5 0%, #d9e2ec 100%);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    padding: 1rem;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+  .login-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .login-card h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 1.75rem;
+    color: #333333;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+  .login-form label {
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+    color: #555555;
+    font-size: 0.95rem;
+  }
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  .login-form input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .password-wrapper svg {
+    position: absolute;
+    right: 1rem;
+    cursor: pointer;
+    transition: fill 0.2s ease;
+  }
+
+  .login-btn {
+    padding: 0.75rem;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    margin-top: 0.5rem;
+  }
+  .login-btn:hover {
+    background-color: #287bb5;
+  }
+
+  .forgot-password-disabled {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #aaa;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: default;
+    opacity: 0.7;
+  }
+
+  .signup-cta {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: #555555;
+  }
+  .signup-cta a {
+    color: #3498db;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .signup-cta a:hover {
+    color: #287bb5;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 480px) {
+    .login-card {
+      padding: 2rem 1.5rem;
+    }
+    .login-card h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
 <div class="login-page">
   <div class="login-card">
     <h2>Log In</h2>
 
     {% if form.errors %}
-      <p class="error-text">Invalid username or password.</p>
+      <p style="color: #e74c3c; text-align: center; margin-bottom: 1rem;">Invalid username or password.</p>
     {% endif %}
 
     <form method="post" action="{% url 'accounts:login' %}?next={{ request.GET.next }}" class="login-form">
       {% csrf_token %}
-      <label for="{{ form.username.id_for_label }}">Username</label>
+
+      {{ form.username.label_tag }}
       {{ form.username }}
 
-      <label for="{{ form.password.id_for_label }}">Password</label>
+      {{ form.password.label_tag }}
       <div class="password-wrapper">
         {{ form.password }}
-        <svg id="togglePassword" class="password-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M12 5C7 5 …"/>
+        <!-- Eye icon -->
+        <svg id="togglePassword" width="24" height="24" viewBox="0 0 24 24" fill="#777777" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12c-2.76 0-5-2.24-5-5 0-2.76 
+            2.24-5 5-5s5 2.24 5 5c0 2.76-2.24 5-5 5z"/>
           <circle cx="12" cy="12" r="2"/>
         </svg>
       </div>
 
-      <button type="submit" class="btn-primary login-btn">Login</button>
+      <button type="submit" class="login-btn">Login</button>
     </form>
 
-    <div class="forgot-password-group">
-      <span class="btn-disabled">Forgot password? Reset here</span>
+    <!-- Disabled “Forgot password?” styled as button -->
+    <div style="text-align: right;">
+      <span class="forgot-password-disabled">
+        Forgot password? Reset here
+      </span>
     </div>
 
-    <p class="signup-cta">
-      Don't have an account? <a href="{% url 'accounts:signup' %}" class="link-accent">Sign up</a>
-    </p>
+    <div class="signup-cta">
+      Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a>
+    </div>
   </div>
 </div>
 
+<!-- Inline script for password toggle -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const pwd = document.querySelector('.login-form input[type="password"]');
-  const toggle = document.getElementById('togglePassword');
-  toggle.addEventListener('click', () => {
-    const type = pwd.type === 'password' ? 'text' : 'password';
-    pwd.type = type;
-    toggle.classList.toggle('visible', type === 'text');
+  document.addEventListener('DOMContentLoaded', function() {
+    const pwdInput = document.querySelector('input[type="password"]');
+    const toggle = document.getElementById('togglePassword');
+    toggle.addEventListener('click', () => {
+      const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      pwdInput.setAttribute('type', type);
+      toggle.setAttribute('fill', type === 'password' ? '#777777' : '#3498db');
+    });
   });
-});
 </script>
 {% endblock %}
