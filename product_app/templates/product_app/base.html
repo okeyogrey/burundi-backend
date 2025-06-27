@@ -7,14 +7,12 @@
 
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-  <!-- Font Awesome -->
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     integrity="sha512-papkgozDe6ujkq9d8M63IMJoVf2U8mInqM3Gy1rXzL4H0lHjvDA5t++yoGmm5HvqvU8+xmPMeBPMeW7D1yt+YQ=="
     crossorigin="anonymous"
     referrerpolicy="no-referrer" />
 
-  <!-- Flag Icon CSS -->
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icon.min.css"
     integrity="sha512-cunCh+dI0JZq5xF+XhEufUbyWC3tcS02Lw6uKZU+IsxpK2lVnk8kFY//TExO4via4/SjJO1Mc+0MfI4o0KzxhA=="
@@ -27,7 +25,6 @@
     {% csrf_token %}
   </form>
 
-  <!-- MAIN NAV BAR -->
   <nav class="navbar">
     <button id="menu-toggle" class="hamburger">
       <i class="fa-solid fa-bars"></i>
@@ -39,18 +36,19 @@
       </a>
     </div>
 
-    <form class="nav-search-form" action="{% url 'product_app:search_products' %}" method="get" id="navSearchForm">
-      <input
-        type="text"
-        class="nav-search-input"
-        placeholder="Search products, brands and categories"
-        name="q"
-        id="navSearchInput" />
-      <button type="submit" class="nav-search-btn">Search</button>
-    </form>
+    {% if show_search_bar %}
+      <form class="nav-search-form" action="{% url 'product_app:search_products' %}" method="get" id="navSearchForm">
+        <input
+          type="text"
+          class="nav-search-input"
+          placeholder="Search products, brands and categories"
+          name="q"
+          id="navSearchInput" />
+        <button type="submit" class="nav-search-btn">Search</button>
+      </form>
+    {% endif %}
 
     <ul class="nav-links">
-      <!-- Currency switcher -->
       <li class="currency-switch">
         {% if current_currency == 'KES' %}
           <span class="flag-icon flag-icon-ke" style="font-size:24px;"></span>
@@ -82,12 +80,10 @@
     </ul>
   </nav>
 
-  <!-- PAGE-SPECIFIC CONTENT -->
   <div class="page-content">
     {% block content %}{% endblock %}
   </div>
 
-  <!-- FOOTER SECTION -->
   <footer class="site-footer">
     <div class="sub-footer">
       <div class="footer-columns">
@@ -141,7 +137,6 @@
     </div>
   </footer>
 
-  <!-- CART DRAWER -->
   <aside id="cartDrawer" class="cart-drawer hidden">
     <div class="cart-drawer-header">
       <h2>Your Cart</h2>
@@ -172,7 +167,6 @@
 
   <div id="cartDrawerOverlay" class="drawer-overlay hidden"></div>
 
-  <!-- Scripts -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const cartIconLink = document.getElementById("cart-icon-link");

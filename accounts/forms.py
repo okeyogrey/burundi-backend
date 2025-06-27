@@ -22,11 +22,11 @@ class CustomUserCreationForm(UserCreationForm):
                 'aria-label': 'Phone Number' # For screen readers
             }),
             'address': forms.Textarea(attrs={
-                'placeholder': 'Delivery Address',
-                'aria-label': 'Delivery Address', # For screen readers
+                'placeholder': 'Address',
+                'aria-label': 'Address', # For screen readers
                 'rows': 3
             }),
-        }
+        }   
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,11 +36,11 @@ class CustomUserCreationForm(UserCreationForm):
         # Add placeholders and aria-labels to the password fields
         if 'password' in self.fields:
             self.fields['password'].widget.attrs.update({
-                'placeholder': 'Password',
+                'placeholder': 'Enter a Strong Password',
                 'aria-label': 'Password'
             })
         if 'password2' in self.fields:
             self.fields['password2'].widget.attrs.update({
-                'placeholder': 'Confirm Password',
+                'placeholder': 'Confirm Your Password',
                 'aria-label': 'Confirm Password'
             })

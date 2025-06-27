@@ -81,7 +81,8 @@ def product_list(request):
 
     context = {
         'products': products,
-        'form': form
+        'form': form,
+        'show_search_bar': True
     }
     return render(request, 'product_app/product_list.html', context)
 
