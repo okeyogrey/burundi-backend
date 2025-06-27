@@ -45,15 +45,21 @@
 
     <ul class="nav-links">
       <!-- Currency switcher -->
-      <li class="currency-switch">
-        {% if current_currency == 'KES' %}
-          <strong>KES</strong> |
-          <a href="{% url 'product_app:set_currency' 'BIF' %}">BIF</a>
-        {% else %}
-          <a href="{% url 'product_app:set_currency' 'KES' %}">KES</a> |
-          <strong>BIF</strong>
-        {% endif %}
-      </li>
+        <li class="currency-switch">
+            {% if current_currency == 'KES' %}
+              <i class="flag-icon flag-icon-ke" style="font-size:24px;"></i>
+              &nbsp;|&nbsp;
+              <a href="{% url 'product_app:set_currency' 'BIF' %}">
+                <i class="flag-icon flag-icon-bi" style="opacity:0.7; font-size:24px;"></i>
+              </a>
+            {% else %}
+              <a href="{% url 'product_app:set_currency' 'KES' %}">
+                <i class="flag-icon flag-icon-ke" style="opacity:0.7; font-size:24px;"></i>
+              </a>
+              &nbsp;|&nbsp;
+              <i class="flag-icon flag-icon-bi" style="font-size:24px;"></i>
+            {% endif %}
+        </li>
       
       <li>
         {% if user.is_authenticated %}

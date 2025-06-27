@@ -1,19 +1,62 @@
 {% extends "base.html" %}
 {% block title %}Log In{% endblock %}
 {% block content %}
-<div class="page-content">
-  <h2>Log In</h2>
-  {% if form.errors %}
-    <p style="color:red;">Invalid username or password.</p>
-  {% endif %}
+<div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f0f2f5; font-family: Arial, sans-serif;">
+  <div style="width: 100%; max-width: 400px; background-color: #ffffff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative;">
+    <h2 style="text-align: center; margin-bottom: 1.5rem; color: #333333;">Log In</h2>
 
-  <!-- ✅ Add next={{ request.GET.next }} to preserve redirect -->
-  <form method="post" action="{% url 'accounts:login' %}?next={{ request.GET.next }}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+    {% if form.errors %}
+      <p style="color: #e74c3c; margin-bottom: 1rem; text-align: center;">Invalid username or password.</p>
+    {% endif %}
 
-  <p>Don't have an account? <a href="{% url 'accounts:signup' %}">Sign up</a></p>
+    <form method="post" action="{% url 'accounts:login' %}?next={{ request.GET.next }}" style="display: flex; flex-direction: column; position: relative;">
+      {% csrf_token %}
+      {{ form.username.label_tag }}  
+      {{ form.username }}
+
+      {{ form.password.label_tag }}
+      <div style="position: relative; display: flex; align-items: center;">
+        {{ form.password }}
+        <!-- Eye icon -->
+        <span id="togglePassword" style="position: absolute; right: 0.75rem; cursor: pointer; user-select: none;">
+          <!-- Simple SVG eye -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#777777" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5C7 5 2.73 8.11 1 12c1.73 3.89 6 7 11 7s9.27-3.11 11-7c-1.73-3.89-6-7-11-7zm0 12c-2.76 0-5-2.24-5-5 0-2.76 
+              2.24-5 5-5s5 2.24 5 5c0 2.76-2.24 5-5 5z"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </span>
+      </div>
+
+      <button type="submit" style="margin-top: 1.5rem; padding: 0.75rem; background-color: #3498db; color: #ffffff; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem;">
+        Login
+      </button>
+    </form>
+
+    <p style="text-align: right; margin-top: 0.75rem;">
+      <a href="{% url 'accounts:password_reset' %}" style="font-size: 0.9rem; color: #e74c3c; text-decoration: none;">
+        Forgot password? Reset here
+      </a>
+    </p>
+
+    <p style="text-align: center; margin-top: 1.5rem; color: #555555;">
+      Don't have an account?
+      <a href="{% url 'accounts:signup' %}" style="color: #3498db; text-decoration: none;">Sign up</a>
+    </p>
+  </div>
 </div>
+
+<!-- Inline script for password toggle -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const pwdInput = document.querySelector('input[type="password"]');
+    const toggle = document.getElementById('togglePassword');
+    toggle.addEventListener('click', () => {
+      const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      pwdInput.setAttribute('type', type);
+      // Optionally change icon color when visible
+      toggle.querySelector('svg').setAttribute('fill', type === 'password' ? '#777777' : '#3498db');
+    });
+  });
+</script>
 {% endblock %}
