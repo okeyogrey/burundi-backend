@@ -1365,3 +1365,22 @@ KICKS KENYA CHECKOUT PAGE STYLING
   width: 80px;
   height: auto;
 }
+
+
+
+.navbar .currency-switch .flag-icon {
+  /* This ensures the span behaves like a block but flows with text */
+  display: inline-block; 
+  
+  /* This ensures it has a visible size */
+  width: 1.333em;
+  height: 1em;
+  
+  /* This ensures the background flag image is positioned correctly */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  /* This helps with vertical alignment next to the "|" separator */
+  vertical-align: middle;
+}
