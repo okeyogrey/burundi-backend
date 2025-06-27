@@ -199,6 +199,15 @@ h1 {
     width: 100%;
     font-size: 20px;
   }
+  .currency-switch a {
+  text-indent: 0;
+  width: auto;
+  height: auto;
+  }
+
+  .currency-switch .flag-icon {
+    font-size: 32px; 
+  }
 }
 
 
