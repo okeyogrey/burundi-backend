@@ -1,121 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Sign Up{% endblock %}
 {% block content %}
-<style>
-  /* Global container styling */
-  .auth-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f0f2f5 0%, #d9e2ec 100%);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    padding: 1rem;
-  }
-
-  .auth-card {
-    width: 100%;
-    max-width: 400px;
-    background-color: #ffffff;
-    padding: 2.5rem 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    position: relative;
-    transition: transform 0.3s ease;
-  }
-  .auth-card:hover {
-    transform: translateY(-5px);
-  }
-
-  .auth-card h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-size: 1.75rem;
-    color: #333333;
-  }
-
-  .signup-form {
-    display: flex;
-    flex-direction: column;
-  }
-  .signup-form label {
-    margin-bottom: 0.25rem;
-    font-weight: 500;
-    color: #555555;
-    font-size: 0.95rem;
-  }
-  .signup-form input,
-  .signup-form select {
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.25rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.2s ease;
-  }
-  .signup-form input:focus,
-  .signup-form select:focus {
-    outline: none;
-    border-color: #2ecc71;
-    box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
-  }
-
-  .signup-btn {
-    padding: 0.75rem;
-    background-color: #2ecc71;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
-    margin-top: 0.5rem;
-  }
-  .signup-btn:hover {
-    background-color: #27ae60;
-  }
-
-  .login-cta {
-    text-align: center;
-    margin-top: 2rem;
-    font-size: 0.95rem;
-    color: #555555;
-  }
-  .login-cta a {
-    color: #2ecc71;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  .login-cta a:hover {
-    color: #27ae60;
-  }
-
-  /* Responsive tweaks */
-  @media (max-width: 480px) {
-    .auth-card {
-      padding: 2rem 1.5rem;
-    }
-    .auth-card h2 {
-      font-size: 1.5rem;
-    }
-  }
-</style>
-
 <div class="auth-page">
   <div class="auth-card">
     <h2>Sign Up</h2>
 
     <form method="post" class="signup-form">
       {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="signup-btn">Register</button>
+      {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      {% endfor %}
+      <button type="submit" class="btn-primary signup-btn">Register</button>
     </form>
 
-    <div class="login-cta">
-      Already have an account? <a href="{% url 'accounts:login' %}">Log in here</a>
-    </div>
+    <p class="login-cta">
+      Already have an account? <a href="{% url 'accounts:login' %}" class="link-accent">Log in here</a>
+    </p>
   </div>
 </div>
 {% endblock %}
