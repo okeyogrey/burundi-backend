@@ -2,7 +2,8 @@
 {% block title %}Sign Up{% endblock %}
 {% block content %}
 <style>
-  /* Global container styling */
+  /* Your existing CSS is perfectly fine, no changes needed here. */
+  /* ... */
   .auth-page {
     display: flex;
     align-items: center;
@@ -39,13 +40,15 @@
     flex-direction: column;
   }
   .signup-form label {
+    /* This style is no longer used, but we can leave it. */
     margin-bottom: 0.25rem;
     font-weight: 500;
     color: #555555;
     font-size: 0.95rem;
   }
   .signup-form input,
-  .signup-form select {
+  .signup-form select,
+  .signup-form textarea { /* Added textarea for the address field */
     padding: 0.75rem 1rem;
     margin-bottom: 1.25rem;
     border: 1px solid #ccc;
@@ -54,7 +57,8 @@
     transition: border-color 0.2s ease;
   }
   .signup-form input:focus,
-  .signup-form select:focus {
+  .signup-form select:focus,
+  .signup-form textarea:focus { /* Added textarea for the address field */
     outline: none;
     border-color: #2ecc71;
     box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
@@ -101,6 +105,14 @@
       font-size: 1.5rem;
     }
   }
+
+  /* Style for form errors */
+  .form-field-errors {
+    font-size: 0.85rem;
+    color: #e74c3c; /* A reddish color for errors */
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+  }
 </style>
 
 <div class="auth-page">
@@ -109,7 +121,19 @@
 
     <form method="post" class="signup-form">
       {% csrf_token %}
-      {{ form.as_p }}
+
+      {# We replace {{ form.as_p }} with a loop #}
+      {% for field in form %}
+        {{ field }} {# This renders just the <input> tag #}
+        {% if field.errors %}
+          <div class="form-field-errors">
+            {% for error in field.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      
       <button type="submit" class="signup-btn">Register</button>
     </form>
 

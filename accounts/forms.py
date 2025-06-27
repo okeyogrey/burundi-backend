@@ -7,37 +7,40 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = ('username', 'email', 'phone_number', 'address')
         
-        # We define the widgets for each field here
+        # We add an 'aria-label' for accessibility
         widgets = {
             'username': forms.TextInput(attrs={
-                'placeholder': 'Enter your username'
+                'placeholder': 'Username',
+                'aria-label': 'Username'  # For screen readers
             }),
             'email': forms.EmailInput(attrs={
-                'placeholder': 'Enter your email address'
+                'placeholder': 'Email Address',
+                'aria-label': 'Email Address' # For screen readers
             }),
             'phone_number': forms.TextInput(attrs={
-                'placeholder': 'e.g., 0712345678'
+                'placeholder': 'Phone Number (e.g., 0712345678)',
+                'aria-label': 'Phone Number' # For screen readers
             }),
             'address': forms.Textarea(attrs={
-                'placeholder': 'Enter your delivery address',
-                'rows': 3 # Keeps your original setting for the address field
+                'placeholder': 'Delivery Address',
+                'aria-label': 'Delivery Address', # For screen readers
+                'rows': 3
             }),
         }
 
     def __init__(self, *args, **kwargs):
-        """
-        Override the init method to remove the default help text for username
-        and to add the 'required' attribute to the password fields.
-        """
         super().__init__(*args, **kwargs)
-        # The default UserCreationForm includes help text we don't need
-        # because we have placeholders now.
         if 'username' in self.fields:
             self.fields['username'].help_text = ''
         
-        # The password fields are not in Meta.fields but are added by UserCreationForm.
-        # We can add placeholders to them here.
+        # Add placeholders and aria-labels to the password fields
         if 'password' in self.fields:
-             self.fields['password'].widget.attrs['placeholder'] = 'Create a password'
+            self.fields['password'].widget.attrs.update({
+                'placeholder': 'Password',
+                'aria-label': 'Password'
+            })
         if 'password2' in self.fields:
-            self.fields['password2'].widget.attrs['placeholder'] = 'Confirm your password'
+            self.fields['password2'].widget.attrs.update({
+                'placeholder': 'Confirm Password',
+                'aria-label': 'Confirm Password'
+            })
