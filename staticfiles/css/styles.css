@@ -1,3 +1,39 @@
+/* Base Styles from burundisales/static/css/styles.css */
+/* (Note: Some rules were merged with the more detailed rules below) */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.related-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.related-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.related-item h4 {
+    margin: 10px 0;
+}
+
+
+/* ===================================================================== */
+/* Styles from product_app/static/css/styles.css with the corrected navbar */
+/* ===================================================================== */
+
+
 /* BASIC PAGE STYLING */
 body {
   background-color: #f5f5f5;
@@ -49,11 +85,12 @@ h1 {
 }
 
 
-/* NAV-SEARCH FORM */
+/* NAV-SEARCH FORM -- CORRECTED */
 .nav-search-form {
-  flex: 1;
+  /* CHANGED: 'flex: 1;' was removed from this rule to stop it from being greedy. */
   display: flex;
   justify-content: center;
+  width: 50%; /* Give it a substantial width so it looks good. */
 }
 .nav-search-input {
   width: 60%;
@@ -62,13 +99,14 @@ h1 {
   border-radius: 4px;
 }
 
-/* NAVIGATION LINKS */
+/* NAVIGATION LINKS -- CORRECTED */
 .nav-links {
   list-style: none;
   display: flex;
   gap: 15px;
   margin: 0;
   padding: 0;
+  margin-left: auto; /* ADDED: This now works correctly and pushes the links to the right. */
 }
 .nav-links li {
   display: flex;
@@ -89,6 +127,7 @@ h1 {
 .logo {
   margin-right: 20px;   /* keep spacing from nav links */
   text-align: left;
+  flex-shrink: 0; /* Prevents the logo from shrinking if space is tight */
 }
 
 .logo-img {
@@ -120,6 +159,7 @@ h1 {
     order: 3;
     display: flex;
     gap: 1rem;
+    margin-left: 0; /* Reset margin for mobile view */
   }
   .nav-search-form{
     order: 4;
@@ -636,12 +676,7 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   border: 1px solid #ddd;
   padding: 20px;
 }
-@media (max-width: 992px) {
-  .landing-sidebar {
-    height: 100%;
-    width: 500px;
-  }
-}
+
 .landing-main-content {
   flex: 1;
   background-color: #f9f9f9;
@@ -667,6 +702,8 @@ BASIC LANDING PAGE / SIDEBAR STYLING
 @media (max-width: 992px) {
   .landing-sidebar {
     display: none;   /* hide your original desktop sidebar */
+    height: 100%;
+    width: 500px;
   }
   .hamburger {
     order: 1;
@@ -684,7 +721,7 @@ BASIC LANDING PAGE / SIDEBAR STYLING
     top: 50;
     left: -100%;
     width: 50%;
-    height: 40vh;
+    height: 28vh;
     background: #fff;
     padding: 20px;
     box-shadow: 2px 0 8px rgba(0,0,0,0.1);
@@ -692,6 +729,7 @@ BASIC LANDING PAGE / SIDEBAR STYLING
     z-index: 1050;
     overflow-y: auto;
     font-size: 50px;
+
   }
   #mobile-sidebar.open {
     left: 0;
@@ -759,13 +797,6 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   font-size: 40px;
 }
 
-/* @media (max-width: 992px) {
-  .landing-featured h3 {
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-  }
-} */
 .featured-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -841,6 +872,7 @@ MEGA MENU (Jumia-like) for Subcategories
   list-style: none;
   margin: 0;
   padding: 0;
+  
 }
 .mega-menu-item {
   position: relative;
@@ -910,6 +942,7 @@ MEGA MENU (Jumia-like) for Subcategories
   padding: 4px 0;
   display: inline-block;
 }
+
 .mega-menu-column li a:hover {
   color: #000;
 }
@@ -929,6 +962,17 @@ MEGA MENU (Jumia-like) for Subcategories
   cursor: default;
   text-decoration: none;
   font-weight: normal;
+}
+@media (max-width: 992px) {
+  .mega-menu-column ul li a {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: #333;
+  }
 }
 
 /* ALLOW CLICK-TOGGLE ON TOUCH DEVICES */
@@ -1321,5 +1365,3 @@ KICKS KENYA CHECKOUT PAGE STYLING
   width: 80px;
   height: auto;
 }
-
-
