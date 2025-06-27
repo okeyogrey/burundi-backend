@@ -1333,7 +1333,9 @@ KICKS KENYA CHECKOUT PAGE STYLING
   height: auto;
 }
 
-
+.navbar .nav-links {
+    margin-left: auto;
+}
 
 
 
