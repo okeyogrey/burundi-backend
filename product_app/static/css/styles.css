@@ -51,9 +51,11 @@ h1 {
 
 /* NAV-SEARCH FORM */
 .nav-search-form {
-  flex: 1;
+  /* flex: 1; <--- THIS LINE IS REMOVED */
   display: flex;
   justify-content: center;
+  /* We give it a width so it doesn't shrink too much */
+  width: 50%; 
 }
 .nav-search-input {
   width: 60%;
@@ -69,6 +71,7 @@ h1 {
   gap: 15px;
   margin: 0;
   padding: 0;
+  margin-left: auto; /* <--- THIS LINE IS ADDED/KEPT */
 }
 .nav-links li {
   display: flex;
@@ -120,6 +123,7 @@ h1 {
     order: 3;
     display: flex;
     gap: 1rem;
+    margin-left: 0; /* Reset margin for mobile view if needed */
   }
   .nav-search-form{
     order: 4;
@@ -1336,6 +1340,3 @@ KICKS KENYA CHECKOUT PAGE STYLING
 .navbar .nav-links {
     margin-left: auto;
 }
-
-
-
