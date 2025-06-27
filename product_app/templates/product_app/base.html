@@ -4,63 +4,69 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}KingOfSpeed{% endblock %}</title>
+
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+  <!-- Font Awesome -->
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-..."
+    integrity="sha512-papkgozDe6ujkq9d8M63IMJoVf2U8mInqM3Gy1rXzL4H0lHjvDA5t++yoGmm5HvqvU8+xmPMeBPMeW7D1yt+YQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer" />
+
+  <!-- Flag Icon CSS -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icon.min.css"
+    integrity="sha512-cunCh+dI0JZq5xF+XhEufUbyWC3tcS02Lw6uKZU+IsxpK2lVnk8kFY//TExO4via4/SjJO1Mc+0MfI4o0KzxhA=="
     crossorigin="anonymous"
     referrerpolicy="no-referrer" />
 </head>
+
 <body>
   <form style="display:none;">
     {% csrf_token %}
   </form>
-
-  <!-- TOP BAR -->
-
 
   <!-- MAIN NAV BAR -->
   <nav class="navbar">
     <button id="menu-toggle" class="hamburger">
       <i class="fa-solid fa-bars"></i>
     </button>
+
     <div class="logo">
       <a href="{% url 'product_app:landing_page' %}">
-        <img src="{% static 'images/logo.png' %}"
-             alt="KingOfSpeed"
-             class="logo-img">
+        <img src="{% static 'images/logo.png' %}" alt="KingOfSpeed" class="logo-img">
       </a>
     </div>
 
     <form class="nav-search-form" action="{% url 'product_app:search_products' %}" method="get" id="navSearchForm">
-       <input
-         type="text"
-         class="nav-search-input"
-         placeholder="Search products, brands and categories"
-         name="q"
-         id="navSearchInput"
-       />
+      <input
+        type="text"
+        class="nav-search-input"
+        placeholder="Search products, brands and categories"
+        name="q"
+        id="navSearchInput" />
       <button type="submit" class="nav-search-btn">Search</button>
     </form>
 
     <ul class="nav-links">
       <!-- Currency switcher -->
-        <li class="currency-switch">
-            {% if current_currency == 'KES' %}
-              <i class="flag-icon flag-icon-ke" style="font-size:24px;"></i>
-              &nbsp;|&nbsp;
-              <a href="{% url 'product_app:set_currency' 'BIF' %}">
-                <i class="flag-icon flag-icon-bi" style="opacity:0.7; font-size:24px;"></i>
-              </a>
-            {% else %}
-              <a href="{% url 'product_app:set_currency' 'KES' %}">
-                <i class="flag-icon flag-icon-ke" style="opacity:0.7; font-size:24px;"></i>
-              </a>
-              &nbsp;|&nbsp;
-              <i class="flag-icon flag-icon-bi" style="font-size:24px;"></i>
-            {% endif %}
-        </li>
-      
+      <li class="currency-switch">
+        {% if current_currency == 'KES' %}
+          <span class="flag-icon flag-icon-ke" style="font-size:24px;"></span>
+          &nbsp;|&nbsp;
+          <a href="{% url 'product_app:set_currency' 'BIF' %}">
+            <span class="flag-icon flag-icon-bi" style="opacity:0.7; font-size:24px;"></span>
+          </a>
+        {% else %}
+          <a href="{% url 'product_app:set_currency' 'KES' %}">
+            <span class="flag-icon flag-icon-ke" style="opacity:0.7; font-size:24px;"></span>
+          </a>
+          &nbsp;|&nbsp;
+          <span class="flag-icon flag-icon-bi" style="font-size:24px;"></span>
+        {% endif %}
+      </li>
+
       <li>
         {% if user.is_authenticated %}
           <a href="{% url 'accounts:profile' %}"><i class="fa-solid fa-user"></i> My Account</a>
@@ -83,7 +89,6 @@
 
   <!-- FOOTER SECTION -->
   <footer class="site-footer">
-    <!-- SUB-FOOTER: Multiple Columns with Links -->
     <div class="sub-footer">
       <div class="footer-columns">
         <div class="footer-column">
@@ -125,7 +130,6 @@
       </div>
     </div>
 
-    <!-- MAIN FOOTER: Copyright & Social Icons -->
     <div class="main-footer">
       <p>&copy; {% now "Y" %} KingOfSpeed. All rights reserved.</p>
       <div class="social-icons">
@@ -137,7 +141,7 @@
     </div>
   </footer>
 
-  <!-- CART DRAWER (SLIDE-OUT) -->
+  <!-- CART DRAWER -->
   <aside id="cartDrawer" class="cart-drawer hidden">
     <div class="cart-drawer-header">
       <h2>Your Cart</h2>
@@ -168,12 +172,13 @@
 
   <div id="cartDrawerOverlay" class="drawer-overlay hidden"></div>
 
+  <!-- Scripts -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       const cartIconLink = document.getElementById("cart-icon-link");
-      const cartDrawer    = document.getElementById("cartDrawer");
-      const closeBtn      = document.getElementById("closeCartDrawerBtn");
-      const overlay       = document.getElementById("cartDrawerOverlay");
+      const cartDrawer = document.getElementById("cartDrawer");
+      const closeBtn = document.getElementById("closeCartDrawerBtn");
+      const overlay = document.getElementById("cartDrawerOverlay");
 
       function openCartDrawer() {
         cartDrawer.classList.remove("hidden");
@@ -195,10 +200,10 @@
 
       const drawerRemoveButtons = document.querySelectorAll(".drawer-remove-btn");
       drawerRemoveButtons.forEach(button => {
-        button.addEventListener("click", function(e) {
+        button.addEventListener("click", function() {
           const itemKey = this.getAttribute("data-item-key");
-          if (!itemKey) return;
           const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
           fetch("{% url 'orders:remove_from_cart' %}", {
             method: "POST",
             headers: {
@@ -212,49 +217,35 @@
           .then(data => {
             alert(data.message);
             const itemEl = document.getElementById("drawer-cart-item-" + itemKey);
-            if (itemEl) {
-              itemEl.parentNode.removeChild(itemEl);
-            }
+            if (itemEl) itemEl.remove();
+
             const cartSummary = document.getElementById("cart-summary");
-            if (cartSummary) {
-              cartSummary.textContent = `Cart (${data.cart_count} items)`;
-            }
+            if (cartSummary) cartSummary.textContent = `Cart (${data.cart_count} items)`;
           })
           .catch(error => console.error("Error:", error));
         });
       });
     });
   </script>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const toggleBtn      = document.getElementById('menu-toggle');
-      const mobileSidebar  = document.getElementById('mobile-sidebar');
+      const toggleBtn = document.getElementById('menu-toggle');
+      const mobileSidebar = document.getElementById('mobile-sidebar');
       const sidebarOverlay = document.getElementById('sidebar-overlay');
-  
-      // only run if we’re on a page that actually has the mobile sidebar
-      if (!toggleBtn || !mobileSidebar || !sidebarOverlay) {
-        return;
-      }
-  
-      function openSidebar() {
-        mobileSidebar.classList.add('open');
-        sidebarOverlay.classList.add('open');
-        document.body.classList.add('sidebar-open');
-      }
-      function closeSidebar() {
-        mobileSidebar.classList.remove('open');
-        sidebarOverlay.classList.remove('open');
-        document.body.classList.remove('sidebar-open');
-      }
-  
-      toggleBtn.addEventListener('click', () => {
+
+      if (!toggleBtn || !mobileSidebar || !sidebarOverlay) return;
+
+      function toggleSidebar() {
         mobileSidebar.classList.toggle('open');
         sidebarOverlay.classList.toggle('open');
         document.body.classList.toggle('sidebar-open');
-      });
-      sidebarOverlay.addEventListener('click', closeSidebar);
+      }
+
+      toggleBtn.addEventListener('click', toggleSidebar);
+      sidebarOverlay.addEventListener('click', toggleSidebar);
     });
   </script>
-  
+
 </body>
 </html>
