@@ -87,7 +87,6 @@ h1 {
 
 /* NAV-SEARCH FORM -- CORRECTED */
 .nav-search-form {
-  /* CHANGED: 'flex: 1;' was removed from this rule to stop it from being greedy. */
   display: flex;
   justify-content: center;
   width: 50%; /* Give it a substantial width so it looks good. */
@@ -106,7 +105,7 @@ h1 {
   gap: 15px;
   margin: 0;
   padding: 0;
-  margin-left: auto; /* ADDED: This now works correctly and pushes the links to the right. */
+  margin-left: auto; /* This now works correctly and pushes the links to the right. */
 }
 .nav-links li {
   display: flex;
@@ -136,6 +135,10 @@ h1 {
   width: auto;
   vertical-align: middle;
 }
+
+/* ================================================= */
+/* FINAL CORRECTED MOBILE STYLES                     */
+/* ================================================= */
 @media (max-width: 992px) {
   .navbar {
     display: flex;
@@ -151,7 +154,7 @@ h1 {
   }
   .logo-img {
     display: inline-block;
-    max-height: 100px;     /* adjust to fit your nav height */
+    max-height: 100px;
     width: auto;
     vertical-align: middle;
   }
@@ -175,43 +178,54 @@ h1 {
     text-align: center;
     width: 100%;
   }
-  .nav-links li a {
-    text-indent: -9999px;     /* hide the label text */
+
+  /* This rule now ONLY targets the User and Cart links using the .icon-only-link class */
+  .nav-links .icon-only-link a {
+    text-indent: -9999px;     /* Hides the text label ("My Account", "Cart") */
     position: relative;
-    width: 3.5em;             /* fit around the icon */
-    height: 1.5em;
+    width: 2em;               /* Gives a consistent clickable area */
+    height: 2em;
+    font-size: 1.2rem;        /* Sets a base size for the link element */
   }
-  .nav-links li a i {
+  
+  /* This rule targets the Font Awesome icons inside those links */
+  .nav-links .icon-only-link a i {
     text-indent: 0;
     position: absolute;
     left: 0; top: 0;
-    font-size: 1.6rem; /* <-- FIX: This size is much more appropriate */
     width: 100%; height:100%;
+    font-size: 1.6rem; /* Sets the size of the user/cart icon */
     display: flex;
     align-items: center;
     justify-content: center;
   }
+  
   .hamburger,
   .nav-links li a {
     padding: 0.5rem;
   }
+  
   .nav-search-form input {
     width: 100%;
     font-size: 20px;
   }
+
+  /* This rule makes sure the currency link is NOT shrunk or hidden */
   .currency-switch a {
-  text-indent: 0;
-  width: auto;
-  height: auto;
+    text-indent: 0;
+    width: auto;
+    height: auto;
   }
 
+  /* This rule sets the size for the flag icons */
   .currency-switch .flag-icon {
-    font-size: 32px; 
+    font-size: 32px; /* You can adjust this value */
+    vertical-align: middle;
   }
 }
-
-
-
+/* ================================================= */
+/* END OF MOBILE STYLES                              */
+/* ================================================= */
 
 
 /* "VIEW CATALOG" BUTTON */
@@ -252,14 +266,7 @@ h1 {
   flex-direction: column;
   gap: 15px;
 }
-@media (max-width: 992px) {
-  .filter-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    font-size: 30px;
-  }
-}
+
 .filter-group {
   display: flex;
   flex-direction: column;
@@ -270,13 +277,7 @@ h1 {
   margin-bottom: 10px;
   color: #444;
 }
-@media (max-width: 992px) {
-  .filter-group h3 {
-    font-size: 26px;
-    margin-bottom: 10px;
-    color: #444;
-  }
-}
+
 .price-range .price-inputs {
   display: flex;
   gap: 10px;
