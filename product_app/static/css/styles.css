@@ -1242,10 +1242,3 @@ h1 {
     flex: 1 1 48%;
   }
 }
-
-/* This rule was conflicting, so it is removed from here. 
-.navbar .nav-links .currency-switch {
-  display: inline-block; 
-  vertical-align: middle;
-}
-*/
