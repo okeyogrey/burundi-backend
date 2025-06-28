@@ -112,7 +112,6 @@ h1 {
 /* 3. COMPONENT: SIDEBAR & FILTERS
 /* ===================================================================== */
 
-/* TWO-COLUMN LAYOUT FOR PRODUCT LISTING */
 .product-page-container {
   display: grid;
   grid-template-columns: 250px 1fr;
