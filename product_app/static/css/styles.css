@@ -1250,3 +1250,14 @@ h1 {
     flex: 1 1 48%;
   }
 }
+
+
+
+
+/* ======================================================= */
+/* FINAL FIX TO OVERRIDE flex display on currency switcher */
+/* ======================================================= */
+.navbar .nav-links .currency-switch {
+  display: inline-block; /* Overrides display: flex */
+  vertical-align: middle;  /* Helps align it with other icons */
+}
