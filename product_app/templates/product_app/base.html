@@ -47,6 +47,7 @@
     {% endif %}
 
     <ul class="nav-links">
+      
       <li class="currency-switch">
         {% if current_currency == 'KES' %}
           <span class="flag-icon flag-icon-ke"></span>
@@ -68,11 +69,13 @@
           <a href="{% url 'accounts:login' %}"><i class="fa-solid fa-user"></i> Login / Signup</a>
         {% endif %}
       </li>
+      
       <li class="icon-only-link">
         <a href="#" id="cart-icon-link">
           <i class="fa-solid fa-cart-shopping"></i> Cart <span id="cart-summary">({{ cart_count }})</span>
         </a>
       </li>
+
     </ul>
   </nav>
 
