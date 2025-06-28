@@ -1,40 +1,6 @@
-/* Base Styles from burundisales/static/css/styles.css */
-/* (Note: Some rules were merged with the more detailed rules below) */
-.form-control {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.related-products {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.related-item {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px;
-    width: 200px;
-    text-align: center;
-    background-color: #f9f9f9;
-}
-
-.related-item h4 {
-    margin: 10px 0;
-}
-
-
 /* ===================================================================== */
-/* Styles from product_app/static/css/styles.css with the corrected navbar */
+/* 1. GENERAL & BASE STYLES
 /* ===================================================================== */
-
-
-/* BASIC PAGE STYLING */
 body {
   background-color: #f5f5f5;
   font-family: Arial, sans-serif;
@@ -47,6 +13,10 @@ h1 {
   color: #333;
   margin-bottom: 20px;
 }
+
+/* ===================================================================== */
+/* 2. COMPONENT: TOP BAR & NAVIGATION BAR
+/* ===================================================================== */
 
 /* TOP BAR */
 .top-bar {
@@ -84,12 +54,24 @@ h1 {
   z-index: 10;
 }
 
+.logo {
+  margin-right: 20px;
+  text-align: left;
+  flex-shrink: 0; /* Prevents the logo from shrinking */
+}
 
-/* NAV-SEARCH FORM -- CORRECTED */
+.logo-img {
+  display: inline-block;
+  max-height: 70px;
+  width: auto;
+  vertical-align: middle;
+}
+
+/* NAV-SEARCH FORM */
 .nav-search-form {
   display: flex;
   justify-content: center;
-  width: 50%; /* Give it a substantial width so it looks good. */
+  width: 50%;
 }
 .nav-search-input {
   width: 60%;
@@ -98,14 +80,14 @@ h1 {
   border-radius: 4px;
 }
 
-/* NAVIGATION LINKS -- CORRECTED */
+/* NAVIGATION LINKS */
 .nav-links {
   list-style: none;
   display: flex;
   gap: 15px;
   margin: 0;
   padding: 0;
-  margin-left: auto; /* This now works correctly and pushes the links to the right. */
+  margin-left: auto; /* Pushes the links to the right */
 }
 .nav-links li {
   display: flex;
@@ -122,126 +104,15 @@ h1 {
   background-color: #f0f0f0;
 }
 
-
-.logo {
-  margin-right: 20px;   /* keep spacing from nav links */
-  text-align: left;
-  flex-shrink: 0; /* Prevents the logo from shrinking if space is tight */
+.hamburger{
+  display: none; /* Hidden on desktop */
 }
 
-.logo-img {
-  display: inline-block;
-  max-height: 70px;     /* adjust to fit your nav height */
-  width: auto;
-  vertical-align: middle;
-}
+/* ===================================================================== */
+/* 3. COMPONENT: SIDEBAR & FILTERS
+/* ===================================================================== */
 
-/* ================================================= */
-/* FINAL CORRECTED MOBILE STYLES                     */
-/* ================================================= */
-@media (max-width: 992px) {
-  .navbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-  .logo {
-    order: 2;
-    flex: 1;
-    text-align: center;
-  }
-  .logo-img {
-    display: inline-block;
-    max-height: 100px;
-    width: auto;
-    vertical-align: middle;
-  }
-  .nav-links {
-    order: 3;
-    display: flex;
-    gap: 1rem;
-    margin-left: 0; /* Reset margin for mobile view */
-  }
-  .nav-search-form{
-    order: 4;
-    flex: 0 0 100%;
-    width: 100%;
-    margin-top: 0.75rem;
-  }
-  .nav-search-form .nav-search-input {
-    width: 100%;
-  }
-  .logo a {
-    display: inline-block;
-    text-align: center;
-    width: 100%;
-  }
-
-  /* This rule now ONLY targets the User and Cart links using the .icon-only-link class */
-  .nav-links .icon-only-link a {
-    text-indent: -9999px;     /* Hides the text label ("My Account", "Cart") */
-    position: relative;
-    width: 2em;               /* Gives a consistent clickable area */
-    height: 2em;
-    font-size: 1.2rem;        /* Sets a base size for the link element */
-  }
-  
-  /* This rule targets the Font Awesome icons inside those links */
-  .nav-links .icon-only-link a i {
-    text-indent: 0;
-    position: absolute;
-    left: 0; top: 0;
-    width: 100%; height:100%;
-    font-size: 1.6rem; /* Sets the size of the user/cart icon */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .hamburger,
-  .nav-links li a {
-    padding: 0.5rem;
-  }
-  
-  .nav-search-form input {
-    width: 100%;
-    font-size: 20px;
-  }
-
-  /* This rule makes sure the currency link is NOT shrunk or hidden */
-  .currency-switch a {
-    text-indent: 0;
-    width: auto;
-    height: auto;
-  }
-
-  /* This rule sets the size for the flag icons */
-  .currency-switch .flag-icon {
-    font-size: 32px; /* You can adjust this value */
-    vertical-align: middle;
-  }
-}
-/* ================================================= */
-/* END OF MOBILE STYLES                              */
-/* ================================================= */
-
-
-/* "VIEW CATALOG" BUTTON */
-.catalog-button {
-  background-color: #000;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
-}
-.catalog-button:hover {
-  background-color: #444;
-}
-
-/* TWO-COLUMN LAYOUT (SIDEBAR + MAIN) FOR LISTING PAGES */
+/* TWO-COLUMN LAYOUT FOR PRODUCT LISTING */
 .product-page-container {
   display: grid;
   grid-template-columns: 250px 1fr;
@@ -250,7 +121,6 @@ h1 {
   max-width: 1200px;
 }
 
-/* SIDEBAR STYLING (FILTERS) */
 .filter-sidebar {
   background-color: #fff;
   padding: 20px;
@@ -261,6 +131,7 @@ h1 {
   margin-bottom: 15px;
   font-size: 18px;
 }
+
 .filter-form {
   display: flex;
   flex-direction: column;
@@ -277,11 +148,33 @@ h1 {
   margin-bottom: 10px;
   color: #444;
 }
+.filter-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.filter-group ul li {
+  margin-bottom: 8px;
+}
+.filter-group input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 6px;
+}
 
 .price-range .price-inputs {
   display: flex;
   gap: 10px;
 }
+.price-input {
+  width: 80px;
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
 .filter-button {
   background-color: #007bff;
   color: #fff;
@@ -296,13 +189,15 @@ h1 {
   background-color: #0056b3;
 }
 
-/* MAIN PRODUCT LISTING */
+/* ===================================================================== */
+/* 4. COMPONENT: PRODUCT LISTING & CARDS
+/* ===================================================================== */
+
 .product-listing {
   display: flex;
   flex-direction: column;
 }
 
-/* SORT BAR */
 .sort-bar {
   display: flex;
   justify-content: flex-end;
@@ -311,39 +206,23 @@ h1 {
   gap: 10px;
 }
 
-/* SEARCH CONTAINER */
-.search-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.search-label {
-  font-weight: bold;
-  font-size: 14px;
-  text-transform: uppercase;
-  color: #222;
-}
 .sort-label {
   font-weight: bold;
 }
-.filter-input {
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+
 .filter-select {
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-/* PRODUCT GRID & CARDS (LISTING) */
 .products-container {
   display: grid;
   gap: 20px;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   padding: 20px 0;
 }
+
 .product-card {
   background-color: #fff;
   border: 1px solid #ddd;
@@ -355,12 +234,14 @@ h1 {
 .product-card:hover {
   transform: translateY(-5px);
 }
+
 .product-image {
   width: 100%;
   height: 220px;
   object-fit: cover;
   display: block;
 }
+
 .product-info {
   padding: 10px;
   text-align: center;
@@ -376,14 +257,7 @@ h1 {
   color: #007bff;
   margin-bottom: 10px;
 }
-.badge-sale {
-  display: inline-block;
-  background-color: #ff4500;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-}
+
 .details-button {
   display: inline-block;
   background-color: #007bff;
@@ -397,112 +271,40 @@ h1 {
   background-color: #0056b3;
 }
 
-/* PAGINATION */
-.pagination {
-  margin-top: 20px;
-  text-align: center;
-}
-.pagination a {
-  margin: 0 5px;
-  padding: 5px 10px;
-  background-color: #007bff;
+.badge-sale {
+  display: inline-block;
+  background-color: #ff4500;
   color: #fff;
-  border-radius: 5px;
-  text-decoration: none;
-}
-.pagination a:hover {
-  background-color: #0056b3;
-}
-.pagination .current {
-  margin: 0 5px;
-  padding: 5px 10px;
-  background-color: #28a745;
-  color: #fff;
-  border-radius: 5px;
-}
-
-/* OPTIONAL UTILITY CLASSES */
-.page-indicator {
-  background-color: #28a745;
-  color: #fff;
-  padding: 5px 15px;
-  border-radius: 20px;
-  text-align: center;
-  width: 120px;
-  margin: 10px auto;
-}
-.align-right {
-  justify-self: end;
-}
-.clear-button {
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-left: 10px;
-  margin-top: 25px;
-}
-.clear-button:hover {
-  background-color: #c82333;
-}
-.small-btn {
-  padding: 6px 12px;
-  font-size: 14px;
-  margin-left: 10px;
-}
-.row-group {
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-.row-group label {
-  margin-bottom: 0;
-}
-
-/* COLLAPSIBLE SECTIONS */
-.collapsible-body {
-  max-height: 999px;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-}
-.collapsible-body.collapsed {
-  max-height: 0;
-}
-.collapsible-header {
-  cursor: pointer;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-/* CHECKBOXES (CheckboxSelectMultiple) */
-.filter-group ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.filter-group ul li {
-  margin-bottom: 8px;
-}
-.filter-group input[type="checkbox"] {
-  transform: scale(1.2);
-  margin-right: 6px;
-}
-
-/* PRICE INPUT STYLE */
-.price-input {
-  width: 80px;
-  padding: 5px;
-  margin-right: 5px;
-  border: 1px solid #ccc;
+  padding: 4px 8px;
   border-radius: 4px;
-  font-size: 14px;
-  text-align: center;
+  margin-bottom: 10px;
 }
 
-/* ========== PRODUCT DETAIL PAGE STYLING ========== */
+.related-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.related-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.related-item h4 {
+    margin: 10px 0;
+}
+
+
+/* ===================================================================== */
+/* 5. COMPONENT: PRODUCT DETAIL PAGE
+/* ===================================================================== */
+
 .detail-page-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -673,9 +475,10 @@ h1 {
   padding: 10px;
 }
 
-/***************************************
-BASIC LANDING PAGE / SIDEBAR STYLING
-***************************************/
+/* ===================================================================== */
+/* 6. COMPONENT: LANDING PAGE
+/* ===================================================================== */
+
 .landing-container {
   display: flex;
   gap: 0px;
@@ -697,103 +500,12 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   height: 75vh;
 }
 
-
-@media (max-width: 992px) {
-  .landing-hero {
-    height: 30vh;
-  }
-}
-.hamburger{
-  display: none;
-}
-
-
-
-@media (max-width: 992px) {
-  .landing-sidebar {
-    display: none;   /* hide your original desktop sidebar */
-    height: 100%;
-    width: 500px;
-  }
-  .hamburger {
-    order: 1;
-    display: block;
-    background: none;
-    border: none;
-    font-size: 4.5rem;
-    margin-left: 1rem;
-    cursor: pointer;
-    z-index: 1100;
-  }
-  #mobile-sidebar {
-    display: block;
-    position: fixed;
-    top: 50;
-    left: -100%;
-    width: 50%;
-    height: 28vh;
-    background: #fff;
-    padding: 20px;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-    transition: left 0.3s ease;
-    z-index: 1050;
-    overflow-y: auto;
-    font-size: 50px;
-
-  }
-  #mobile-sidebar.open {
-    left: 0;
-  }
-
-  /* push page content under when sidebar open (optional) */
-  body.sidebar-open {
-    overflow: hidden;
-  }
-}
-
-
-/* ——— Sidebar overlay ——— */
-#sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.4);
-  z-index: 1040;       /* just under your sidebar */
-  transition: opacity 0.3s ease;
-  opacity: 0;
-  pointer-events: none; /* ignore clicks when hidden */
-}
-
-/* when “open” we show it */
-#sidebar-overlay.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-
-
-
-
-
-
-/* mobile: 2 columns */
-
 .landing-hero-image {
   width: 100%;
-  /* max-height: 300px; */
   object-fit: cover;
   display: block;
   border-radius: 8px;
   height: 100%;
-}
-@media (max-width: 992px) {
-  .landing-hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-  }
 }
 .landing-promo {
   margin-bottom: 20px;
@@ -813,17 +525,6 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   gap: 20px;
 }
 
-@media (max-width: 992px) {
-  .featured-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-/* Tablets: 5 columns */
-@media (min-width: 993px) {
-  .featured-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
 .featured-card {
   background-color: #fff;
   border: 1px solid #ddd;
@@ -831,64 +532,32 @@ BASIC LANDING PAGE / SIDEBAR STYLING
   text-align: center;
   padding: 10px;
 }
-@media (max-width: 992px) {
-  .featured-card {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    text-align: center;
-    padding: 10px;
-    height: 600px;
-  }
-}
 .featured-card img {
   width: 100%;
   height: 150px;
   object-fit: cover;
-}
-@media (max-width: 992px) {
-  .featured-card img {
-    width: 100%;
-    height: 450px;
-    object-fit: cover;
-  }
 }
 .featured-card h4 {
   margin: 10px 0 5px;
   font-size: 16px;
   color: #333;
 }
-@media (max-width: 992px) {
-  .featured-card h4 {
-    margin: 10px 0 5px;
-    font-size: 26px;
-    color: #333;
-  }
-}
 .featured-card p {
   color: #007bff;
   margin-bottom: 8px;
 }
-@media (max-width: 992px) {
-  .featured-card p {
-    font-size: 22px;
-  }
-}
 
-/***************************************
-MEGA MENU (Jumia-like) for Subcategories
-***************************************/
+/* MEGA MENU FOR LANDING PAGE SIDEBAR */
 .mega-menu {
   list-style: none;
   margin: 0;
   padding: 0;
-  
 }
 .mega-menu-item {
   position: relative;
   margin-bottom: 5px;
 }
-.mega-menu-item > a {
+.mega-menu-item > a, .mega-menu-label {
   display: block;
   padding: 8px 10px;
   color: #333;
@@ -899,24 +568,24 @@ MEGA MENU (Jumia-like) for Subcategories
 .mega-menu-item > a:hover {
   background-color: #eee;
 }
-/* make submenus static, hidden by default */
+.mega-menu-label {
+  cursor: default;
+  font-weight: normal;
+}
 .mega-menu-content {
   display: none;
-  position: static;      /* flow in document */
-  width: 100%;           /* full width of parent LI */
-  margin-top: 5px;       /* space below label */
+  position: static;
+  width: 100%;
+  margin-top: 5px;
   padding: 10px 20px;
   border: 1px solid #ddd;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-
-
-/* when the parent has .open, show its submenu */
-.has-mega-menu.open > .mega-menu-content {
+.has-mega-menu.open > .mega-menu-content,
+.mega-menu-item.open > .mega-menu-content {
   display: block;
 }
-
 .mega-menu-row {
   display: flex;
   flex-wrap: wrap;
@@ -932,12 +601,6 @@ MEGA MENU (Jumia-like) for Subcategories
   color: #333;
   margin-bottom: 8px;
 }
-@media (max-width: 992px) {
-  .mega-menu-column h4 {
-    font-size: 36px;
-    text-decoration: none;
-  }
-}
 .mega-menu-column ul {
   list-style: none;
   margin: 0;
@@ -952,7 +615,6 @@ MEGA MENU (Jumia-like) for Subcategories
   padding: 4px 0;
   display: inline-block;
 }
-
 .mega-menu-column li a:hover {
   color: #000;
 }
@@ -962,43 +624,11 @@ MEGA MENU (Jumia-like) for Subcategories
   clear: both;
 }
 
-/* NON-CLICKABLE MEGA MENU LABEL */
-.mega-menu-label {
-  display: block;
-  padding: 8px 10px;
-  color: #333;
-  background-color: #f8f8f8;
-  border-radius: 4px;
-  cursor: default;
-  text-decoration: none;
-  font-weight: normal;
-}
-@media (max-width: 992px) {
-  .mega-menu-column ul li a {
-    display: inline-block;
-    padding: 0.25em 0.5em;
-    border-radius: 4px;
-    background-color: #f0f0f0;
-    font-size: 1.4rem;
-    text-decoration: none;
-    color: #333;
-  }
-}
+/* ===================================================================== */
+/* 7. COMPONENT: CART & CHECKOUT
+/* ===================================================================== */
 
-/* ALLOW CLICK-TOGGLE ON TOUCH DEVICES */
-.mega-menu-item.open > .mega-menu-content {
-  display: block;
-}
-
-
-
-
-
-
-
-/***************************************
-CART DRAWER STYLING
-***************************************/
+/* CART DRAWER */
 .cart-drawer {
   position: fixed;
   top: 0;
@@ -1039,9 +669,7 @@ CART DRAWER STYLING
   border-radius: 4px;
 }
 
-/***************************************
-CART PAGE STYLING
-***************************************/
+/* CART PAGE */
 .cart-page-container {
   max-width: 1000px;
   margin: 0 auto 40px;
@@ -1144,9 +772,132 @@ CART PAGE STYLING
   margin-bottom: 20px;
 }
 
-/***************************************
-FOOTER STYLING
-***************************************/
+/* CHECKOUT PAGE */
+.kicks-checkout {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin: 20px auto;
+  max-width: 800px;
+}
+.checkout-header h1 {
+  text-align: center;
+  font-size: 32px;
+  color: #222;
+  margin-bottom: 30px;
+}
+.checkout-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+.order-summary-section,
+.customer-payment-section {
+  flex: 1 1 100%;
+}
+.order-summary-card,
+.customer-details-card,
+.payment-options-card {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+.order-summary-card h2,
+.customer-details-card h2,
+.payment-options-card h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 8px;
+}
+.order-summary-card ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.order-item:last-child {
+  border-bottom: none;
+}
+.item-info {
+  font-size: 16px;
+  color: #555;
+}
+.item-price {
+  font-size: 16px;
+  color: #007bff;
+  text-align: right;
+}
+.order-total {
+  text-align: right;
+  font-size: 20px;
+  margin-top: 15px;
+}
+.customer-details-card .form-group {
+  margin-bottom: 15px;
+}
+.customer-details-card input[type="text"],
+.customer-details-card input[type="email"] {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.payment-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.payment-btn:hover {
+  background-color: #0056b3;
+}
+.paypal-btn {
+  background-color: #003087;
+}
+.paypal-btn:hover {
+  background-color: #002060;
+}
+.paystack-btn {
+  background-color: #00c853;
+}
+.paystack-btn:hover {
+  background-color: #009624;
+}
+.mpesa-section {
+  text-align: center;
+  padding: 20px;
+}
+.mpesa-icon {
+  display: block;
+  margin: 0 auto 15px;
+  width: 80px;
+  height: auto;
+}
+
+/* ===================================================================== */
+/* 8. COMPONENT: FOOTER
+/* ===================================================================== */
+
 .site-footer {
   background-color: white;
   color: black;
@@ -1217,142 +968,280 @@ FOOTER STYLING
   color: greenyellow;
 }
 
-/***************************************
-KICKS KENYA CHECKOUT PAGE STYLING
-***************************************/
-.kicks-checkout {
-  background-color: #fff;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin: 20px auto;
-  max-width: 800px;
+/* ===================================================================== */
+/* 9. UTILITY & MISC CLASSES
+/* ===================================================================== */
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.checkout-header h1 {
+.page-indicator {
+  background-color: #28a745;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 20px;
   text-align: center;
-  font-size: 32px;
-  color: #222;
-  margin-bottom: 30px;
+  width: 120px;
+  margin: 10px auto;
 }
-
-.checkout-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
+.align-right {
+  justify-self: end;
 }
-
-.order-summary-section,
-.customer-payment-section {
-  flex: 1 1 100%;
-}
-
-.order-summary-card,
-.customer-details-card,
-.payment-options-card {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  margin-bottom: 20px;
-}
-
-.order-summary-card h2,
-.customer-details-card h2,
-.payment-options-card h2 {
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 15px;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 8px;
-}
-
-.order-summary-card ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.order-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.order-item:last-child {
-  border-bottom: none;
-}
-
-.item-info {
-  font-size: 16px;
-  color: #555;
-}
-
-.item-price {
-  font-size: 16px;
-  color: #007bff;
-  text-align: right;
-}
-
-.order-total {
-  text-align: right;
-  font-size: 20px;
-  margin-top: 15px;
-}
-
-.customer-details-card .form-group {
-  margin-bottom: 15px;
-}
-
-.customer-details-card input[type="text"],
-.customer-details-card input[type="email"] {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.payment-methods {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.payment-btn {
-  background-color: #007bff;
+.clear-button {
+  background-color: #dc3545;
   color: #fff;
   border: none;
-  padding: 12px 20px;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-left: 10px;
+  margin-top: 25px;
+}
+.clear-button:hover {
+  background-color: #c82333;
+}
+.small-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-left: 10px;
+}
+.row-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.row-group label {
+  margin-bottom: 0;
 }
 
-.payment-btn:hover {
-  background-color: #0056b3;
+/* COLLAPSIBLE SECTIONS */
+.collapsible-body {
+  max-height: 999px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.collapsible-body.collapsed {
+  max-height: 0;
+}
+.collapsible-header {
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-.paypal-btn {
-  background-color: #003087;
+/* MOBILE SIDEBAR */
+#mobile-sidebar {
+    display: none; /* Initially hidden until activated by JS in mobile view */
+}
+#sidebar-overlay {
+  display: none; /* Initially hidden */
 }
 
-.paypal-btn:hover {
-  background-color: #002060;
+/* FLAG ICON BASE STYLE - DESKTOP */
+.navbar .currency-switch .flag-icon {
+  display: inline-block; 
+  width: 1.333em;
+  height: 1em;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  vertical-align: middle;
 }
 
-.paystack-btn {
-  background-color: #00c853;
+/* ===================================================================== */
+/* 10. RESPONSIVE STYLES (All mobile styles consolidated here)
+/* ===================================================================== */
+
+@media (max-width: 992px) {
+  /* NAVBAR & ICONS */
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .logo {
+    order: 2;
+    flex: 1;
+    text-align: center;
+  }
+  .logo-img {
+    max-height: 100px;
+  }
+  .logo a {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+  }
+  .nav-links {
+    order: 3;
+    gap: 1rem;
+    margin-left: 0; /* Reset margin for mobile view */
+  }
+  .nav-search-form{
+    order: 4;
+    flex: 0 0 100%;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+  .nav-search-form .nav-search-input {
+    width: 100%;
+  }
+  .nav-search-form input {
+    font-size: 20px;
+  }
+
+  /* This rule now ONLY targets the User and Cart links */
+  .nav-links .icon-only-link a {
+    text-indent: -9999px;     /* Hides the text label */
+    position: relative;
+    width: 2em;
+    height: 2em;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+  }
+  
+  /* This rule targets the Font Awesome icons inside those links */
+  .nav-links .icon-only-link a i {
+    text-indent: 0;
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height:100%;
+    font-size: 1.6rem; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* This rule makes sure the currency link is NOT shrunk or hidden */
+  .currency-switch a {
+    text-indent: 0;
+    width: auto;
+    height: auto;
+    padding: 0.5rem;
+  }
+
+  /* This rule sets the size for the flag icons */
+  .currency-switch .flag-icon {
+    font-size: 32px; 
+  }
+
+  /* HAMBURGER & MOBILE SIDEBAR */
+  .hamburger {
+    order: 1;
+    display: block;
+    background: none;
+    border: none;
+    font-size: 4.5rem;
+    margin-left: 1rem;
+    cursor: pointer;
+    z-index: 1100;
+    padding: 0.5rem;
+  }
+  .landing-sidebar {
+    display: none;
+  }
+  #mobile-sidebar {
+    display: block;
+    position: fixed;
+    top: 50;
+    left: -100%;
+    width: 50%;
+    height: 28vh;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1050;
+    overflow-y: auto;
+    font-size: 50px;
+  }
+  #mobile-sidebar.open {
+    left: 0;
+  }
+  body.sidebar-open {
+    overflow: hidden;
+  }
+  #sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    z-index: 1040;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #sidebar-overlay.open {
+    display: block; /* Make it visible when open */
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* FILTERS */
+  .filter-form {
+    font-size: 30px;
+  }
+  .filter-group h3 {
+    font-size: 26px;
+  }
+
+  /* LANDING PAGE */
+  .landing-hero {
+    height: 30vh;
+  }
+  .landing-hero-image {
+    object-fit: fill;
+  }
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .featured-card {
+    height: 600px;
+  }
+  .featured-card img {
+    height: 450px;
+  }
+  .featured-card h4 {
+    font-size: 26px;
+  }
+  .featured-card p {
+    font-size: 22px;
+  }
+
+  /* MEGA MENU */
+  .mega-menu-column h4 {
+    font-size: 36px;
+    text-decoration: none;
+  }
+  .mega-menu-column ul li a {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: #333;
+  }
+
+  /* CHECKOUT PAGE */
+  .checkout-content {
+    flex-wrap: wrap; /* Already flex-wrap: wrap by default, but this ensures it on mobile */
+  }
 }
 
-.paystack-btn:hover {
-  background-color: #009624;
-}
-
-/* Responsive adjustments for larger screens */
-@media (min-width: 768px) {
+/* Additional Breakpoint for Larger Screens (Example) */
+@media (min-width: 993px) {
+  .featured-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
   .checkout-content {
     flex-wrap: nowrap;
   }
@@ -1360,37 +1249,4 @@ KICKS KENYA CHECKOUT PAGE STYLING
   .customer-payment-section {
     flex: 1 1 48%;
   }
-}
-
-
-
-/* ========== SAFARICOM MPESA ICON & SECTION ========== */
-.mpesa-section {
-  text-align: center;
-  padding: 20px;
-}
-.mpesa-icon {
-  display: block;
-  margin: 0 auto 15px;
-  width: 80px;
-  height: auto;
-}
-
-
-
-.navbar .currency-switch .flag-icon {
-  /* This ensures the span behaves like a block but flows with text */
-  display: inline-block; 
-  
-  /* This ensures it has a visible size */
-  width: 1.333em;
-  height: 1em;
-  
-  /* This ensures the background flag image is positioned correctly */
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  
-  /* This helps with vertical alignment next to the "|" separator */
-  vertical-align: middle;
 }
