@@ -48,19 +48,25 @@
 
     <ul class="nav-links">
       
-      <li class="currency-switch">
-        {% if current_currency == 'KES' %}
-          <span class="flag-icon flag-icon-ke"></span>
-          <a href="{% url 'product_app:set_currency' 'BIF' %}">
-            <span class="flag-icon flag-icon-bi"></span>
-          </a>
-        {% else %}
-          <a href="{% url 'product_app:set_currency' 'KES' %}">
-            <span class="flag-icon flag-icon-ke"></span>
-          </a>
-          <span class="flag-icon flag-icon-bi"></span>
-        {% endif %}
-      </li>
+      {% if current_currency == 'KES' %}
+            <li class="currency-item active-currency">
+              <span class="flag-icon flag-icon-ke"></span>
+            </li>
+            <li class="currency-item">
+              <a href="{% url 'product_app:set_currency' 'BIF' %}">
+                <span class="flag-icon flag-icon-bi"></span>
+              </a>
+            </li>
+      {% else %}
+            <li class="currency-item">
+              <a href="{% url 'product_app:set_currency' 'KES' %}">
+                <span class="flag-icon flag-icon-ke"></span>
+              </a>
+            </li>
+            <li class="currency-item active-currency">
+              <span class="flag-icon flag-icon-bi"></span>
+            </li>
+      {% endif %}
 
       <li class="icon-only-link">
         {% if user.is_authenticated %}
