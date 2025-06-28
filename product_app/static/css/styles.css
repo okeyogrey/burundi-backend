@@ -1111,7 +1111,7 @@ h1 {
   }
   
   /* This rule makes sure the currency link is NOT shrunk or hidden */
-  .currency-switch a {
+  .currency-item a {
     text-indent: 0;
     width: auto;
     height: auto;
@@ -1119,7 +1119,7 @@ h1 {
   }
 
   /* This rule sets the size for the flag icons */
-  .currency-switch .flag-icon {
+  .currency-item .flag-icon {
     font-size: 32px; 
   }
 
